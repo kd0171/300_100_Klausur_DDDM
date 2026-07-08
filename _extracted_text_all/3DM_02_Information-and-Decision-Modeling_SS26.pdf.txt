@@ -1,0 +1,1055 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 2 – Information and Decision Modeling
+       Goals of today‘s lecture
+       •      The Process of Business Analytics
+       •      Information and Decision Modeling
+       •      Vehicle Routing with time-dependent Travel Times
+       •      Data comes first…
+
+
+
+       • Warning: In this lecture, we will use many different methods. They will not be defined in
+         detail, but only their idea.
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Information Modeling and Decision Modeling
+
+       • Case Study: Traveling salesperson with time-dependent travel times
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Decision making
+       •      Real-World: Actions are performed and
+              resulting states can be observed
+
+
+       •      Aggregation: Transfers real-world data
+                                                                                                   Information Model                Decision Model
+              into dimensions of information model
+
+
+       •      Information Model: Depicts information in
+              a condensed way                                                                          Aggregation                  Implementation
+
+
+       •      Decision Model: Defines decision space
+              and evaluates decision
+                                                                                                                       Real-World
+
+
+       •      Implementation: Translates solution of the
+              decision model into real-world actions
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Selection of information and decision model
+       • Information and decision model are designed based on initial hypotheses
+
+       • Hypotheses base on observed behavior of the real-world problem and data (descriptive
+         analytics)
+
+       • The hypotheses are not necessarily correct.
+
+       • The quality of the hypotheses can be evaluated by implementing the solution of the
+         decision model
+
+       • Observations may lead to an update of the hypotheses, and consequently, information
+         and decision model
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Intelligent Data Analysis: From Appearance to Structure
+                                                                                                                      problem
+                                                                                                                                                     system
+                                                                                                                                                        task
+
+       ▪       Data from any real-world system just reflects its
+               appearance. The structural properties are hardly visible                                                         appearance                            structure
+
+               (Google Maps shows congestion, not reason)
+       ▪       Appearance may be incomplete, faulty, exceptional
+       ▪       System structure helps building the data model (do                                                                            data               data model
+                                                                                                                                                                                            information
+                                                                                                                                                                                           model / pattern
+
+               margarine sales depend on visits or vice versa?)
+       ▪       Recorded data are just observations of general system
+               appearance (data ≈ tiny no. of samples)                                                                                                                                          search
+
+
+
+       ▪       Recorded data is to be cleaned, corrected, imputed,
+               validated and thinned into a target data set
+       ▪
+                                                                                                                                                                                                         information
+               Data Mining computes model from target data set                                                                                      recorded data
+                                                                                                                                                                             search   target data         structure
+
+
+       ▪       A DM concept implements our hypothesis (assumption)
+               about statistical correlation in the data                                                                                                                                                 hypothesis
+
+       ▪       Model/pattern → evidence on system structure
+                                                                                                                                               Meisel, Mattfeld (2010): Synergies of operations research and
+                                                                                                                                               data mining, EJOR vol 206, pages 1-10
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Planning of Mobility/Transp.: From Structure to Appearance
+                                                                                                                                          problem
+
+       ▪ The real-world decision problem has to be simplified in                                                                                                           goal
+
+
+         order to meet the requirements of math. modeling
+                                                                                                                                                    appearance                               structure
+       ▪ Therefore important features of the problem structure are
+         selected by means of a hypothesis
+       ▪ Features are only considered if data is available                                                               solution                                                 data               data model
+
+
+       ▪ Important features are objective, decision space, constraints
+       ▪ The general structure of the decision model helps to bridge
+                                                                                                                          search
+         the path from problem → decision model
+
+       ▪ Decision model structures are e.g. Assignment, Routing,                                                       decision model                   decision
+                                                                                                                                                      model structure                    recorded data
+
+         Scheduling
+       ▪ The resulting solution depicts one (optimal) appearance of
+         the problem → evaluation?                                                                                                                                      hypothesis
+
+
+
+                                                                                                                      Meisel, Mattfeld (2010): Synergies of operations research and
+                                                                                                                      data mining, EJOR vol 206, pages 1-10
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+    Unified View of IDA and PMT
+                                                             problem
+
+                                                                                              goal
+
+
+
+
+                                                                       appearance                               structure
+
+
+
+
+                                                                                                                                                    information
+                                         solution                                                    data               data model                 model / pattern
+
+
+
+
+                                         search                                                                                                         search
+
+
+
+
+                                      decision model                       decision                                                                              information
+                                                                                                                                     search   target data
+                                                                         model structure                    recorded data                                         structure
+
+
+
+
+                                                                                           hypothesis
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Traveling Salesperson Problem
+       •      Hypotheses: Travel times are constant
+       •      Information model: travel time matrix
+       •      Decision model: mixed integer program without
+              temporal considerations
+
+
+       •      Implementation leads to unexpected results
+              (usually, more time is required than planned)
+
+
+       •     Hypotheses are adapted to capture time-dependent travel times leading to changes in
+            • Information model: A set of travel time matrices (and some transition considerations)
+            • Decision model: mixed integer program with time-of-day considerations (𝑥𝑖𝑗𝒕 )
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Information Modeling and Decision Modeling
+
+       • Case Study: Traveling salesperson with time-dependent travel times
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Motivation
+       • Service Routing
+       • Save costly driving time
+       • Temporal commitment:
+         • Increase customer service experience                                                                        lebensmittelzeitung.de   schindler.com
+
+
+
+         • Ensure customer availability
+       • Both require accurate consideration
+          of travel times
+       • Source: Jan Ehmke, Integration of Information
+          and Optimization Models for Routing in City
+          Logistics, Springer
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Time-Dependent Travel Times
+                                                                                               10 am:                  3 pm:
+           • Varying traffic over time and space
+
+           • Different travel times per street
+             segment
+
+           • Different shortest paths between
+             customers
+
+           • Different sequences of customers
+             depending on start time of the tour
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling (sketched)
+       • Information Model:
+         • Time-dependent travel times between customers (including depot)
+         • Time-dependent travel time matrix, or a set of travel time matrices
+
+
+
+       • Decision Model:
+         • Objective: Minimize travel times
+         • Constraints:
+            • Serve all customers
+            • Routing-constraints (Subtour-elimination, etc.)
+         • Decision variables: Travel between customers i an j at time t
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data Collection: Floating Car Data
+
+           • Travel times per time and street
+             segment
+           • Large quantities required to calculate
+             accurate mean values
+
+           • Floating Car Data: A large fleet of
+             vehicles sends their position, direction,
+             and potentially their speed in frequent
+             time intervals
+
+
+
+
+                                                                                                                       www.thetimes.c
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 14
+                                                                                                                       o.uk
+© Prof. Dr. Dirk C. Mattfeld
+       Data Collection: Floating Car Data (Public)
+
+                               Taxi Fleet                                                           FCD-Collection und Use
+
+                                                 Dispatcher                         Internet           Public Traffic Management
+
+
+                                                                                                                    Providers
+                                               Communicatio
+                                                     n
+                                                                                                                  GPRS, SMS,
+                                                 ca. 1/min                                                       RDS-TMC, HTTP
+
+
+
+
+                                                                                                                                   source:
+
+
+
+                                Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Floating Car Data: Speed Calculation
+           • Taxi Data does not provide street,                                                                                                 17:06
+
+
+
+             direction, and speed
+           • Required steps:                                                                                                                   17:07
+
+
+
+
+                • Observe taxi positions                                                                                                       17:08
+
+                                                                                                                                               17:09
+
+                • Project position to a street segment                                                                                                  17:10
+
+
+
+
+                • Calculate observed speed for this segment                                                                                     17:11
+
+
+
+
+                                                                                                                                    17:12
+
+
+
+                                                                                                                         17:13
+
+
+                               Link.ID                 Zeit                             v                Coverage
+                                1234           03.02.2005 12:43:30                   50 km/h               70%
+                                                                                                                         Stuttgart, Die., 1.7.2003, 17-18 Uhr
+
+                                                                                                                                                            source:
+                                 Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Floating Car Data: Speed Calculation
+                                                                                                                       link         time                  speed          max
+                                                                                                                          -53197590 2003-03-24 00:11:19             55
+                                                                                                                          -53197590 2003-03-24 00:07:35             61
+                                                                                                                          -53197590 2003-03-24 00:21:25             49
+                                                                                                                          -53197590 2003-03-24 00:22:49             20
+                                                                                                                          -53197590 2003-03-24 01:48:16             64
+                                                                                                                          -53197590 2003-03-24 01:22:19             70
+                                                                                                                          -53197590 2003-03-24 02:06:48             43
+                                                                                                                          -53197590 2003-03-24 02:26:25             49
+                                                                                                                          -53197590 2003-03-24 02:52:32             29
+                                                                                                                          -53197590 2003-03-24 03:17:53             61
+                                                                                                                          -53197590 2003-03-24 03:18:23             63
+                                                                                                                          -53197590 2003-03-24 03:21:59             40
+                                                                                                                          -53197590 2003-03-24 04:34:33             67
+                                                                                                                          -53197590 2003-03-24 04:43:56             41
+                                                                                                                          -53197590 2003-03-24 05:14:18             74
+                                                                                                                          -53197590 2003-03-24 04:48:38             61
+                                                                                                                                                              source:
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                                              Downtown link, Monday
+       Data Analysis                                                                                                   20%
+
+                                                                                                                       15%
+       • Varying speed patterns over the day                                                                           10%
+         (confirms hypothesis)                                                                                         5%
+
+                                                                                                                       0%
+       • Variation even at the same day, same time
+         (ignored by our hypothesis, next lecture)
+
+                                                                                                                             Downtown link, Mon 8-9 am
+       • There might be outliers or errors (taxi data!)                                                                20%
+
+                                                                                                                       15%
+
+                                                                                                                       10%
+
+                                                                                                                        5%
+
+                                                                                                                        0%
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data Cleaning
+
+       •        Which observations are outliers or errors?                                                         link         time
+                                                                                                                      -53197590 2003-03-24 00:11:19
+                                                                                                                                                      speed
+                                                                                                                                                              55
+                                                                                                                                                                   maxspeed
+                                                                                                                                                                          75
+                                                                                                                      -53197590 2003-03-24 00:07:35           61          75
+       •        Objective evaluation difficult since there are                                                        -53197590 2003-03-24 00:21:25           49          75
+                many external factors                                                                                 -53197590 2003-03-24 00:22:49           20          75
+                                                                                                                      -53197590 2003-03-24 01:48:16           64          75
+                (e.g., traffic lights, weather, …)                                                                    -53197590 2003-03-24 01:22:19           70          75
+                                                                                                                      -53197590 2003-03-24 02:06:48           43          75
+       •        Example for data cleaning:                                                                            -53197590 2003-03-24 02:26:25           49          75
+                                                                                                                      -53197590 2003-03-24 02:52:32           29          75
+                Filter all observations with speed higher than                                                        -53197590 2003-03-24 03:17:53           61          75
+                1.5x speed limit.                                                                                     -53197590 2003-03-24 03:18:23           63          75
+                                                                                                                      -53197590 2003-03-24 03:21:59           40          75
+                                                                                                                      -53197590 2003-03-24 04:34:33           67          75
+                                                                                                                      -53197590 2003-03-24 04:43:56           41          75
+                                                                                                                      -53197590 2003-03-24 05:14:18           74          75
+                                                                                                                      -53197590 2003-03-24 04:48:38           61          75
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data Visualization
+
+         • Spatial distribution of observations
+         • Some areas are well-covered
+         • Some areas only have a few observations
+           (taxi data)
+         • Same is true for time of day
+         • Can we trust our observations?
+
+         → Aggregation and generalization
+           needed
+
+
+                                                                                                             Small number of observations
+                                                                                                             Large number of observations
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld                                                                                                       20
+       Aggregation
+                                                                                                         Link.ID               Zeit               v               Coverage
+                                                                                                          1234         03.02.2005 12:43:30     50 km/h              70%
+         1. Define time-steps W
+         (e.g.,: 24 x 7)                                                                                                                       n
+                                                                                                                                                 1
+                                                                                                                                 vlw = n / 
+         2. Calculate mean travel speed                                                                                                    i =1 vlwi
+         • per segment l
+                                                                                                                                 W = 1: One value per
+         • in time-step w                                                                                                        segment
+         • from observation vlwi                                                                                                 W = 24 x 7: Per day 24
+                                                                                                                                 values per segment
+
+
+
+
+                                                                   Zeit     0-1       1-2       …        3-4       …   8-9   …   16-17   …    22-23 23-24
+                                                                    So       47        52       …        55        …   50    …     42    …     47        50
+                                                                    Fr       47        52       …        52        …   33    …     31    …     44        46
+                                                                                                                                                    source: DLR
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Generalization
+           •        Aggregation results in millions of values
+           •        Some values base only on a few observations
+           •        Decision model requires information model easy to access (and reliable)
+
+
+           •        Data visualization reveals similar traffic quality patterns on different street segments
+                    (not shown in this lecture)
+
+
+           •        Idea: Group street segments based on their typical traffic quality
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 22
+
+
+                                                                                                 22
+© Prof. Dr. Dirk C. Mattfeld
+       Generalization: Normalization
+
+
+                 • Different segments have same pattern but different absolute values (e.g., speed
+                   limit of 30 or 50)
+                 • Normalization with maximum daily value to allow comparison
+
+
+                               Zeit     0-1       1-2       …       3-4        …       8-9         …    16-17          …   22-23 23-24
+                                So       47       52        …        55        …        50         …       42          …    47    50
+                                Fr       47       52        …        52        …        33         …       31          …    44    46
+
+                               Zeit     0-1       1-2       …       3-4        …       8-9         …    16-17          …   22-23 23-24
+                                So       0.4      0.8       …        1.0       …        0.7        …      0.1          …    0.4   0.6
+                                                                                                                                  0.7
+                                Fr       0.8      1.0       …        1.0       …        0.2        …      0.1          …    0.6   0.7
+
+
+                                                                                              23
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld                                                                                                             23
+       Generalization: Clustering
+
+           •          Clustering algorithm to group similar daily developments
+           •          6 Clusters
+
+                                Time
+                                         0-1       1-2         ...       3-4        ...       8-9         ...     16-17   ...   22-23   23-24
+                           Cluster
+
+                           1            0.71       0.76        ...      0.79        ...       0.25        ...      0.23   ...   0.59    0.65
+                           2            0.64       0.65        ...      0.63        ...       0.52        ...      0.53   ...   0.64    0.64
+                           3            0.43       0.46        ...      0.55        ...       0.30        ...      0.27   ...   0.38    0.41
+                           4            0.78       0.76        ...      0.77        ...       0.48        ...      0.45   ...   0.71    0.75
+                           5            0.83       0.81        ...      0.81        ...       0.33        ...      0.70   ...   0.83    0.81
+
+
+           •          0 = poor traffic quality → long travel time
+           •          1 = good traffic quality → short travel time
+
+                                Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 24
+
+
+                                                                                                    24
+© Prof. Dr. Dirk C. Mattfeld
+       Spatial Validation
+
+
+            • Clusters differ in their peak behavior
+
+            • Clusters represent different street
+               segment types, e.g.,
+              • Downtown
+              • Commercial
+              • Highway
+              • Conveyor belt
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 25
+
+
+                                                                                                 25
+© Prof. Dr. Dirk C. Mattfeld
+       Temporal Validation
+       • Traffic quality over the course of the day (A – high, F – poor)
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Spatial-Temporal
+
+                                               Monday,
+                                               3-4 a.m,
+                                              90 % of the
+                                             segments are
+                                                 free
+
+
+
+
+                                               Free
+                                               traffic
+
+                                                                                                                       source: Google Earth
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Spatial-Temporal
+
+                                                 Monday,
+                                                 5-6 p.m,
+                                                 30% are
+                                                congested
+
+
+
+
+                                               Rush hour
+
+
+
+                                                                                                                       source: Google Earth
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Information Model: Conclusion
+
+          • We have a travel time matrix for each street
+            segment and each hour
+
+          • Example: First hour longer travel, second
+            hour shorter travel, third our longest travel
+            time.
+
+          • How can we route based on this
+            information?
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       From Segments to Paths
+
+        • There are several potential                                                    Topology
+                                                                                         Routing
+
+
+
+
+                                                                                                                                                        source: in Anlehnung an Rodrigues, Comtois und Slack (2009)
+          paths between customers
+
+        • Shortest paths are calculated via
+          Dijkstra-algorithm
+
+        • We need to consider time-
+          dependency, i.e., we are looking for
+          time-dependent shortest paths
+                                                                                                                   node
+                                                                                                                   pickup / delivery   shortest
+                                                                                                                                        directedpath
+                                                                                                                                                 link
+                                                                                                                   bi-directional
+                                                                                                                   warehouse link      between nodes
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       From Segments to Paths
+
+       • If we start at different times, we may take different segments
+       • The time-dependent Dijkstra takes this into account
+
+
+
+
+                           τij(t
+
+
+
+
+                                                                                                                           source: Dean (2000)
+                           )
+
+
+
+
+                                                                t
+
+
+
+
+                                   Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       From Segments to Paths
+                                                                                                                                              1
+                                                                                                                                              3
+                                                                                                                                              min.
+           • Hard matrix breaks lead to                                                                            9:59
+                                                                                                                   10:00                                              10:01
+                                                                                                                                                                      10:02
+             a weird transition phenomenon
+                                                                                                    τl(t)                                              z2+1
+                                                                                                                       z1-δl1
+                                                                                                       τl3
+           • FIFO: We need to ensure that we do not                                                    τl1
+
+             „overtake“ when starting later                                                                       slope
+                                                                                                                    -s0
+                                                                                                                                     z1+δl1
+                                                                                                       τl2
+                                                                                                                                          z2-1
+
+           • We smooth the breakpoints with some                                                     vl(t)                                                                 t
+
+             linear combinations                                                                       vl2
+
+
+
+                                                                                                       vl1
+                                                                                                       vl3
+
+                                                                                                             z0                 z1                z2                z3      t
+
+                                                                                                                                           source: Fleischmann et al. (2004):
+                                                                                                                                Time-Varying Travel Times in Vehicle Routing
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling (sketched)
+       • Information Model:
+         • Time-dependent travel times between customers (including depot)
+         • Time-dependent travel time matrix, or a set of travel time matrices
+
+
+
+       • Decision Model:
+         • Objective: Minimize travel times
+         • Constraints:
+           • Serve all customers
+           • Routing-constraints (Subtour-elimination, etc.)
+       • Decision variables: Travel between customers i an j at time t
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Time-dependent Decision Variable
+
+
+                               A                                 B              A            A            A            A    A    A    A
+
+
+
+                                                                                B            B            B            B    B    B    B
+
+
+
+
+                                                                                                                                           Pallottino (1997)
+                           𝑑𝐴,𝐵 = 1,1, –             𝑑𝐵,𝐴 = 1,5, –
+                           𝑑𝐴,𝐶 = 2, – ,2            𝑑𝐶,𝐴 = – ,1,1
+                           𝑑𝐵,𝐷 = 2,2,2              𝑑𝐷,𝐵 = 2,2,3
+                           𝑑𝐶,𝐷 = 1, – ,4            𝑑𝐷,𝐶 = – ,2,2             t1            t2           t3           t4   t5   t6   t7
+                           𝑑𝐷,𝐴 = – , – ,3
+
+
+
+
+                                   Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Time-dependent Decision Variable
+
+
+                               A                                 B              A            A            A            A    A    A    A
+
+
+
+                                                                                B            B            B            B    B    B    B
+
+
+
+
+                                                                                                                                           Pallottino (1997)
+                               C                                 D              C            C            C            C    C    C    C
+
+
+                           𝑑𝐴,𝐵 = 1,1, –             𝑑𝐵,𝐴 = 1,5, –
+                           𝑑𝐴,𝐶 = 2, – ,2            𝑑𝐶,𝐴 = – ,1,1             D             D            D            D    D    D    D
+                           𝑑𝐵,𝐷 = 2,2,2              𝑑𝐷,𝐵 = 2,2,3
+                           𝑑𝐶,𝐷 = 1, – ,4            𝑑𝐷,𝐶 = – ,2,2             t1            t2           t3           t4   t5   t6   t7
+                           𝑑𝐷,𝐴 = – , – ,3
+
+
+
+
+                                   Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Finding a Solution
+       • Optimal calculation challenging, heuristics needed
+
+       • 4 Heuristics
+         • LANTIME: Metaheuristic (see Ehmke 2012)
+         • Nearest Neighbor
+         • Cheapest Insertion
+         • Savings
+
+       • We also solve a TSP on mean values
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Nearest Neighbor
+       • Selects next customer closest to current position
+       • Can deal with time-dependency
+       • Usually leads to long travels in the end
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Cheapest Insertion
+       • Starts with empty tour
+       • Inserts stepwise cheapest customer in the tour
+       • Customers are shifted and previous decisions become ineffective due to changes in the
+         travel times.
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 38
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Savings
+       •      Starts with direct-trip tours
+       •      merges tours at minimal cost
+       •      Time-dependency difficult to assess
+       •      Implicitly considered at least in later steps
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 39
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Results
+
+       • Different start times                                                               120
+                                                                                                   Monday   Tuesday     Wednesday       Thursday      Friday             Saturday   Sunday
+
+                                                                                             110
+
+
+       • Travel time depends
+
+
+
+
+                                                                         Travel time (min)
+                                                                                             100
+
+         on time of day                                                                      90
+
+                                                                                             80
+
+       • Static overestimates and                                                            70
+         underestimates
+                                                                                             60
+
+
+
+
+                                                                                                   16:30
+
+
+
+
+                                                                                                   12:30
+                                                                                                   00:30
+                                                                                                   04:30
+                                                                                                   08:30
+                                                                                                   12:30
+                                                                                                   16:30
+                                                                                                   20:30
+                                                                                                   00:30
+                                                                                                   04:30
+                                                                                                   08:30
+                                                                                                   12:30
+
+                                                                                                   20:30
+                                                                                                   00:30
+                                                                                                   04:30
+                                                                                                   08:30
+                                                                                                   12:30
+                                                                                                   16:30
+                                                                                                   20:30
+                                                                                                   00:30
+                                                                                                   04:30
+                                                                                                   08:30
+                                                                                                   12:30
+                                                                                                   16:30
+                                                                                                   20:30
+                                                                                                   00:30
+                                                                                                   04:30
+                                                                                                   08:30
+                                                                                                   12:30
+                                                                                                   16:30
+                                                                                                   20:30
+                                                                                                   00:30
+                                                                                                   04:30
+                                                                                                   08:30
+                                                                                                   12:30
+                                                                                                   16:30
+                                                                                                   20:30
+                                                                                                   00:30
+                                                                                                   04:30
+                                                                                                   08:30
+
+                                                                                                   16:30
+                                                                                                   20:30
+                                                                                                                                     Departure time
+
+                                                                                                                 TDNN        TDSAV          LANTIME        Best static
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 40
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Implementation:
+       • Start Monday noon:
+         • Avoids downtown initially
+         • Serves outskirts first
+
+       • Start Monday evening:
+         • Serves downtown first
+         • Uses rural road in the beginning
+         • Different paths
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 41
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Long story short…
+       • Taking problem and data seriously requires a lot of work
+
+       • Information Model: Data collection, analysis, structuring, aggregation, generalization
+
+       • Decision Model: More decision variables, complex decision model, and adapted solution
+         methodology
+
+       • Resulting approach takes more detail in modeling but assumes deterministic behavior
+
+
+
+
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 42
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Outlook
+       Uncertainty and its impact on information and decision model
+
+
+
+                                                                                                                       Downtown link, Monday
+                                                                                                       20%
+                                                                                                       18%
+                                                                                                       16%
+                                                                                                       14%
+                                                                                                       12%
+                                                                                                       10%
+                                                                                                        8%
+                                                                                                        6%
+                                                                                                        4%
+                                                                                                        2%
+                                                                                                        0%
+
+
+
+
+                                                                                                                15-20
+
+
+
+
+                                                                                                                60-65
+                                                                                                                10-15
+
+                                                                                                                20-25
+                                                                                                                25-30
+                                                                                                                30-35
+                                                                                                                35-40
+                                                                                                                40-45
+                                                                                                                45-50
+                                                                                                                50-55
+                                                                                                                55-60
+
+                                                                                                                65-70
+                                                                                                                70-75
+                                                                                                                  0-5
+                                                                                                                 5-10
+                               Data Driven Decision Making | Lecture 2 – Information and Decision Modeling | Page 43
+
+
+© Prof. Dr. Dirk C. Mattfeld                                                                                                                   43
+

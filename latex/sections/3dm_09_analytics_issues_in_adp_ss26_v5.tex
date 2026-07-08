@@ -1,0 +1,1149 @@
+\section*{Lecture 9 - Analytics Issues in ADP}
+\addcontentsline{toc}{section}{Lecture 9 - Analytics Issues in ADP}
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{001}{Data Driven Decision Making}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{1}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定
+\item 講義 9 – Analytics Issues in 近似動的計画法
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S001: 「Data Driven Decision Making」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S001: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{002}{Data Analytics Issues for ADP Methods}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{2}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ADP手法におけるデータ分析上の論点
+\item Exogenous Information（この用語は講義スライド上の専門語として扱う）
+\item Feature Engineering（この用語は講義スライド上の専門語として扱う）
+\item Endogenous Information（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Analytics Issues for ADP Methods」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S002: 「Data Analytics Issues for ADP Methods」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S002: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{003}{Unsupervised vs. Supervised Learning}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{3}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 教師なし学習と教師あり学習
+\item ▪ Machine Learning differentiates concepts in (un-)教師あり学習 approaches
+\item ▪ Un教師あり学習 looks at data objects consisting of attributes only
+\item ▪ It then builds a model that describes all data objects in the best possible way（この用語は講義スライド上の専門語として扱う）
+\item ▪ It stands proxy for descriptive modeling, an illustrative concept is clustering（この用語は講義スライド上の専門語として扱う）
+\item ▪ Supervised learning looks at data objects consisting of attributes and (one) variable（この用語は講義スライド上の専門語として扱う）
+\item ▪ It aims at a mapping of attribute values to one distinct value of the variable（この用語は講義スライド上の専門語として扱う）
+\item ▪ It learns a suitable mapping from training data, later on it discriminates test data（この用語は講義スライド上の専門語として扱う）
+\item ▪ It stands proxy for predictive modeling, an illustrative concept is classification（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Unsupervised vs. Supervised Learning」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S003: 「Unsupervised vs. Supervised Learning」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S003: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{004}{Data Objects}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{4}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Data Objects（この用語は講義スライド上の専門語として扱う）
+\item We often assume that the data set is provided in form of a simple table（この用語は講義スライド上の専門語として扱う）
+\item 教師なし学習 教師あり学習
+\item 𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 1 … 𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 𝑚 𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 1 … 𝑉𝑎𝑟𝑖𝑎𝑏𝑙𝑒 phase（この用語は講義スライド上の専門語として扱う）
+\item 𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 1 𝑣𝑎𝑙𝑢𝑒11 𝑣𝑎𝑙𝑢𝑒1… 𝑣𝑎𝑙𝑢𝑒1𝑚 𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 1 𝑣𝑎𝑙𝑢𝑒11 𝑣𝑎𝑙𝑢𝑒1… 𝑣𝑎𝑙𝑢𝑒1 training（この用語は講義スライド上の専門語として扱う）
+\item … 𝑣𝑎𝑙𝑢𝑒…1 𝑣𝑎𝑙𝑢𝑒…… 𝑣𝑎𝑙𝑢𝑒…𝑚 … 𝑣𝑎𝑙𝑢𝑒…1 𝑣𝑎𝑙𝑢𝑒…… 𝑣𝑎𝑙𝑢𝑒… training（この用語は講義スライド上の専門語として扱う）
+\item 𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 𝑛 𝑣𝑎𝑙𝑢𝑒𝑛1 𝑣𝑎𝑙𝑢𝑒𝑛… 𝑣𝑎𝑙𝑢𝑒𝑛𝑚 𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 𝑛 𝑣𝑎𝑙𝑢𝑒𝑛1 𝑣𝑎𝑙𝑢𝑒𝑛… 𝑣𝑎𝑙𝑢𝑒𝑛 test data（この用語は講義スライド上の専門語として扱う）
+\item Berthold et al. (2010), Ch. 4.1（この用語は講義スライド上の専門語として扱う）
+\item The rows of the table are called instances, records, samples or data objects（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Objects」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S004: 「Data Objects」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S004: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{005}{Attribute Scales}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{5}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Attribute Scales（この用語は講義スライド上の専門語として扱う）
+\item ▪ Every attribute has exactly one level of measurement/scale（この用語は講義スライド上の専門語として扱う）
+\item ▪ Scale defines the types of operations and computations that are allowed for the attribute values（この用語は講義スライド上の専門語として扱う）
+\item Mathematical（この用語は講義スライド上の専門語として扱う）
+\item Scale Measure property 例
+\item operators（この用語は講義スライド上の専門語として扱う）
+\item Classification,（この用語は講義スライド上の専門語として扱う）
+\item Nominal =, ≠ Color: red, green, blue, orange（この用語は講義スライド上の専門語として扱う）
+\item membership（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Attribute Scales」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S005: 「Attribute Scales」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S005: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{006}{Exogenous Information}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{6}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Exogenous Information（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Exogenous Information」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S006: 「Exogenous Information」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S006: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{007}{Exogeneous Information}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{7}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Exogeneous Information（この用語は講義スライド上の専門語として扱う）
+\item ▪ Little information suggests the use of 方策 function approx. or cost function approx.
+\item ▪ Anticipation may be achieved by explorative data analysis → derive future costs（この用語は講義スライド上の専門語として扱う）
+\item ▪ The more you know about exogeneous information, the more useful anticipation becomes（この用語は講義スライド上の専門語として扱う）
+\item ▪ Detailed exogeneous information suggests 先読み methods or value function approx.
+\item ▪ Stochastic 遷移s denoted in the MDP are to be implemented in the シミュレーション
+\item ▪ Transitions may be derived from 分布s or they may be sampled from observations
+\item ▪ In the following, there are examples provided for both approaches（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Exogeneous Information」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S007: 「Exogeneous Information」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S007: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{008}{Generating stochastic transition from distribution}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{8}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Generating 確率的 遷移 from 分布
+\item ▪ Consider a 確率的 遷移 depicting the
+\item elapse of time before the next customer Θ（この用語は講義スライド上の専門語として扱う）
+\item Θ
+\item arrives Θ（この用語は講義スライド上の専門語として扱う）
+\item ▪ Inter-arrival times (between customers) are（この用語は講義スライド上の専門語として扱う）
+\item often depicted by an exponential 分布
+\item ▪ Consider random variable（この用語は講義スライド上の専門語として扱う）
+\item with 𝜃 being the scale parameter（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Generating stochastic transition from distribution」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S008: 「Generating stochastic transition from distribution」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S008: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{009}{Generating stochastic transition for distribution}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{9}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Generating 確率的 遷移 for 分布
+\item https://medium.com/@m.pierini/generation-of-a-random-variable-with-the-inversion-method-4ea99e12569a（この用語は講義スライド上の専門語として扱う）
+\item ▪ Apply inversion method if random variable comes（この用語は講義スライド上の専門語として扱う）
+\item with an invertible cumulative form 𝐹 −1（この用語は講義スライド上の専門語として扱う）
+\item ▪ Inversion of 𝐹 𝑥 for exponential 分布
+\item ▪ Generate random variable（この用語は講義スライド上の専門語として扱う）
+\item ▪ A sample from uniform 分布 𝑈 0,1 is transposed into an exponentially dist. sample
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Generating stochastic transition for distribution」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S009: 「Generating stochastic transition for distribution」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S009: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{010}{Generating stochastic transition from observations}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{10}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Generating 確率的 遷移 from observations
+\item ▪ A logistics problem is considered, which is to be solved with the help of sequential（この用語は講義スライド上の専門語として扱う）
+\item 決定 making. The problem extends over many 決定 points at which new
+\item commodities appear（この用語は講義スライド上の専門語として扱う）
+\item ▪ Commodities are to be delivered to their destination on time in a complex network.（この用語は講義スライド上の専門語として扱う）
+\item ▪ For this purpose, a シミュレーション introduces commodities over time. A commodity has a
+\item start location, a destination, a delivery time and a weight.（この用語は講義スライド上の専門語として扱う）
+\item ▪ All these features cannot simply be drawn from 分布s.
+\item ▪ Since there is access to historic logistics data, new data can be generated for our（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Generating stochastic transition from observations」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S010: 「Generating stochastic transition from observations」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S010: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{011}{Choosing the number of commodities θ = 1}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{11}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Choosing the number of commodities θ = 1（この用語は講義スライド上の専門語として扱う）
+\item θ = 5
+\item θ = 9
+\item ▪ The first step is to decide how many new commodities will appear（この用語は講義スライド上の専門語として扱う）
+\item within each 確率的 遷移.
+\item ▪ In the literature, this number is usually determined using a discrete（この用語は講義スライド上の専門語として扱う）
+\item Poisson 分布 (suggesting \# of independent events occurring)
+\item θ𝑘 −θ
+\item 𝑃θ 𝑘 = 𝑒
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Choosing the number of commodities θ = 1」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S011: 「Choosing the number of commodities θ = 1」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S011: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{012}{Choosing the commodities}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{12}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Choosing the commodities（この用語は講義スライド上の専門語として扱う）
+\item ▪ The second step is to select the commodities that appear in the respective 遷移s.
+\item ▪ As many commodities (as previously specified by the Poisson 分布) are drawn from the
+\item pool of all available commodities at each 決定 time.
+\item ▪ Since the (unknown) underlying 分布 are already in the data, the selection can be made
+\item using a discrete uniform 分布.
+\item ▪ With this, each commodity 𝑥 has the same probability of being selected from an array of 𝑛（この用語は講義スライド上の専門語として扱う）
+\item commodities ranging from 0 to 𝑛 − 1: 𝑥 = ⌊𝑈 0,1 ∗ 𝑛⌋（この用語は講義スライド上の専門語として扱う）
+\item ▪ In this way, a data set can be compiled for a sequential 決定 process.
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Choosing the commodities」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S012: 「Choosing the commodities」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S012: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{013}{Two issues with generating stochastic transitions}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{13}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Two issues with generating 確率的 遷移s
+\item ▪ Correlation（この用語は講義スライド上の専門語として扱う）
+\item ▪ Random variables are not independent but follow some correlation（この用語は講義スライド上の専門語として扱う）
+\item ▪ Correlation (due to causation) can appear time and/or space relation（この用語は講義スライド上の専門語として扱う）
+\item ▪ For instance, a congestion on a road will cause a congestion on a parallel road（この用語は講義スライド上の専門語として扱う）
+\item ▪ Zhaoxia Guo, Stein W. Wallace, Michal Kaut (2019) Vehicle Routing with Space- and Time-Correlated Stochastic（この用語は講義スライド上の専門語として扱う）
+\item 旅行時間: Evaluating the 目的 Function. INFORMS Journal on Computing 31(4):654-670
+\item ▪ Outlier（この用語は講義スライド上の専門語として扱う）
+\item ▪ A 分布 approximated from observations include historic pecularities
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Two issues with generating stochastic transitions」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S013: 「Two issues with generating stochastic transitions」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S013: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{014}{Feature Engineering}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{14}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Feature Engineering（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Feature Engineering」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S014: 「Feature Engineering」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S014: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{015}{Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{15}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 決定 Process
+\item ▪ Stochastic and 動的 決定 modelling aims at generating an (near) optimal 方策
+\item ▪ A 方策 provides a suitable 決定 to every 状態 of the 状態 space
+\item ▪ A small 状態- and 決定 space helps keeping anticipation computationally tractable
+\item ▪ Space reduction drives out dimensions from consideration (e.g. spatial or time)（この用語は講義スライド上の専門語として扱う）
+\item ▪ Next to problem specific dimension reduction generic analytics techniques can be applied（この用語は講義スライド上の専門語として扱う）
+\item ▪ Either important features are selected or the dimensionality of the 状態 space is reduced
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S015: 「Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S015: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{016}{Feature selection techniques}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{16}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 特徴選択 techniques
+\item ▪ Unsupervised: do not incorporate variable（この用語は講義スライド上の専門語として扱う）
+\item ▪ Supervised: Determine features with strong（この用語は講義スライド上の専門語として扱う）
+\item relations to target variable by statistics（この用語は講義スライド上の専門語として扱う）
+\item ▪ Intrinsic: For instance 決定 trees
+\item ▪ Wrapper: Start with many features and（この用語は講義スライド上の専門語として扱う）
+\item successively eliminate features（この用語は講義スライド上の専門語として扱う）
+\item ▪ Filter: Score features in accordance to（この用語は講義スライド上の専門語として扱う）
+\item relationship between feature and variable（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Feature selection techniques」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S016: 「Feature selection techniques」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S016: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{017}{Filter based feature selection techniques}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{17}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Filter based 特徴選択 techniques
+\item ▪ Choice by（この用語は講義スライド上の専門語として扱う）
+\item ▪ Feature type (input)（この用語は講義スライド上の専門語として扱う）
+\item ▪ Variable type (output)（この用語は講義スライド上の専門語として扱う）
+\item ▪ Normal 分布 (ANOVA)
+\item ▪ Rank based (Kendall)（この用語は講義スライド上の専門語として扱う）
+\item https://machinelearningmastery.com/feature-selection-with-real-and-categorical-data/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Filter based feature selection techniques」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S017: 「Filter based feature selection techniques」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S017: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{018}{Taxonomy of methods for dimensionality reduction}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{18}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Taxonomy of methods for dimensionality reduction（この用語は講義スライド上の専門語として扱う）
+\item Important properties（この用語は講義スライド上の専門語として扱う）
+\item Parametrization（この用語は講義スライド上の専門語として扱う）
+\item Parametric（この用語は講義スライド上の専門語として扱う）
+\item transformations allow the（この用語は講義スライド上の専門語として扱う）
+\item mapping of further data（この用語は講義スライド上の専門語として扱う）
+\item points into the lower-（この用語は講義スライド上の専門語として扱う）
+\item dimensional space（この用語は講義スライド上の専門語として扱う）
+\item Linearity（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Taxonomy of methods for dimensionality reduction」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S018: 「Taxonomy of methods for dimensionality reduction」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S018: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{019}{Possible Candidates for Reduction of Dimensionality}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{19}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Possible Candidates for Reduction of Dimensionality（この用語は講義スライド上の専門語として扱う）
+\item Van der Maaten Method Description Graphik（この用語は講義スライド上の専門語として扱う）
+\item et al. (2009)
+\item ▪ Lower-dimensional（この用語は講義スライド上の専門語として扱う）
+\item representation Accelerated learning（この用語は講義スライド上の専門語として扱う）
+\item maximizing the variance With lowered（この用語は講義スライド上の専門語として扱う）
+\item PCA dimensionality the（この用語は講義スライド上の専門語として扱う）
+\item of the data sample（この用語は講義スライド上の専門語として扱う）
+\item + combinatoric of 状態s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Possible Candidates for Reduction of Dimensionality」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S019: 「Possible Candidates for Reduction of Dimensionality」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S019: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{020}{Performance on a demand responsive taxi problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{20}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Performance on a demand responsive taxi problem（この用語は講義スライド上の専門語として扱う）
+\item ▪ PCA and AE learn (and perform) better at start 状態 representation Relative performance Accepted requests
+\item High-dimensional 状態 104.3\% 30.7
+\item PCA 状態 103.1\% 28.1
+\item ▪ In later iterations the high-dim model catches up Autoencoder 状態 102.0\% 31.3
+\item Aggregated 状態 101.5\% 29.8
+\item Myopic reference 100.0\% 30.6（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Performance on a demand responsive taxi problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S020: 「Performance on a demand responsive taxi problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S020: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{021}{Endogenous information}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{21}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Endogenous information（この用語は講義スライド上の専門語として扱う）
+\item Endogenous Information（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Endogenous information」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S021: 「Endogenous information」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S021: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{022}{Endogenous information}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{22}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Endogenous information（この用語は講義スライド上の専門語として扱う）
+\item ▪ 先読み approx. and value function approx. generate values from シミュレーション runs
+\item ▪ Values observed for multiple runs are aggregated into scalar values → data mining task（この用語は講義スライド上の専門語として扱う）
+\item ▪ Supervised learning methods depicts relation between features and resulting value（この用語は講義スライド上の専門語として扱う）
+\item ▪ Basically, we classify an value (output) upon observed features (inputs)（この用語は講義スライド上の専門語として扱う）
+\item ▪ Classification (discrete) and regression (continuous) as well as ANN can be used.（この用語は講義スライド上の専門語として扱う）
+\item ▪ Supervised learning methods depend on feature and variable type（この用語は講義スライド上の専門語として扱う）
+\item (regression/classification)（この用語は講義スライド上の専門語として扱う）
+\item ▪ White-box and black-box approaches can be distinguished (決定 tree/ANN)
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Endogenous information」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S022: 「Endogenous information」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S022: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{023}{Classification: Example with 2-Dim Input and 2 Classes}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{23}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Classification: 例 with 2-Dim Input and 2 Classes
+\item Training samples（この用語は講義スライド上の専門語として扱う）
+\item 𝑥1 , 𝑦1 , … , 𝑥𝑁 , 𝑦𝑁 ∈ ℝ2 × \{0,1\}
+\item Coordinate Class label（この用語は講義スライド上の専門語として扱う）
+\item Task（この用語は講義スライド上の専門語として扱う）
+\item Derive a hypothesis ℎ that allows us（この用語は講義スライド上の専門語として扱う）
+\item to classify unlabeled data points（この用語は講義スライド上の専門語として扱う）
+\item ෝ = 𝒉(𝒙)
+\item 𝒚
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Classification: Example with 2-Dim Input and 2 Classes」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S023: 「Classification: Example with 2-Dim Input and 2 Classes」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S023: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{024}{Classification: Linear Regression}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{24}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Classification: Linear Regression（この用語は講義スライド上の専門語として扱う）
+\item Linear Regression（この用語は講義スライド上の専門語として扱う）
+\item ෝ = 𝜽 + 𝒘𝑻 𝒙
+\item 𝒚
+\item Score Bias Weight Input（この用語は講義スライド上の専門語として扱う）
+\item Using the score, we predict a class by（この用語は講義スライド上の専門語として扱う）
+\item Orange if ෝ > 𝟎. 𝟓（この用語は講義スライド上の専門語として扱う）
+\item Red if ෝ ≤ 𝟎. 𝟓
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Classification: Linear Regression」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S024: 「Classification: Linear Regression」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S024: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{025}{Classification: Lookup-Table of Size 8x8}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{25}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Classification: Lookup-Table of Size 8x8（この用語は講義スライド上の専門語として扱う）
+\item Table（この用語は講義スライド上の専門語として扱う）
+\item ෝ = 𝑻(𝑨 𝒙 )
+\item 𝒚
+\item Count vector Table 集約 Input
+\item A class is then predicted by（この用語は講義スライド上の専門語として扱う）
+\item Orange if ෞ0 > 𝒚（この用語は講義スライド上の専門語として扱う）
+\item 𝒚 ෞ𝟏
+\item Red if ෞ1 ≤ 𝒚
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Classification: Lookup-Table of Size 8x8」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S025: 「Classification: Lookup-Table of Size 8x8」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S025: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{026}{Classification: Decision Tree with 29 Leaves}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{26}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Classification: 決定 Tree with 29 Leaves
+\item 𝐼1 𝐼2 𝐼3 𝐼4 𝐼5 決定 Tree
+\item 𝑲
+\item ෝ = ෍ 𝒑𝒌 ∙ 𝕀 𝒙∈𝑰𝒌
+\item 𝒚
+\item 𝐼7 𝐼8 𝐼9 𝐼10 𝒌=𝟏
+\item 𝐼6
+\item Probability Vector of class 1 if x is in leaf 𝐼𝑘 ,（この用語は講義スライド上の専門語として扱う）
+\item vector probabilities 0 else（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Classification: Decision Tree with 29 Leaves」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S026: 「Classification: Decision Tree with 29 Leaves」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S026: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{027}{Advanced Methods: Gradient Boosted Decision Trees}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{27}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Advanced Methods: Gradient Boosted 決定 Trees
+\item ▪ Reminder A 決定 tree is noted by 𝐹 𝑥; 𝑝, 𝐼 ≔ σ𝐾
+\item 𝑘=1 𝑝𝑘 ∙ 𝕀 𝑥∈𝐼𝑘
+\item ▪ Problem A single 決定 tree is prone to overfitting
+\item ▪ Solution Fit several small trees and use them as an ensemble（この用語は講義スライド上の専門語として扱う）
+\item 𝐽
+\item ▪ Iterative procedure 𝐹𝑚 𝑥 = 𝐹𝑚−1 𝑥 + 𝛼𝑚 σ𝑗=1 𝑝𝑗𝑚 𝕀 𝑥∈𝐼𝑗𝑚（この用語は講義スライド上の専門語として扱う）
+\item Fit the residual of 𝐹𝑚−1（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Advanced Methods: Gradient Boosted Decision Trees」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S027: 「Advanced Methods: Gradient Boosted Decision Trees」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S027: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{028}{Advanced Methods: Neural Network}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{28}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Advanced Methods: Neural Network（この用語は講義スライド上の専門語として扱う）
+\item ▪ Reminder Linear Regression 𝑦ො = 𝜃 + 𝑤 𝑇 𝑥（この用語は講義スライド上の専門語として扱う）
+\item ▪ Problem Can only express linear relations（この用語は講義スライド上の専門語として扱う）
+\item ▪ Solution Stack several linear layers 𝜃 + 𝑤 𝑇 𝑥 and introduce non-linearity（この用語は講義スライド上の専門語として扱う）
+\item via an activation function, e.g., 𝑅𝑒𝐿𝑢 𝑥 = 𝑚𝑎𝑥(0, 𝑥)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Advanced Methods: Neural Network」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S028: 「Advanced Methods: Neural Network」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S028: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{029}{Advanced Methods: Neural Network}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{29}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Advanced Methods: Neural Network（この用語は講義スライド上の専門語として扱う）
+\item 𝑙=1 𝑙=2 𝑙=3 𝑙=4
+\item Output of a neuron（この用語は講義スライド上の専門語として扱う）
+\item 𝑎𝑗𝑙 = 𝜎 ෍ 𝑤𝑗𝑘
+\item 𝑙
+\item ⋅ 𝑎𝑘𝑙−1 + 𝜃𝑗𝑙
+\item 𝑘
+\item Output of a layer（この用語は講義スライド上の専門語として扱う）
+\item 𝑎𝑙 = 𝜎(𝑤 𝑙 𝑎𝑙−1 + 𝜃 𝑙 )
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Advanced Methods: Neural Network」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S029: 「Advanced Methods: Neural Network」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S029: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{030}{Advanced Methods: Neural Network – Tuning}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{30}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Advanced Methods: Neural Network – Tuning（この用語は講義スライド上の専門語として扱う）
+\item Increase nodes per layer（この用語は講義スライド上の専門語として扱う）
+\item Increase number of layers（この用語は講義スライド上の専門語として扱う）
+\item Also consider varying:（この用語は講義スライド上の専門語として扱う）
+\item Learning rate / Learning rate（この用語は講義スライド上の専門語として扱う）
+\item schedule（この用語は講義スライド上の専門語として扱う）
+\item Batch size（この用語は講義スライド上の専門語として扱う）
+\item Weight initialization（この用語は講義スライド上の専門語として扱う）
+\item Optimizer（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Advanced Methods: Neural Network – Tuning」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S030: 「Advanced Methods: Neural Network – Tuning」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S030: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{031}{Some Words of Advice}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{31}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Some Words of Advice（この用語は講義スライド上の専門語として扱う）
+\item ▪ Start with a simple model to setup a benchmark. Then try out more complex models and（この用語は講義スライド上の専門語として扱う）
+\item compare them to your benchmark.（この用語は講義スライド上の専門語として扱う）
+\item A possible progression: Linear regression → Gradient boosted 決定 tree → ANN
+\item ▪ When employing a complex method, train on a few thousand data points. It should be able（この用語は講義スライド上の専門語として扱う）
+\item to learn them by heart.（この用語は講義スライド上の専門語として扱う）
+\item ▪ Once you have a good model you can start fine-tuning. Only fine-tune hyperparameters（この用語は講義スライド上の専門語として扱う）
+\item that you actually understand and for which you can set reasonable ranges.（この用語は講義スライド上の専門語として扱う）
+\item ▪ Never resort to grid-search! Random-search and Bayesian optimization are much more（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Some Words of Advice」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S031: 「Some Words of Advice」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S031: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 9 - Analytics Issues in ADP}{032}{Summary of lecture}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{32}{../Materials/2026/3DM_09_Analytics-Issues-in-ADP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Summary of lecture（この用語は講義スライド上の専門語として扱う）
+\item ▪ シミュレーション based methods (先読み, VFA) make use of descriptive analytics
+\item ▪ The size of the post-決定 space of a problem can be lowered by dim. reduction
+\item ▪ Learn relation between features observed in the シミュレーション and an 期待される future 報酬
+\item ▪ Generally, analytics provides generic approaches to design of ADP methods（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。
+\item feature selectionとdimensionality reductionを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Summary of lecture」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Analytics Issues in ADP では、ADPを動かすためのデータ分析上の問題を扱う。価値関数や方策を近似するには、状態、決定、外生情報、報酬、遷移のデータが必要である。実データだけでは不足する場合、シミュレーションで学習データを生成することもある。\par
+supervised learning は、入力と正解ラベルの対応から予測モデルを学ぶ方法である。VFAでは、特徴量を入力し、シミュレーションやDPで得た価値推定をラベルとして学習できる。unsupervised learning は、ラベルなしデータからクラスタや低次元構造を見つける。状態集約や需要パターン分類で役立つ。\par
+Feature selection は、既存の候補特徴から重要なものを選ぶことである。例えば車両位置、残り容量、残り時間、遅延注文数のうち、将来価値の説明に効くものを選ぶ。Dimensionality reduction は、既存特徴を組み合わせて新しい低次元表現を作ることである。PCAやオートエンコーダのような方法が該当する。\par
+外生情報の生成では、過去データから分布を推定し、乱数で将来シナリオを生成する。旅行時間、需要発生、サービス時間などをサンプリングすることで、RolloutやVFA学習に必要な未来パスを作る。ただし、分布仮定が間違っていると学習された方策も現実に合わない。\par
+試験では、ADPを単なる最適化手法としてではなく、データ分析・特徴量設計・学習・シミュレーションが組み合わさったシステムとして説明する。特にfeature selectionとdimensionality reductionの違いは頻出であり、例を添えて説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L09-S032: 「Summary of lecture」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADPではデータ生成、特徴量、学習方法、評価が政策品質を左右する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L09-S032: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+\clearpage\ExamHeader{Lecture 9 - Analytics Issues in ADP}
+\ExamQuestion{SS25 Exercise 5 (4 点)}
+\ExamSubsection{問題内容}
+feature selectionとdimensionality reductionの違い。設問では、特徴量を選ぶのか、新しい低次元表現に変換するのかを例で区別すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、VFAが状態または後決定状態の将来価値を特徴量から近似する方法であると説明する。決定評価では R(S,x)+\textbackslash{}hat V(S\textasciicircum{}x) を使う。特徴量には残り需要、リソース余裕、時間、位置、需要密度などがあり、feature selectionとdimensionality reductionを区別する。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}

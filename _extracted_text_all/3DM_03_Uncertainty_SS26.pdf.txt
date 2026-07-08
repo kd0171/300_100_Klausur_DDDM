@@ -1,0 +1,749 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 3 – Uncertainty
+       Recap & Today
+       •      Full process of business analytics
+       •      Information and decision model
+       •      Data comes first
+       •      Finding the “right” information model is challenging
+       •      Decision making complexity increases with
+              more elaborate information model.
+
+       • Uncertainty in the information model
+       • How can we model uncertainty?
+       • How can we make decisions under uncertainty?
+
+       • Case Study: Delivery routing with uncertain travel times                               http://ardent.mit.edu/real
+                                                                                                _options/Real_opts_pap
+                                                                                                ers/flaw_of_averages.p
+                                                                                                df
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Uncertainty
+
+       • Modeling Uncertainty
+
+       • Decision Making under Uncertainty
+
+       • Case Study: Robust Vehicle Routing in Urban Logistics
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Introduction
+       Examples:
+       • Stock market                                                                                                                         faz.net
+
+       • Demand                                                                                 finanzen.net
+
+
+       • Supply
+       • Innovation
+       • Politics                                                                                                       zeit.de
+                                                                                                                                  wired.com
+
+       Differ in
+       • Frequency
+       • Range
+       • Disruptivity
+       • Predictability
+                                                                                                      playstation.com
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Uncertainty in Mobility and Logistics
+       • Customers: requests, demand volumes, service times, availability, behavior
+       • Drivers: availability, behavior, range, skills
+       • Environment: travel times, parking, network availability
+
+
+
+
+                         www.wnyc.org                                         lebensmittelzeitung.de   Handelsblatt.de   schindler.com
+
+
+
+
+                                 Data Driven Decision Making | Lecture 3 – Uncertainty | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Uncertainty in Travel Times
+       • Weather
+         • Continuous
+         • Predictable
+       • Traffic
+         • Systemic / follows observable patterns
+         • Spontaneous (accidents, congestion)
+         • Partially predictable
+       • Traffic Management
+         • Discrete Events
+         • Subjected to framework conditions and previous events
+         • Partially predictable
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Possible Consequences
+       • Complete cancellation of planned activities
+          • Transport: Package is not delivered
+          • Mobility: Workplace is inaccessible
+       • Disruption of planned activities
+          • Transport: Delayed package delivery
+            → Complete failure possible if customer is not present anymore
+          • Mobility: Workplace is reached with delay
+       • General undesirable effects (e.g.)
+          • Resulting additional costs
+          • Decrease of customer satisfaction
+          • Successive activities are affected
+       → Consideration of uncertainty in decision making is crucial
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Uncertainty
+
+       • Modeling Uncertainty
+
+       • Decision Making under Uncertainty
+
+       • Case Study: Robust Vehicle Routing in Urban Logistics
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling Uncertainty
+       Choice of model depends on level of information
+
+       1. Deterministic: All information is known
+
+       2. Stochastic: Probability of different information realizations is known
+
+       3. Quasi-stochastic: Probability of information realization is unknown
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                             Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm.
+                                                                                                                                          n=20
+       Basics
+
+
+
+
+                                                                                                 Frequency
+       •    Probability distribution
+       •    Discrete or continuous
+       •    Random Variable: 𝑋 with realizations 𝑥1,…,𝑖 e.g., 𝑥1 = 20 𝑘𝑚/ℎ
+       •    Probabilities 𝑝1,…,𝑖 of the realization of the corresponding 𝑥𝑖
+       •    Expected value : 𝜇 = 𝐸 𝑋 = σ𝑖 𝑝𝑖 𝑥𝑖 (or an integral)
+       •    Variance: 𝜎 2 = 𝐸 (𝑋 − 𝜇 2 ]
+       • Standard deviation: 𝜎 =                          𝜎2
+                                                               𝜎
+       • Coefficient of variation: 𝐶𝑉 =
+                                                               𝜇
+       • Median and quantiles
+
+                                                 → Metrics can be incorporated into decision making process
+                                                 → Sampling: Generation of new observations from distribution
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Determining a Probability Distribution
+       Simple assumption of a theoretical distribution and its corresponding parameters
+       • Uniform distribution
+       • Normal distribution
+       • Exponential distribution
+
+       Choice and adjustment of a probability distribution to existing data („Fitting“)
+       1. Choice of appropriate theoretical probability distribution
+       2. Estimation of corresponding parameters
+       3. Testing goodness-of-fit
+            • Visualization
+            • Goodness-of-fit statistics (e.g., Kolmogorov-Smirnov test)
+       4. Testing the appropriateness of estimated parameters (“bootstrapping”)
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Theoretical Probability Density Functions
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Urban Travel Time Distribution I
+
+                                                                                                      Travel time observations for one street section
+
+
+
+
+                                                                                          Frequency
+                                                                                                              Travel time (in seconds)
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Fitting using Software
+       • Supporting: Python + Libraries
+
+
+
+
+       • Automated: EasyFit
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Urban Travel Time Distribution II
+
+
+
+
+                                                 Frequency/ Density
+
+
+
+
+                                                                                         Travel time (in seconds)
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Possible Issues with Stochastic Modeling
+       • Unavailability of data (e.g., cannot be observed a priori)
+          • Lack of data recording
+          • Change of system: Construction of a street
+          • New concept (e.g., autonomous cars)
+
+       • Limited data available
+          • Only few observations are available which leads to coarse estimation of the underlying
+            distribution
+
+       • Assumption that path travel times are computed by convolution of independent
+         distributions generated for street segments. Correlation is neglected.
+          • Indeed, correlation of neighboring street segments is essential
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Quasi-stochastic Modeling
+       • Based on scenarios
+          • Create 𝑛 scenario 𝑠𝑛 ∈ 𝑆 (all scenarios)
+          • Finite amount of possible realizations
+          • „What-If“ analysis
+          • e.g., traffic congestion: 10 km/h, no traffic congestion 50 km/h
+       • Based on intervals 𝑙, 𝑢 (as range of possible realizations)
+          • Smallest possible value 𝑙, highest possible value 𝑢
+          • Possible realizations can have arbitrary values within interval limits
+          • E.g., 20 km/h for 10,50 km/h
+
+       • Both scenarios and intervals can be derived from domain knowledge and / or from data
+       → Depict an estimation of uncertainty without directly modeling a probability distribution
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Constructing Scenarios from Data I
+       Example: Single observations of travel times
+
+
+
+                                        Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm. n=20
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Constructing Scenarios from Data II
+       Possible approaches
+         • Set number of scenarios to construct (e.g., 5)
+         • Choose extreme scenarios (best-/worst-case)
+         • Choose in-between scenarios             Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm. n=20
+
+
+
+
+       • Choice based on domain knowledge
+       • Increasing the number of scenarios lead to more accurate estimations, in general
+       → Increases complexity of decision making
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Determining Intervals from Data
+       Limits
+         • Upper: 90% Percentile
+         • Lower: 10% Percentile
+       Adjustment of limits
+         • Pessimistic: Shift towards worst-case
+         • Optimistic: Shift towards best-case
+         • Decreasing-/increasing interval span
+                                         Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm. n=20
+                                                       10                                                    90%
+                                                       %
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Uncertainty
+       • Modeling Uncertainty (Descriptive and Predictive Analytics)
+       • Decision Making under Uncertainty (Prescriptive Analytics)
+
+       • Case Study: Robust Vehicle Routing in Urban Logistics
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example Knapsack Problem I
+       Example                                                                                   Deterministic environment
+       A burglar with a knapsack gets into a house                                                • He knows exact values (𝑣𝑖 ) and
+       and wants to steal objects to sell later on.                                                 weights (𝑤𝑖 ) of possible objects
+       • Each object has a value and a weight
+                                                                                                  • He knows the exact limit of this
+       • Total weight of a combination of objects                                                   knapsack (𝑊 )
+          has to fit the capacity of the knapsack
+       • Find combination of these objects with                                                             𝑛
+          highest sum of selling prices.                                                              max ෍ 𝑣𝑖 ⋅ 𝑥𝑖
+                                                                                                           𝑖=1
+                                                                                                            𝑛
+
+                                                                                                      s.t. ෍ 𝑤𝑖 ⋅ 𝑥𝑖 ≤ 𝑊
+                                                                                                           𝑖=1
+                                                                                                           𝑥𝑖 ∈ 0,1 for 𝑖 ∈ {1, … , 𝑛}
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 22
+                               Icon: https://www.flaticon.com/free-icon/thief_4321310
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example Knapsack Problem II
+       Stochastic environment                                                                    Example
+       • Possible uncertainty in the objective:
+         • He does not know the exact selling                                                    • Random variable in the objective
+           prices on the black market.                                                             • max σ𝑛𝑖=1 𝒗𝑖 ⋅ 𝑥𝑖
+
+       • Possible uncertainty in the constraints:
+         • He does not know the exact weights of                                                 • Random variable on LHS of constraint:
+           the objects                                                                             • σ𝑛𝑖=1 𝒘𝑖 ⋅ 𝑥𝑖 ≤ 𝑊
+
+            • He does not know the exact limit of his                                            • Random variable on RHS of constraint:
+              knapsack                                                                             • σ𝑛𝑖=1 𝑤𝑖 ⋅ 𝑥𝑖 ≤ 𝑾
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Decision Making under Uncertainty
+       • Stochastic decision making differs from quasi-stochastic
+         decision making
+
+       • Uncertainty can affect objective and / or constraints
+
+       • Realizations manifest after decisions are made
+                                                                                                 finanzen.ne
+       • Stochastic decision making:                                                             t
+
+         Expected value and deviation is known
+
+       • Quasi-stochastic decision making:
+         Expected value and deviation is unknown
+                                                                                                     faz.net
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Stochastic Decision Making
+       •      𝒳 domain of all feasible decision
+       •      𝑥 a specific decision
+       •      𝜉 random information (available after decision is made)
+       •      𝐹 cost function to be minimized, denoted as 𝐹 𝑥, 𝜉
+
+       • Optimizing 𝐹 𝑥, 𝜉 directly is not possible
+         → minimize expected value 𝔼 𝐹(𝑥, 𝜉)
+
+       • Optimal value: 𝜁 ∗ = min 𝑓 𝑥 = 𝔼 𝐹(𝑥, 𝜉)
+                                                      𝑥∈𝒳
+       • Set of optimal decisions: 𝒮 ∗ = 𝑥 ∈ 𝒳: 𝑓 𝑥 = 𝜁 ∗
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Stochastic Decision Making II
+       Monte Carlo Sampling                                                                      Example
+       • Choose 𝑛 scenarios 𝜉 𝑛𝑖=1 of 𝜉                                                          • Distributions of selling prices for each
+                                                                                                   object is known
+       • Approximate objective function by                                                       • Generate 𝑛 scenarios by sampling selling
+                               𝑛                                                                   prices for each object
+                            1
+               𝔼 𝐹(𝑥, 𝜉) ≈ ෍ 𝐹 𝑥, 𝜉𝑖                                                             • Solve each scenario independently
+                            𝑛
+                                                         𝑖=1                                     • Determine approximate optimal value and
+                                                                                                   set of approximate optimal decisions from
+       • Solve deterministic right hand side                                                       the 𝑛 solved scenarios
+
+       • Approximate optimal value:
+                          1
+         𝜁𝑛∗ = min 𝑓𝑛 𝑥 = σ𝑛𝑖=1 𝐹 𝑥, 𝜉𝑖
+                          𝑥∈𝒳                     𝑛
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Stochastic Decision Making III
+       Expected Value Variance Principle                                                         Example
+       • 𝑥 is evaluated by a preference function                                                 • Burglar knows distributions of selling
+          using expected value and variance                                                         prices for each object
+       • Incorporating variance for a more precise                                                 • E.g., through assumption based on
+          objective function                                                                          historical data
+       • Variance is weighted by                                                                 • Calculates expected values (and
+          𝑞: 𝜇 𝑥 + 𝑞 ⋅ 𝜎 2 𝑥                                                                        variances)
+         • 𝑞 = −1 high affinity to risk                                                          • Chooses combination of objects with best
+         • 𝑞 = 0 neutral to risk                                                                    total expected selling prices
+         • 𝑞 = 1 risk-averse
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Quasi-stochastic Decision Making I
+       Hurwicz-Criterion                                                                         Example
+       • Consider worst and best realization                                                     • Burglar knows (historical) selling prices
+       • Weighted sum with optimism-parameter                                                      for each objects
+         λ ∈ 0,1 :                                                                               • Choose different scenarios
+          1 − 𝜆 ⋅ "worst case" + 𝜆 ⋅ "best case"                                                 • Calculates weighted mean / sum prices
+                                                                                                   for each object
+                                                                                                 • Chooses combination of objects with best
+                                                                                                   total prices as determined
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Quasi-stochastic Decision Making II
+       Minmax-Regret-Criterion                                                                   Example
+        • Comparing a pessimistic decision in a                                                  • Regret of burglar not realizing the best
+          certain scenario with best possible                                                       case
+          decision (assuming complete                                                            • Burglar knows (historical) selling prices
+          information) in the same scenario                                                         for each objects
+        • Regret: Deviation of the worst decision                                                • Calculate difference of best and worst
+          from the best possible decision in the                                                    cases for each combination
+          same scenario                                                                            • Worst selling price for taken objects
+                                                                                                   • Best selling price for objects left behind
+                                                                                                 • Results in taking objects with a stable
+                                                                                                    market price and leaving things behind
+                                                                                                    that only yield a high price in the
+                                                                                                    optimistic case.
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Uncertainty
+       • Modeling Uncertainty (Descriptive and Predictive Analytics)
+       • Decision Making under Uncertainty (Prescriptive Analytics)
+
+       • Case Study: Robust Vehicle Routing in Urban Logistics
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 30
+
+                                                                                                 30
+© Prof. Dr. Dirk C. Mattfeld
+       Case Study: Robust Vehicle Routing for Urban Logistics
+
+                           Challenges of urban logistics                                                       Urban Trafficsystems
+
+                           ▪ High demand and cost-pressure                                                     ▪ Limited infrastructure: Traffic congestion
+                           ▪ High Customer Expectation                                                         ▪ Volatile travel times: Uncertainty
+
+
+
+
+                                                                             Integration of Informationen on
+                                                                               Uncertainty of Travel Times
+                                                                        into Vehicle Routing for Urban Logistics
+
+
+
+          Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics.
+          Transportation Research Procedia 10, 652 – 661.
+
+          Groß, P.-O., Ehmke, J.F., Mattfeld, D.C., 2020. Interval travel times for robust synchronization in city logistics vehicle routing,
+          Transportation Research Part E: Logistics and Transportation Review,
+          Volume 143, 2020
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Roles in Urban Logistics
+       Shipping Company
+       •    Online retailer
+       •    Number of known customers
+       •    Commission logistic service provider with delivery of goods
+       •    Demand 𝛼-service level, based on promised delivery dates
+       Logistic service provider
+       •    Parcel Services
+       •    Operate a fleet of delivery vehicles
+       •    A-priori / “day-ahead” planning of deliveries
+       •    Minimize travel time
+
+
+       𝛼-service level is affected by travel times
+       → Information w.r.t. uncertainty of travel times must be considered in the planning phase
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modelling uncertain travel times
+
+                                                         Stochastic                                Quasi-stochastic
+
+                                                         Distribution of travel times with         Intervals of travel times with limits
+                                                         expected value 𝜇 and variance 𝜎 2         [𝑙, 𝑢]
+                               Representation            [Lecluyse et al. (2009)]                  [Karasan et al. (2001)]
+
+                               Data                      Large number of observations              Small number of observations
+                               requirements              [Ehmke et al. (2016)]                     [Groß et al. (2015)]
+
+                                                         Type of distribution / parametrization
+                               Modeling                  [Susilawati et al. (2013)]                Determining interval limits
+
+                                                         Convolution                               Interval arithmetics
+                               Aggregation               [Gómez et. al. (2015)]                    [Alefeld and Mayer (2000)]
+
+
+                               Interpretability          Abstract / “Complex”                      Intuitive / “Simple”
+                               → Interval travel times is an appropriate information model for urban logistics
+
+                                 Data Driven Decision Making | Lecture 3 – Uncertainty | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Generating the information model data
+       • Shifted Gamma distribution
+
+       • Parameter
+         • Mean Travel Time
+         • Coefficient of Variation
+
+       • Sampling Approach
+         • Randomly draw 500 observations
+
+
+
+                                                                                                                                                                                       Example of a connection. Parameters:
+                                                                                                                                                                                       Mean travel time = 15.5
+                                                                                                                                                                                       Coefficient of variance = 10% (left) and 30% (right)
+                               Quelle: Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics. Transportation Research Procedia 10, 652 – 661.
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Information Model
+
+       Two travel time matrices
+                                                                                                                                                                                                                           𝑢𝑖𝑗 …
+
+                                                                                                                                                                                                    𝑈=
+       • 𝑈: upper limit of interval travel times
+       • 95% Quantile (on peak traffic)
+
+       • 𝐿: lower limit of interval travel times                                                                                                                                                                          𝑙𝑖𝑗 …
+
+       • 5% Quantile (off peak traffic)                                                                                                                                                              𝐿=
+
+
+
+
+                                                                                                                                                                                                                                 𝑙𝑖𝑗 ≤ 𝑢𝑖𝑗
+
+
+
+                               Quelle: Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics. Transportation Research Procedia 10, 652 – 661.
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Robust TSP with Minmax Regret-Criterion
+
+
+
+
+                                         Legend:                                                                         Tour edges                                                                              Unused edges
+                               Quelle: Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics. Transportation Research Procedia 10, 652 – 661.
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       What to achieve?
+       • We aim at finding a route that can be implemented for most traffic speed scenarios
+       • A tradeoff of efficiency in terms of travel time and service reliability in terms of punctuality
+
+       •      Considering the best possible case is not an option at all. This will violate feasibility
+       •      A mean of best and worst traffic speed per road segment may deteriorate service quality
+       •      Considering worst case traffic speed leads to a poor efficiency, but good service quality
+       •      Hopefully, a regret based approach balances efficiency and reliability
+
+       • Evaluation: Sum of earliness and lateness (=deviation) from self-imposed arrival times
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Problem Setting
+       • “Two-Tier” Delivery network
+       • Satellites as transfer points
+
+       • Delivery from depot to transfer points
+         using a fleet of vehicles
+
+       • Final delivery originates from
+         each transfer point
+
+       • Objective: Minimize travel times including
+         wait times at transfer points
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 38
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Results
+        • Method:                                                                                • Evaluation criteria
+          • VRP using minmax regret criterion                                                      • Vehicles used
+          • Metaheuristic                                                                          • Total travel time in minutes
+        • Evaluation:                                                                              • Mean deviation of arrival
+        • AVG (mean), UB (worst-case), ITT (interval)                                                at satellite (desynchronized)
+
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 39
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary
+
+
+       • Uncertainty should be considered in information and decision model
+
+       • Uncertainty affects many applications. Uncertainty may have significant affect on the
+         decisions made.
+
+       • Modeling uncertainty appropriately is necessary to make sensible use of decision-relevant
+         data.
+
+       • Decision models must be selected in dependence of application and derived modelling of
+         uncertainty.
+
+
+
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 40
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Further Questions
+       • Can we react to changes?                                                                • Can we predict future uncertain
+       • Example: The TSP is re-planned based                                                      developments?
+         on current traffic information                                                          • Example: Some regions with risk of traffic
+                                                                                                   congestions can be avoided.
+
+
+
+
+       → Dynamic decision making                                                                 → Anticipation
+                                                                                                 → Stochastic dynamic decision making
+                               Data Driven Decision Making | Lecture 3 – Uncertainty | Page 41
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

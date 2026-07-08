@@ -1,0 +1,58 @@
+
+\documentclass[a4paper,landscape,9pt]{article}
+\usepackage[margin=6mm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\setmainfont{Noto Sans}
+\setsansfont{Noto Sans}
+\setCJKmainfont{Noto Sans CJK JP}
+\definecolor{TUBSred}{HTML}{BE1E3C}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.8pt}
+\setlist[itemize]{leftmargin=1.05em,itemsep=0.7pt,topsep=0.8pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.20em,itemsep=1.0pt,topsep=0.8pt,parsep=0pt}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\titleformat{\section}{\Large\bfseries\color{TUBSred}}{}{0pt}{}
+\newcommand{\SlideHeader}[3]{%
+  \noindent{\large\bfseries #1 / Slide #2: #3}\hfill {\scriptsize review v5}\par
+  \vspace{0.6mm}\hrule\vspace{0.8mm}
+}
+\newcommand{\SlideImage}[2]{%
+  \noindent\makebox[\textwidth][c]{\includegraphics[page=#1,width=\textwidth,height=0.45\textheight,keepaspectratio]{#2}}\par
+  \vspace{0.8mm}
+}
+\newcommand{\NoteSection}[1]{%
+  \vspace{1.0mm}\noindent{\normalsize\bfseries\color{TUBSred}#1}\par\vspace{0.35mm}
+}
+\newcommand{\ExamHeader}[1]{%
+  \noindent{\Large\bfseries\color{TUBSred}過去問演習: #1}\hfill {\scriptsize review v5}\par
+  \vspace{1mm}\hrule\vspace{2mm}
+  {\small 関連知識を一通り説明した後に置く独立演習ページである。スライドページには同じ過去問を繰り返さない。}\par\vspace{2mm}
+}
+\newcommand{\ExamQuestion}[1]{\vspace{2mm}\noindent{\large\bfseries #1}\par\vspace{0.8mm}}
+\newcommand{\ExamSubsection}[1]{\vspace{1.2mm}\noindent{\normalsize\bfseries\color{TUBSred}#1}\par\vspace{0.6mm}}
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge Data Driven Decision Making\par}
+\vspace{0.5cm}
+{\Large Lecture 2 - Information and Decision Modeling - 日本語訳・詳細解説・試験対策ノート\par}
+\vspace{1cm}
+\begin{minipage}{0.82\textwidth}
+このPDFは review v5 です。全講義資料へ同じ形式を適用し、各スライドページには元スライド、日本語訳、詳細解説、試験対策ポイント、ページ固有の確認問題と解答を配置しています。過去問は重複を避け、必要な知識を説明した後に独立演習ページとしてまとめています。
+\end{minipage}
+\vfill
+{\large Materials/2026/3DM\_02\_Information-and-Decision-Modeling\_SS26.pdf}
+\end{titlepage}
+\tableofcontents
+\clearpage
+\input{sections/3dm_02_information_decision_modeling_ss26_v5.tex}
+\end{document}

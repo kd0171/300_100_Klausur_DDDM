@@ -1,0 +1,589 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 11 – Platform-based Food Delivery
+       Content
+                ▪ Platform-based Food Delivery
+                ▪ The Eater‘s Perspective
+                ▪ Uber Eat’s Perspective
+                ▪ The Delivery Perspective
+                ▪ The Restaurant‘s Perspective
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Platform-based food delivery
+       ▪ Platform-based business models act in a gig economy with volatile business partners
+
+       ▪ Uber Eats introduces the three sided-market place
+
+       ▪ Revenue mainly from restaurants (+user flat fee)
+
+       ▪ Payments are made to delivery drivers
+
+       ▪ Platform is not involved in physical transaction
+
+
+                                                                                                                  https://www.intelivita.com/blog/food-delivery-business-model/
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Properties
+       ▪ The platform business model is applicable in different regions and scales in any order
+
+       ▪ Decisions needed for the transactional control are taken in a fully automated fashion
+
+       ▪ Partners in the three-sided market place occur and vanish at random
+
+       ▪ The credibility of partners is maintained by monitoring, data analysis and ranking
+
+       ▪ Data driven decision making is the key feature for running such a platform
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Interaction of partner
+
+
+
+
+                                                                                                                  https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Content
+                ▪ Platform-based Food Delivery
+                ▪ The Eater‘s Perspective
+                ▪ Uber Eat’s Perspective
+                ▪ The Delivery Perspective
+                ▪ The Restaurant‘s Perspective
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Stages in generation of food recommendation
+
+       1. Non-personalized recommendation focus on                                                                  Content
+          very few restaurants only                                                                                 based
+
+       2. Content-based recommendations
+          have led to a meal over-specialization
+                                                                                                                    Collaborative
+       3. Collaborative filtering is used for                                                                       filtering
+          personalized recommendations
+
+       ➢ 3. requires the clustering of eaters in
+         accordance to personal attributes (not
+         considered here any further)
+
+                                                                                                                  https://thingsolver.com/blog/introduction-to-recommender-systems/
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       The eater‘s perspective (non-personalized recommendation)
+       ▪ The eater has got a preferred cuisine
+       ▪ She prefers food from high ranked restaurants
+
+       ▪ Fast delivery is of utmost importance
+       ▪ Reasonable pricing is desirable
+
+       ▪ However, restaurant choices may be too similar
+       ▪ There should be some range of food offered to the eater
+       ▪ Diverse food offerings maintain eater‘s retention
+
+
+                                                                                                                  https://www.uber.com/en-DE/blog/uber-eats-trip-
+                                                                                                                  optimization/
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Food ontology graph (content based recommendation)
+
+
+
+
+                                                                                                                  https://www.uber.com/en-DE/blog/uber-eats-query-understanding/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+         Content based diversification of meal offerings
+       ▪ Ontology subgraph links eater query with alternative cuisine
+
+       ▪ Having searched for Soba, also Udon may be offered
+
+       ▪ Broaden the scope may also offer Sushi, or Chinese dishes
+
+
+
+
+       ▪ Ontologies are built offline by incorporating expert knowledge
+
+       ▪ The online counterpart for diversification is learning from orders
+
+                                                                                                                   https://www.uber.com/en-DE/blog/uber-eats-query-understanding/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Online diversification (collaborative filtering)
+
+
+
+
+       ▪ Queries are tied to restaurants by historic orders
+
+       ▪ Queries referring to the same restaurant define a context
+
+       ▪ The context is used later on for query expansion
+                                                                                                                   https://www.uber.com/en-DE/blog/uber-eats-query-understanding/
+
+       ▪ For Tan Tan Noodle request, restaurants are recommended that appear in related contexts
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Content
+                ▪ Platform-based Food Delivery
+                ▪ The Eater‘s Perspective
+                ▪ Uber Eat’s Perspective
+                ▪ The Delivery Perspective
+                ▪ The Restaurant‘s Perspective
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Controlling the marketplace
+
+
+
+
+                                                                                                                   https://www.uber.com/en-DE/blog/uber-eats-trip-
+                                                                                                                   optimization/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Ranking of recommendations
+       ▪ Approximately 80% of order are picked from recommended meals shown in app
+       ▪ Recommendations should be generated in a way that aligns with partner‘s objectives
+
+               Partner                        Objective
+                                              Conversion
+               Eater
+                                              Retention
+                                              Fairness
+               Restaurant
+                                              Earnings
+
+               Driver                         Supply reliability
+
+
+
+
+                                                                                                                   https://www.uber.com/newsroom/arriving-now-the-new-uber-eats/
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Incorporate multiple (contradicting) objectives
+       ▪ Gross booking value is defined as the full amount of payments processed on the platform. It is
+         achieved by placing pricy orders at popular restaurants and addresses restaurant earnings
+
+       ▪ Marketplace fairness is in the interest of new or less popular restaurants. Earnings from such
+         restaurants should be generated in order to prevent such restaurants from leaving the platform
+
+
+
+
+                                                                                                                   https://www.adjust.com/glossary/conversion-rate/
+       ▪ A conversion rate records the percentage of users who have completed a desired action. Here,
+         its defines a user interaction that results in a meal order. This strengthen eater retention
+
+       ▪ Gross booking value conflicts with marketplace fairness
+       ▪ Gross booking value may conflict with conversion rate
+       ▪ Conversion rate and marketplace fairness are independent
+         of each other or may be even complementary
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling (1)
+       Model decides about the priority of recommending (reasonable) restaurants to eater
+       𝑥𝑖𝑗 = decision variable that represents the probability of recommending restaurant 𝑗 to eater 𝑖
+       𝐼𝑖𝑗 = indicator of restaurant 𝑗 being recommended by eater 𝑖
+       𝑂𝑖𝑗 = indicator of eater 𝑖 ordering from restaurant 𝑗
+       𝐺𝑖𝑗 = dollar amount of the order between eater 𝑖 and restaurant 𝑗
+
+
+       Conversion rate 𝑇 𝑋 = 𝐸[σ𝑖 σ𝑗 𝐼𝑖𝑗 𝑂𝑖𝑗 ] = σ𝑖 σ𝑗 𝑥𝑖𝑗 𝑝𝑖𝑗 with 𝑝𝑖𝑗 predicted conversion rate
+
+
+       Gross booking 𝐺 𝑋 = 𝐸[σ𝑖 σ𝑗 𝐼𝑖𝑗 𝑂𝑖𝑗 𝐺𝑖𝑗 ] = σ𝑖 σ𝑗 𝑥𝑖𝑗 𝑝𝑖𝑗 𝑔𝑖𝑗 with 𝑔𝑖𝑗 expected booking value
+
+
+       Both, 𝑝𝑖𝑗 = 𝐸[𝑂𝑖𝑗 ] and 𝑔𝑖𝑗 = 𝐸[𝐺𝑖𝑗 ] are personalized machine learning models that use
+       features from eaters, restaurants and real-time contexts.
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling (2)
+       𝑈 = (𝑢𝑖𝑗 ) equal probability for all restaurants 𝑗 to be recommended to eater 𝑖 with σ𝑗 𝑢𝑖𝑗 = 1, ∀𝑖
+       𝑋 ⋆ = probabilities of optimal solution that can achieve best possible conversion rate 𝑇(𝑋 ⋆ )
+       Parameter (0 < 𝛼 < 1) for required conversion rate and 𝜆 for quadratic fairness penalty
+                                                                                                       1
+       Maximize gross booking value                                             max 𝐺 𝑋 − 𝜆 𝑋 − 𝑈 2
+                                                                                   𝑋                   2
+                                                                                  𝑠. 𝑡. 𝑇 𝑋 ≥ 𝛼 𝑇(𝑋 ⋆ )
+                         𝑥
+                    𝑢          |𝑥 − 𝑢|                                                      ෍ 𝑥𝑖𝑗 = 1, ∀𝑖
+                                                                                              𝑗
+                                                                                             𝑥𝑖𝑗 ≥ 0, ∀𝑖, 𝑗
+                                                                                                                   1
+       Note, that|𝑥𝑖𝑗 − 𝑢𝑖𝑗 |penalizes 𝑥𝑖𝑗 deviating from 𝑢𝑖𝑗 twice, therefore penalty is multiplied by
+                                                                                                                   2
+       As a result, gross bookings are favored that do not need promotion → marketplace fairness
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling (3)
+       ▪ Parameter λ penalizes gross booking value that results from restaurant recommendations
+          ▪ A small λ favors recommended restaurants and drives out low performing restaurants
+          ▪ A high λ enforces that gross booking value is generated from low performers only
+       ▪ Parameter α enforces a high conversion rate.
+          ▪ Setting α ≈ 1 discharges promising solutions
+          ▪ Setting α ≈ 0 allows for a poor conversion rate
+
+       ▪ Both parameters have to be tuned online
+       ▪ A multi-armed bandit maintains different parameter sets in parallel
+       ▪ The framework controls whether to perform
+         ▪ Exploitation (apply parameter sets that have shown to work well)
+         ▪ Exploration (change parameter values in the hope of further improvement)                                https://yjjo.tistory.com/3
+                                                                                                                   8
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling (4)
+       ▪ Exploration by trying a new parameter set is costly in terms of time and profit (loss)
+       ▪ The number of parameter sets to try is very limited → Bayesian optimization applies
+
+
+
+       ▪ At t=3 three sets have been tested
+       ▪ For these sets we‘ve got confidence
+       ▪ An acquisition function suggests new trial
+       ▪ At t=4 the confidence has improved
+         because of the new observation
+       ▪ A modified acquisition function suggests
+         a new trial at its maximum
+
+                                                                                                    https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Prediction and optimization pipeline
+
+       ▪ Data analysis predicts demand (fulfilment) in the next period
+       ▪ Multi-objective optimization identifies appropriate restaurants/meals
+
+
+
+
+                                                                                                                                                   https://www.uber.com/newsroom/arriving-now-the-new-uber-eats/
+       ▪ Eater‘s eyeball triggers order that maximizes conversion rate
+
+
+
+
+                                                                             https://www.uber.com/en-DE/blog/uber-eats-recommending-marketplace/
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Content
+                ▪ Platform-based Food Delivery
+                ▪ The Eater‘s Perspective
+                ▪ Uber Eat’s Perspective
+                ▪ The Delivery Perspective
+                ▪ The Restaurant‘s Perspective
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Interaction of partners
+
+
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dispatching a driver
+       ▪ Given a (30min) meal preparation time, dispatch of drivers starts 10min before ETA
+       ▪ Several dispatch attempts until successful trip acceptance by one of the driver pool
+       ▪ Drivers may be ranked and (pre-)selected prior to dispatch attempts
+
+
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Driver selection
+
+
+
+
+                                                                                                                                                                           https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+           ▪ Distance to the restaurant
+           ▪ Second order in vicinity
+           ▪ Reliability of the driver
+           ▪ Working time restriction
+           ▪ Number of recent deliveries
+           ▪ Weekly payout so far
+           ▪ Batched opportunities:
+
+        Drivers are paired with orders based on the quickest option for all orders, rather than
+        assigning one driver to one order with a very fast delivery time and another driver to another
+        order with a much slower delivery time
+        → Ensuring a roughly comparable waiting time.
+                                                                                                         https://www.withpara.com/blog/how-does-uber-eats-assign-drivers
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       State of order is communicated to the eater
+       ▪ The driver is monitored
+
+       ▪ The position of the driver is
+         communicated to the eater
+
+       ▪ The predicted time of delivery is
+         updated
+
+       ▪ Drivers are ranked by the platform
+          ▪ By the speed of delivery
+          ▪ By the reliability of activities
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Content
+                ▪ Platform-based Food Delivery
+                ▪ The Eater‘s Perspective
+                ▪ Uber Eat’s Perspective
+                ▪ The Delivery Perspective
+                ▪ The Restaurant‘s Perspective
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Interaction of partner
+
+
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Food preparation at the restaurant
+       ▪ After order, speedy meal preparation and delivery is of utmost importance
+       ▪ A crucial point of time is the food handover to the driver that cannot be observed
+
+
+
+
+                                                                                                                   https://www.uber.com/en-DE/blog/uber-eats-recommending-
+                                                                                                                   marketplace/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Online and offline prediction of food handover time
+
+
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data acquisition, training, evaluation and deployment
+
+
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Analysis of driver‘s activities for selected restaurants
+
+
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+       Restaurants are ranked in accordance to duration and variation of food handover time
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Prediction of food handover at restaurant
+       ▪ Predictive modeling task, supervised learning
+       ▪ Inputs like restaurant, time of day, #orders placed, size of order,
+         driver, dispatch time
+       ▪ Predicted output is the time span between driver arrival and
+         handover of food
+       ▪ Phases of the process depend on each other → Markov model
+       ▪ Prediction e.g. by recurrent neural networks, that couple ANN
+                                                                                                                   https://de.wikipedia.org/wiki/Rekurrentes_neuronales_Netz#/me
+                                                                                                                   dia/Datei:Neuronal-Networks-Feedback.png
+
+
+         neurons in a cyclic way
+       ▪ Application of RNN e.g. in large language models, where
+         predictions are chained
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Adjusting prediction by real world observation
+       Activity modes that are recognized by Android OS
+
+
+
+
+       Sequence of activities to be carried out by driver
+
+
+
+
+                                                                                                                   https://www.uber.com/en-DE/blog/uber-eats-trip-
+                                                                                                                   optimization/
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       From order creation to food drop-off
+
+
+
+
+                                                                                                                   https://www.infoq.com/fr/articles/uber-eats-time-predictions/
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary
+       ▪ Platform business models require online automated decision making
+
+       ▪ Decision making incorporates prediction by means of data analytics
+
+       ▪ Online optimization ensures seamless transaction of meal delivery
+
+       ▪ Expected realization of individual objectives determine food recommendation
+
+       ▪ Realized recommendations determine conversion rate → to be maximized
+
+
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Literature
+       ▪ Arriving Now: The New Uber Eats (2020)
+         https://www.uber.com/newsroom/arriving-now-the-new-uber-eats/
+       ▪ Food Discovery with Uber Eats: Recommending for the Marketplace (2018)
+         https://www.uber.com/en-DE/blog/uber-eats-recommending-marketplace/
+       ▪ Food Discovery with Uber Eats: Building a Query Understanding Engine (2018)
+         https://www.uber.com/en-BE/blog/uber-eats-query-understanding/
+       ▪ How Does Uber Eats Assign Drivers? (2024)
+         https://www.withpara.com/blog/how-does-uber-eats-assign-drivers
+       ▪ How Trip Inferences and Machine Learning Optimize Delivery Times on Uber Eats (2018)
+         https://www.uber.com/en-DE/blog/uber-eats-trip-optimization/
+       ▪ Uber Eats Weather Predictions (2020)
+         https://www.infoq.com/fr/articles/uber-eats-time-predictions/ (fr)
+
+
+                               Data Driven Decision Making | Lecture 11 – Platform-based Food Delivery | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

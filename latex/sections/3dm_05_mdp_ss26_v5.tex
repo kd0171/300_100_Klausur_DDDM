@@ -1,0 +1,2100 @@
+\section*{Lecture 5 - Markov Decision Process}
+\addcontentsline{toc}{section}{Lecture 5 - Markov Decision Process}
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{001}{Data Driven Decision Making}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{1}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定
+\item 講義 5 – マルコフ意思決定過程
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S001: 「Data Driven Decision Making」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S001: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{002}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{2}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item Markov 決定 process
+\item Optimal solutions（この用語は講義スライド上の専門語として扱う）
+\item Curses of dimensionality（この用語は講義スライド上の専門語として扱う）
+\item Modeling discussion（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{003}{Operations Research}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{3}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item オペレーションズ・リサーチ
+\item Business Problems（この用語は講義スライド上の専門語として扱う）
+\item 𝑚 𝑛
+\item min ෍ ෍ 𝑐𝑖𝑗 𝑥𝑖𝑗
+\item 𝑖=1 𝑖=1
+\item 𝑛
+\item u.d.N. ෍ 𝑥𝑖𝑗 = 𝑎𝑖 (𝑖 = 1, … , 𝑚)
+\item Mathematical Modeling 𝑗=1（この用語は講義スライド上の専門語として扱う）
+\item 𝑚
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Operations Research」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S003: 「Operations Research」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S003: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{004}{Modeling}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{4}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Modeling（この用語は講義スライド上の専門語として扱う）
+\item Model connects real-world application with solution methodology（この用語は講義スライド上の専門語として扱う）
+\item Modeling translates verbal descriptions into mathematical notation（この用語は講義スライド上の専門語として扱う）
+\item A model provides an unambiguous definition of the problem（この用語は講義スライド上の専門語として扱う）
+\item Different problems may have the same model（この用語は講義スライド上の専門語として扱う）
+\item Different models can define the same problem（この用語は講義スライド上の専門語として扱う）
+\item A specific modeling can support solution methodology（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Modeling」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S004: 「Modeling」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S004: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{005}{Dynamic Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{5}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 動的意思決定プロセス
+\item Two processes:（この用語は講義スライド上の専門語として扱う）
+\item Exogeneous: Changing information (確率的ity)
+\item Endogenous: Adaption of plans (dynamism)（この用語は講義スライド上の専門語として扱う）
+\item Meisel (2011)（この用語は講義スライド上の専門語として扱う）
+\item → A model should capture 確率的ity and dynamism (over time)
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S005: 「Dynamic Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S005: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{006}{“Standard” Static Vehicle Routing Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{6}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item “Standard” Static 車両ルーティング問題
+\item Depot, customers, vehicles（この用語は講義スライド上の専門語として扱う）
+\item Constraint: capacity（この用語は講義スライド上の専門語として扱う）
+\item 目的: 最小化する 旅行時間
+\item 決定s
+\item Assignment of customers to vehicles（この用語は講義スライド上の専門語として扱う）
+\item Sequence of customers per vehicle（この用語は講義スライド上の専門語として扱う）
+\item Modeling: mixed-integer programming（この用語は講義スライド上の専門語として扱う）
+\item Solution: set of routes（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「“Standard” Static Vehicle Routing Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S006: 「“Standard” Static Vehicle Routing Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S006: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{007}{Markov Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{7}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item マルコフ意思決定過程
+\item 𝑥 𝜔𝑘
+\item 𝑆𝑘 𝑆𝑘𝑥 𝑆𝑘+1
+\item 𝑅 𝑆𝑘 , 𝑥
+\item Components:（この用語は講義スライド上の専門語として扱う）
+\item 決定 point 𝑘 (either periodic or event triggered)
+\item 決定 状態 𝑆𝑘 ∈ 𝐒
+\item 決定s 𝑥 ∈ 𝑋 (e.g., with Mixed-Integer Programming)
+\item 報酬 𝑅 𝑆𝑘 , 𝑥 ∈ ℝ (or costs as negative 報酬)
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Markov Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S007: 「Markov Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S007: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{008}{Example: Parcel Service}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{8}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Parcel Service
+\item 𝑥 𝜔𝑘
+\item 𝑆𝑘 𝑆𝑘𝑥 𝑆𝑘+1
+\item 𝑅 𝑆𝑘 , 𝑥 = 30
+\item 𝑡 D 𝑡 D 𝑡 D
+\item = 60 = 60 = 90
+\item 3 3 3
+\item 2 30 2 2
+\item 1 1
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Parcel Service」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S008: 「Example: Parcel Service」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S008: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{009}{Problem Modeling: Markov Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{9}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Problem Modeling: マルコフ意思決定過程
+\item 𝑥 𝜔𝑘
+\item 𝑆𝑘 𝑆𝑘𝑥 𝑆𝑘+1
+\item 𝑅 𝑆𝑘 , 𝑥
+\item S0 SK
+\item SK
+\item Initial 状態 𝑆0
+\item Final 状態 𝑆𝐾
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Problem Modeling: Markov Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S009: 「Problem Modeling: Markov Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S009: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{010}{Solution: Decision Policy}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{10}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Solution: 決定 方策
+\item A 決定 方策 assigns a 決定 to every 状態
+\item S0 SK
+\item SK
+\item 目的: find optimal 方策 𝜋 ∗ maximizing 期待される overall 報酬s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Solution: Decision Policy」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S010: 「Solution: Decision Policy」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S010: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{011}{Optimal Solution}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{11}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 最適解
+\item An optimal solution 𝜋 ∗ satisfies:（この用語は講義スライド上の専門語として扱う）
+\item 𝐾
+\item ∗
+\item 𝜋 ∗ = arg max𝜋∈Π 𝔼 ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ))|𝑆0
+\item 𝑖=0
+\item 方策 𝜋 ∗ represents the 方策 𝜋 ∈ Π, maximizing the 期待される 報酬
+\item Given initial 状態 𝑆0
+\item 𝑋𝑘𝜋 𝑆𝑘 indicates the 決定 made by 方策 𝜋 in 状態 𝑆𝑘
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Optimal Solution」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S011: 「Optimal Solution」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S011: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{012}{Bellman Equation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{12}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ベルマン方程式
+\item An optimal 方策 satisfies:
+\item 𝐾
+\item ∗ ∗
+\item 𝑋𝑘𝜋 𝑆𝑘 = arg maxx∈𝑋 𝑆𝑘 𝑅 𝑆𝑘 , 𝑥 + 𝔼 ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ) |𝑆𝑘𝑥（この用語は講義スライド上の専門語として扱う）
+\item 𝑖=𝑘+1
+\item Maximize immediate plus（この用語は講義スライド上の専門語として扱う）
+\item 期待される future 報酬
+\item 𝑅𝑘 (𝑆𝑘 , 𝑥) 𝔼
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Bellman Equation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S012: 「Bellman Equation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S012: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{013}{Value Function}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{13}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 価値関数
+\item Expected future 報酬 is called the value 𝑉(𝑆𝑘𝑥 ) of 後決定状態 𝑆𝑘𝑥
+\item The value function maps a (post-決定) 状態 to the 期待される future 報酬
+\item 𝑅𝑘 (𝑆𝑘 , 𝑥)
+\item 𝑉(𝑆𝑘𝑥 )
+\item S0 SK
+\item SK
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Value Function」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S013: 「Value Function」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S013: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{014}{Value Function}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{14}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 価値関数
+\item The value function for the optimal 方策 satisfies:
+\item 𝑉(𝑆𝑘 ) = max 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 ) (deterministic 決定)
+\item 𝑉 𝑆𝑘𝑥 = σ𝑆𝑘+1 ℙ 𝑆𝑘+1 = 𝑆𝑘𝑥 , 𝜔𝑘 𝑉(𝑆𝑘+1 ) (確率的 遷移)
+\item Values can be calculated recursively for a finite horizon（この用語は講義スライド上の専門語として扱う）
+\item 𝑉(𝑆𝐾 ) = 0 (value of final 状態 is 0)
+\item 𝑥 𝑥
+\item 𝑉 𝑆𝐾−1 = σ𝑆𝐾 ℙ 𝑆𝐾 = 𝑆𝐾−1 , 𝜔𝐾−1 𝑉(𝑆𝐾 ) (last but one 後決定状態)
+\item 𝑥
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Value Function」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S014: 「Value Function」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S014: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{015}{Values can be calculated recursively}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{15}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Values can be calculated recursively（この用語は講義スライド上の専門語として扱う）
+\item ▪ 𝑉(𝑆𝐾 ) = 0
+\item ▪ 𝑉(𝑆𝑘 ) = max 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+\item ▪ 𝑉 𝑆𝑘𝑥 = σ𝑆𝑘+1 ℙ 𝑆𝑘+1 = 𝑆𝑘𝑥 , 𝜔𝑘 𝑉(𝑆𝑘+1 )
+\item S0 SK
+\item SK
+\item Recursion（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Values can be calculated recursively」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S015: 「Values can be calculated recursively」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S015: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{016}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{16}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item マルコフ意思決定過程
+\item Optimal Solutions（この用語は講義スライド上の専門語として扱う）
+\item 次元の呪い
+\item Modeling discussion（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{017}{Example}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{17}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例
+\item Illustrate マルコフ意思決定過程
+\item Show recursive 動的 programming solution
+\item Indicate 次元の呪い
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S017: 「Example」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S017: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{018}{Example}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{18}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例
+\item ?
+\item Serve 3 customers in predefined sequence (1-2-3) 12 ?（この用語は講義スライド上の専門語として扱う）
+\item Stochastic demand 3（この用語は講義スライド上の専門語として扱う）
+\item Either 2 or 1 unit(s) 10（この用語は講義スライド上の専門語として扱う）
+\item Same probability (50\%) ?（この用語は講義スライド上の専門語として扱う）
+\item Vehicle with capacity 4 1（この用語は講義スライド上の専門語として扱う）
+\item 10 0
+\item Replenishment at the depot（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S018: 「Example」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S018: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{019}{Markov Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{19}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item マルコフ意思決定過程
+\item 𝑥 𝜔𝑘
+\item 𝑆𝑘 𝑆𝑘𝑥 𝑆𝑘+1
+\item 𝑅 𝑆𝑘 , 𝑥
+\item Components:（この用語は講義スライド上の専門語として扱う）
+\item 決定 point 𝑘: Arrival at customer
+\item 状態 𝑆𝑘 : Position \& Fill level vehicle
+\item 決定 𝑥: Replenish at depot (A) or next customer (N)
+\item Cost (Negative 報酬) 𝑅 𝑆𝑘 , 𝑥 : Travel time
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Markov Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S019: 「Markov Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S019: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{020}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{20}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item Travel Time（この用語は講義スライド上の専門語として扱う）
+\item Next（この用語は講義スライド上の専門語として扱う）
+\item Current（この用語は講義スライド上の専門語として扱う）
+\item Position（この用語は講義スライド上の専門語として扱う）
+\item 0, 4 1, 4
+\item N ? 4
+\item 1 N
+\item 10 0
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S020: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S020: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{021}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{21}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item 1, 2
+\item ?
+\item Stochastic（この用語は講義スライド上の専門語として扱う）
+\item 15 15
+\item Transition 1, 2 2, 2（この用語は講義スライド上の専門語として扱う）
+\item N N 10
+\item 1 A
+\item 0.5 20 A 10 0
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S021: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S021: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{022}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{22}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item 2, 0 0 2 2, 1 1 1
+\item ? 12 ?
+\item 2 2
+\item 3 3
+\item N
+\item 10 10
+\item A 15 A 15
+\item 0 0
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S022: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S022: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{023}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{23}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item 2, 0 3, 1 3, -1
+\item N
+\item 25 12 45
+\item A
+\item 1, 2 2, 2
+\item N 15
+\item A 3, 3 0, 3
+\item 20 A 25
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S023: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S023: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{024}{Values can be calculated recursively}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{24}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Values can be calculated recursively（この用語は講義スライド上の専門語として扱う）
+\item 𝑉(𝑆𝐾 ) = 0
+\item 𝑉 𝑆𝑘 = 𝑚𝑎𝑥 𝑅 𝑆𝑘 , 𝑥 + 𝑉 𝑆𝑘𝑥
+\item 𝑉 𝑆𝑘𝑥 = σ𝑆𝑘+1 ℙ 𝑆𝑘+1 = 𝑆𝑘𝑥 , 𝜔𝑘 𝑉(𝑆𝑘+1 )
+\item S0 SK
+\item SK
+\item Recursion（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Values can be calculated recursively」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S024: 「Values can be calculated recursively」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S024: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{025}{Calculating Optimal Policy}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{25}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Calculating Optimal 方策
+\item Phase 状態 決定 Value of 決定
+\item Next 状態 Optimal Value Optimal 決定
+\item 𝑺𝒌+𝟏 𝑽∗ (𝑺𝒌 ) 𝒙∗
+\item 𝒌 𝑺𝒌 𝑥 𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 )
+\item 3, -1 A - 45 + 0 45 A
+\item 3, 0 N - 15 + 0 15 N
+\item 4 3, 1 N - 15 + 0 15 N
+\item 3, 2 N - 15 + 0 15 N
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Calculating Optimal Policy」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S025: 「Calculating Optimal Policy」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S025: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{026}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{26}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item 3, -1
+\item 45 45
+\item 15 0
+\item 3, 3 0, 3
+\item 3, 2 0, 2
+\item 3, 0 0, 0
+\item 3, 1 0, 1
+\item Phase 4（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S026: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S026: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{027}{Values can be calculated recursively}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{27}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Values can be calculated recursively（この用語は講義スライド上の専門語として扱う）
+\item 𝑉(𝑆𝐾 ) = 0
+\item 𝑉(𝑆𝑘 ) = 𝑚𝑎𝑥 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+\item 𝑽 𝑺𝒙𝒌 = σ𝑺𝒌+𝟏 ℙ 𝑺𝒌+𝟏 = 𝑺𝒙𝒌 , 𝝎𝒌 𝑽(𝑺𝒌+𝟏 )
+\item S0 SK
+\item SK
+\item Recursion（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Values can be calculated recursively」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S027: 「Values can be calculated recursively」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S027: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{028}{Calculating Optimal Policy}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{28}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Calculating Optimal 方策
+\item Phase 状態 決定 Value of 決定 Optimal Optimal
+\item Next 状態
+\item Value 決定
+\item 𝑺𝒌+𝟏
+\item 𝒌 𝑺𝒌 𝑥 𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 ) 𝑽∗ (𝑺𝒌 ) 𝒙∗
+\item 2, 0 A [3,2] , [3,3] 25 + (15*0.5 + 15*0.5) = 40 40 A
+\item N [3,-1], [3,0] 12 + (45*0.5 + 15*0.5) = 42
+\item 2, 1 40 A
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Calculating Optimal Policy」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S028: 「Calculating Optimal Policy」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S028: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{029}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{29}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item 2, 0 3, 1 3, -1
+\item 40 25 12 30 45 45
+\item 15 0
+\item 3, 3 0, 3
+\item 40 15
+\item 2, 1 3, 4
+\item 3, 2 0, 2
+\item 27 15
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S029: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S029: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{030}{Calculating Optimal Policy}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{30}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Calculating Optimal 方策
+\item Phase 状態 決定 Value of 決定 Optimal Optimal
+\item Next 状態
+\item Value 決定
+\item 𝑺𝒌+𝟏
+\item 𝒌 𝑺𝒌 𝑥 𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 ) 𝑽∗ (𝑺𝒌 ) 𝒙∗
+\item N [2,0], [2,1] 15 + (40*0.5 + 40*0.5) = 55
+\item 1, 2 47 A
+\item A [2,2], [2,3] 20 + (27*0.5 + 27*0.5) = 47
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Calculating Optimal Policy」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S030: 「Calculating Optimal Policy」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S030: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{031}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{31}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item 2, 0 3, 1 3, -1
+\item 47 40 40 45 45
+\item 25 12 30
+\item 15 15 0
+\item 1, 2 2, 2
+\item 3, 3 0, 3
+\item 40 15
+\item 20 25
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S031: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S031: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{032}{Calculating Optimal Policy}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{32}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Calculating Optimal 方策
+\item Phase 状態 決定 Value of 決定 Optimal Optimal
+\item Next 状態
+\item Value 決定
+\item 𝑺𝒌+𝟏
+\item 𝒌 𝑺𝒌 𝑥 𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 ) 𝑽∗ (𝑺𝒌 ) 𝒙∗
+\item 1 0, 4 N [1,2] , [1,3] 10 + (47*0.5 + 47*0.5) = 57 57 N
+\item 0.5 𝑉 ∗ [1,2] = 47
+\item 0, 4
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Calculating Optimal Policy」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S032: 「Calculating Optimal Policy」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S032: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{033}{MDP-Decision Tree}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{33}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item MDP-決定 Tree
+\item 2, 0 3, 1 3, -1
+\item 47 40 40 45 45
+\item 25 12 30
+\item 15 15 0
+\item 1, 2 2, 2
+\item 3, 3 0, 3
+\item 40 15
+\item 20 25
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「MDP-Decision Tree」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S033: 「MDP-Decision Tree」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S033: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{034}{Conclusion I: Management}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{34}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Conclusion I: Management（この用語は講義スライド上の専門語として扱う）
+\item Expected 旅行時間 is 57 minutes
+\item Vehicle always returns after serving first customer（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Conclusion I: Management」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S034: 「Conclusion I: Management」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S034: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{035}{Conclusion II: Calculation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{35}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Conclusion II: Calculation（この用語は講義スライド上の専門語として扱う）
+\item Calculation possible（この用語は講義スライド上の専門語として扱う）
+\item Problem with（この用語は講義スライド上の専門語として扱う）
+\item 4 決定 points
+\item 12 状態s
+\item 17 決定s
+\item 12 Post-決定s 状態s
+\item 16 Transitions（この用語は講義スライド上の専門語として扱う）
+\item 16 Calculations（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Conclusion II: Calculation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S035: 「Conclusion II: Calculation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S035: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{036}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{36}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item マルコフ意思決定過程
+\item Optimal Solutions（この用語は講義スライド上の専門語として扱う）
+\item 次元の呪い
+\item Modeling discussion（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{037}{Transition/Information Space}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{37}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Transition/Information Space（この用語は講義スライド上の専門語として扱う）
+\item Stepwise increase of potential demand options（この用語は講義スライド上の専門語として扱う）
+\item 2,3,…,20,
+\item Up to 900 状態s with 20 options
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Transition/Information Space」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S037: 「Transition/Information Space」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S037: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{038}{Number of Customers}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{38}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Number of Customers（この用語は講義スライド上の専門語として扱う）
+\item Stepwise increase in number of customer（この用語は講義スライド上の専門語として扱う）
+\item 1,…,9 customers（この用語は講義スライド上の専門語として扱う）
+\item Up to 200,000 状態s for
+\item problem with 9 customers（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Number of Customers」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S038: 「Number of Customers」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S038: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{039}{Increase Customer Number and Integrate Routing Decisions}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{39}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Increase Customer Number and Integrate Routing 決定s
+\item Stepwise increase in number of customer（この用語は講義スライド上の専門語として扱う）
+\item 1,…,9 customers（この用語は講義スライド上の専門語として扱う）
+\item Up to 6 billion 状態s for
+\item problem with 9 customers（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Increase Customer Number and Integrate Routing Decisions」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S039: 「Increase Customer Number and Integrate Routing Decisions」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S039: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{040}{Curses of Dimensionality}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{40}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 次元の呪い
+\item 状態 Space
+\item 決定 Space
+\item Information Space（この用語は講義スライド上の専門語として扱う）
+\item With increasing dimensionality, recursion（この用語は講義スライド上の専門語として扱う）
+\item becomes infeasible.（この用語は講義スライド上の専門語として扱う）
+\item For (nearly) all real-world problems, an optimal solution cannot be found（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Curses of Dimensionality」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S040: 「Curses of Dimensionality」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S040: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{041}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{41}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item マルコフ意思決定過程
+\item Optimal Solutions（この用語は講義スライド上の専門語として扱う）
+\item 次元の呪い
+\item Modeling discussion（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{042}{Decision Point}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{42}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 決定 Point
+\item 決定 points define when a 決定 is made.
+\item Notation: 𝑘 = 0, … , 𝐾（この用語は講義スライド上の専門語として扱う）
+\item Not necessarily equidistant and known（この用語は講義スライド上の専門語として扱う）
+\item 例s:
+\item Every day, every hour, etc.（この用語は講義スライド上の専門語として扱う）
+\item Whenever a vehicle served a customer/ a job is produced（この用語は講義スライド上の専門語として扱う）
+\item Whenever a new customer requests/ new job comes in（この用語は講義スライド上の専門語として扱う）
+\item Self-Induced (“I will wait 5 minutes and then decide”)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Decision Point」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S042: 「Decision Point」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S042: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{043}{State}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{43}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 状態
+\item A 状態 contains all information available to make a 決定
+\item Notation: 𝑆𝑘 in 決定 point 𝑘
+\item Information comprises（この用語は講義スライド上の専門語として扱う）
+\item Environment: time, traffic, weather, etc.（この用語は講義スライド上の専門語として扱う）
+\item Resources: vehicle locations, machine availability times, etc.（この用語は講義スライド上の専門語として扱う）
+\item Demand: customers and locations, set of production jobs, etc.（この用語は講義スライド上の専門語として扱う）
+\item Resources and demand may have additional attributes such as capacity, deadlines, etc.（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「State」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S043: 「State」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S043: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{044}{Example 1: Delivery Routing}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{44}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例 1: Delivery Routing
+\item Environment: 𝑡 = 60, 旅行時間 matrix 𝑡 = 60 D
+\item Resources: vehicle location 3（この用語は講義スライド上の専門語として扱う）
+\item Demand: Set of customers still to serve 2（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example 1: Delivery Routing」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S044: 「Example 1: Delivery Routing」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S044: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{045}{Example 2: Line Production}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{45}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例 2: Line Production
+\item Environment: 𝑡 = 4（この用語は講義スライド上の専門語として扱う）
+\item Resources: availability times of the machines plus previous job: (A, 5, blue), (B, 4, red)（この用語は講義スライド上の専門語として扱う）
+\item Demand: Set of jobs with information (Type, Duration, Deadline):（この用語は講義スライド上の専門語として扱う）
+\item (blue,3,11), (blue,4,9), (red, 3, 15)（この用語は講義スライド上の専門語として扱う）
+\item 11 9 15
+\item A 7
+\item B
+\item 0 1 2 3 4 5 6 7 8 9 10 11 …
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example 2: Line Production」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S045: 「Example 2: Line Production」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S045: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{046}{Example 3: Inventory Management}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{46}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例 3: Inventory Management
+\item Environment: 𝑡 = 2（この用語は講義スライド上の専門語として扱う）
+\item 𝑡=2
+\item Resources: Current fill level（この用語は講義スライド上の専門語として扱う）
+\item Demand: Not realized yet（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example 3: Inventory Management」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S046: 「Example 3: Inventory Management」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S046: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{047}{Decisions and Rewards}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{47}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 決定s and 報酬s
+\item 決定s are made about the use/spending of resources to serve demand
+\item Notation: 𝑥𝑘 ∈ 𝑋(𝑆𝑘 ) in 状態 𝑆𝑘
+\item Feasibility depend on（この用語は講義スライド上の専門語として扱う）
+\item Constraints in resource use (travel/set-up times, capacities, etc.)（この用語は講義スライド上の専門語として扱う）
+\item Constraints in service of demand (deadlines, amount, etc.)（この用語は講義スライド上の専門語として扱う）
+\item Each 決定s causes costs and/or 報酬s 𝑅 𝑆𝑘 , 𝑥𝑘 :
+\item Costs in use of resources（この用語は講義スライド上の専門語として扱う）
+\item 報酬s in service of demand
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Decisions and Rewards」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S047: 「Decisions and Rewards」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S047: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{048}{Examples 1: Dynamic Vehicle Routing}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{48}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例s 1: Dynamic Vehicle Routing
+\item Action:（この用語は講義スライド上の専門語として扱う）
+\item 決定s and 報酬s can be modeled
+\item either as immediate action or as plan updates.（この用語は講義スライド上の専門語として扱う）
+\item Immediate action is the least commitment（この用語は講義スライド上の専門語として扱う）
+\item necessary (next customer to serve, next job（この用語は講義スライド上の専門語として扱う）
+\item to produce)（この用語は講義スライド上の専門語として扱う）
+\item Plan updates consider a sequence of tentative（この用語は講義スライド上の専門語として扱う）
+\item actions where only the first is implemented（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Examples 1: Dynamic Vehicle Routing」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S048: 「Examples 1: Dynamic Vehicle Routing」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S048: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{049}{Example 2: Connecting Decisions to Methods}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{49}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例 2: Connecting Decisions to Methods
+\item Without plan, we just decide about the next job on line B（この用語は講義スライド上の専門語として扱う）
+\item With plan, we tentatively plan all jobs and only implement the next job on line B（この用語は講義スライド上の専門語として扱う）
+\item A solution method aims on minimizing delay（この用語は講義スライド上の専門語として扱う）
+\item Operating on a set of plans indicates impact on delay for all jobs（この用語は講義スライド上の専門語として扱う）
+\item Only operating on current action seems unintuitive（この用語は講義スライド上の専門語として扱う）
+\item Difference in 報酬/delay: current action: 0, plan: 1
+\item A 7 S 9
+\item 9 S 15 S 11
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example 2: Connecting Decisions to Methods」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S049: 「Example 2: Connecting Decisions to Methods」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S049: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{050}{Example 3: Uncertain Reward}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{50}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例 3: Uncertain Reward
+\item Inventory management problem has two types of costs:（この用語は講義スライド上の専門語として扱う）
+\item Inventory holding costs (known at time of 決定)
+\item Emergency replenishment costs:（この用語は講義スライド上の専門語として扱う）
+\item Stochastic（この用語は講義スライド上の専門語として扱う）
+\item Unknown at time of 決定
+\item Also very common when（この用語は講義スライド上の専門語として扱う）
+\item Customers can choose products（この用語は講義スライド上の専門語として扱う）
+\item Travel times are 確率的
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example 3: Uncertain Reward」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S050: 「Example 3: Uncertain Reward」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S050: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{051}{Post-Decision State}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{51}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Post-決定 状態
+\item Combination of 状態 𝑆𝑘 and 決定 𝑥𝑘 leads to 後決定状態 𝑆𝑘𝑥
+\item Deterministic part of the overall 遷移 from 状態 to 状態.
+\item Often contains similar information as the 状態 with changes (e.g., no open requests/jobs)
+\item Can be seen as the “current plan.”（この用語は講義スライド上の専門語として扱う）
+\item Explicit modeling supports（この用語は講義スライド上の専門語として扱う）
+\item Communication (We see the implementation of the 決定)
+\item Methodology (compare ベルマン Equation, max 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 ))
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。
+\item Greedy政策と最適政策の違いを説明できるようにする。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Post-Decision State」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Bellman方程式は、動的意思決定における最適性の再帰的な考え方である。現在状態 S\_t で決定 x を選ぶと、即時報酬 R(S\_t,x) が得られる。しかし本当に重要なのは、その決定によって次にどの状態へ進み、そこから将来どれだけ報酬を得られるかである。\par
+Greedy政策は、目の前の即時報酬だけを見て選ぶ。例えば今すぐ最も近い注文を取る、今一番利益が高い注文を取る、在庫を最小にする、といった判断である。短期的には合理的でも、将来の注文や状態を悪化させることがある。\par
+Bellman最適政策は、即時報酬 + 期待将来価値で決定を評価する。配送で、近い注文を取ると車両が需要の少ない地域へ移動し、少し遠い注文を取ると需要が多い地域に残れるなら、後者の方が将来的に良い可能性がある。この『将来の良さ』を価値関数で表す。\par
+価値関数 V(S) は、その状態から将来得られる期待報酬を表す。後決定状態 S\_t\textasciicircum{}x は、決定を行った直後、まだ外生情報が実現していない状態である。後決定状態を使うと、意思決定とランダム情報の実現を分けて考えやすくなる。\par
+試験では、式を書くだけでなく、各項の意味を文章で説明する必要がある。Rは今の報酬、Vは将来価値、期待値は未来の不確実性を平均する操作、argmaxは最も良い決定を選ぶ操作である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S051: 「Post-Decision State」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Bellman方程式は、即時報酬と期待将来価値の和で決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S051: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{052}{Example: Decision Time of Post-Decision State}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{52}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Decision Time of Post-Decision State
+\item Post-決定 状態 may have the same 例 状態 and 𝑡 = 60
+\item or a later 決定 time as the possible 決定s:
+\item corresponding 状態
+\item 1 3
+\item 例 1
+\item Deterministic 旅行時間s, but Post-決定 状態 𝑡 = 90
+\item 確率的 demand at new location for example 1: 2
+\item → later 決定 time
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Decision Time of Post-Decision State」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S052: 「Example: Decision Time of Post-Decision State」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S052: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{053}{Stochastic Information and Transitions}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{53}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Stochastic Information and Transitions（この用語は講義スライド上の専門語として扱う）
+\item Observation of 確率的 information 𝜔𝑘 given 後決定状態 𝑆𝑘𝑥 leads
+\item to new 状態 𝑆𝑘+1 .
+\item Stochastic part of the overall 遷移 from 状態 to 状態.
+\item Each 確率的 information has a probability (in theory).
+\item If 遷移 is not self-evident, sometimes 遷移 function is explicitly modeled
+\item (compare Powell 2011)（この用語は講義スライド上の専門語として扱う）
+\item Transitions comprise:（この用語は講義スライド上の専門語として扱う）
+\item Observation of new customers/jobs/demand（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Stochastic Information and Transitions」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S053: 「Stochastic Information and Transitions」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S053: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{054}{Coding MDPs}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{54}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Coding MDPs（この用語は講義スライド上の専門語として扱う）
+\item For coding MDPs, five components are required:（この用語は講義スライド上の専門語として扱う）
+\item 1. Exogeneous information, for example, lists of jobs/customers with all relevant details（この用語は講義スライド上の専門語として扱う）
+\item (duration, location, potentially choice model details, etc.)（この用語は講義スライド上の専門語として扱う）
+\item 2. シミュレーション loop, for example, over time or the job/customer list
+\item 3. 状態 information as combination of previous 後決定状態 and new information
+\item 4. 決定 方策, assigning a 決定 to a 状態 (see next week) and creating 報酬 and
+\item 後決定状態
+\item 5. Variable to track observed 報酬s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Coding MDPs」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S054: 「Coding MDPs」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S054: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 5 - Markov Decision Process}{055}{Outlook}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{55}{../Materials/2026/3DM_05_MDP_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Outlook（この用語は講義スライド上の専門語として扱う）
+\item 近似動的計画法
+\item Rolling Horizon Optimization（この用語は講義スライド上の専門語として扱う）
+\item 方策 and 費用関数近似
+\item シミュレーション methods
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。
+\item 未知の事例を見たら、まずMDPの構成要素へ分解する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Outlook」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Markov Decision Process は、時間を持つ意思決定問題を定式化する枠組みである。各時点 t で状態 S\_t を観測し、実行可能な決定 x\_t を選ぶ。その後、外生情報 W\_\{t+1\} が実現し、遷移関数によって次の状態 S\_\{t+1\} が決まる。このとき報酬または費用 R\_t(S\_t,x\_t) も発生する。\par
+Markov性とは、将来を予測するために必要な情報が現在状態 S\_t に含まれているという考え方である。過去の履歴そのものを全て覚える必要はないが、履歴が将来に影響するなら、その影響を現在状態に要約して入れなければならない。例えば配送では、車両位置、残り注文、現在時刻、積載量、遅延状況が状態に含まれる。\par
+方策 policy は、各状態に対してどの決定を選ぶかを定める規則である。最適方策は、単に現在報酬が最大の決定を選ぶのではなく、現在報酬と将来報酬の期待値を合わせて最大にする。これが greedy との違いである。\par
+具体例として在庫問題では、状態は在庫量、決定は注文量、外生情報は需要、遷移は『次在庫 = 現在在庫 + 注文到着 - 需要』、費用は保管費・欠品費・注文費である。配送問題では、状態は車両位置と未処理注文、決定は次に訪問する顧客または割当、外生情報は新規注文や旅行時間、報酬は配送収益または遅延ペナルティである。\par
+試験では、MDPの記号を暗記するより、現実問題を構成要素に落とし込む力が重視される。問題文に新しい事例が出たら、時点、状態、決定、外生情報、遷移、目的関数の順に書くと、体系的な答案になる。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L05-S055: 「Outlook」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、MDPは、状態、決定、外生情報、遷移、報酬、方策で動的意思決定を定式化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L05-S055: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+\clearpage\ExamHeader{Lecture 5 - Markov Decision Process}
+\ExamQuestion{WS22/23 Aufgabe 7 (5 点)}
+\ExamSubsection{問題内容}
+MDPによる動的意思決定プロセスの形式化。設問では、MDPの構成要素を記号で書けること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、決定時点、状態 S\_t、決定 x\_t、外生情報 W\_\{t+1\}、遷移 S\_\{t+1\}=S\textasciicircum{}M(S\_t,x\_t,W\_\{t+1\})、報酬または費用 R\_t(S\_t,x\_t)、方策 X\_t\textasciicircum{}\textbackslash{}pi(S\_t)、目的関数を定義する。具体事例では、状態が何を含み、決定で何を選び、外生情報で何がランダムに起こるかを対応付ける。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS22/23 Aufgabe 8 (3 点)}
+\ExamSubsection{問題内容}
+確率的動的問題のcurse of dimensionality。設問では、状態空間・決定空間・外生情報/遷移の爆発を説明できること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS23 Aufgabe 6 (32 点)}
+\ExamSubsection{問題内容}
+UNIPERガス貯蔵を確率的動的在庫問題/MDP/VFAとしてモデル化。設問では、現実シナリオをMDPの構成要素・定量変数・計画ホライズン・確率/準確率モデル・費用収益・VFAへ展開すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、決定時点、状態 S\_t、決定 x\_t、外生情報 W\_\{t+1\}、遷移 S\_\{t+1\}=S\textasciicircum{}M(S\_t,x\_t,W\_\{t+1\})、報酬または費用 R\_t(S\_t,x\_t)、方策 X\_t\textasciicircum{}\textbackslash{}pi(S\_t)、目的関数を定義する。具体事例では、状態が何を含み、決定で何を選び、外生情報で何がランダムに起こるかを対応付ける。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS23/24 Aufgabe 9 (4 点)}
+\ExamSubsection{問題内容}
+動的在庫問題の構成要素。設問では、在庫水準・注文量・需要・遷移・費用/報酬を対応付けること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS24 Aufgabe 3a (6 点)}
+\ExamSubsection{問題内容}
+MDPグラフで最適政策とGreedy政策を比較。設問では、期待報酬を計算し、短期最適と長期最適の違いを判断すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、決定時点、状態 S\_t、決定 x\_t、外生情報 W\_\{t+1\}、遷移 S\_\{t+1\}=S\textasciicircum{}M(S\_t,x\_t,W\_\{t+1\})、報酬または費用 R\_t(S\_t,x\_t)、方策 X\_t\textasciicircum{}\textbackslash{}pi(S\_t)、目的関数を定義する。具体事例では、状態が何を含み、決定で何を選び、外生情報で何がランダムに起こるかを対応付ける。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS24 Aufgabe 3c (4 点)}
+\ExamSubsection{問題内容}
+Bellman方程式と計算不能になる部分。設問では、max/期待値/遷移列挙が状態・遷移増大で爆発することを示すこと。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Bellman方程式が即時報酬と期待将来価値の和を最大化する再帰式であると説明する。Greedy政策は即時報酬だけを見るが、最適政策は将来価値も見る。状態空間、決定空間、外生情報空間が増えると再帰計算が爆発し、ADPや価値関数近似が必要になる。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS24 Aufgabe 5 (20 点)}
+\ExamSubsection{問題内容}
+一週間のパッケージ配送をMDP/VFA/PFAとしてモデル化。設問では、決定時点、状態、決定、費用、後決定状態、外生情報、遷移、目的関数を具体化すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、決定時点、状態 S\_t、決定 x\_t、外生情報 W\_\{t+1\}、遷移 S\_\{t+1\}=S\textasciicircum{}M(S\_t,x\_t,W\_\{t+1\})、報酬または費用 R\_t(S\_t,x\_t)、方策 X\_t\textasciicircum{}\textbackslash{}pi(S\_t)、目的関数を定義する。具体事例では、状態が何を含み、決定で何を選び、外生情報で何がランダムに起こるかを対応付ける。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS24/25 Aufgabe 2 (10 点)}
+\ExamSubsection{問題内容}
+離散時点の確率的問題に対する動的計画法。設問では、後ろ向き再帰、Bellman方程式、価値関数、最適戦略を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS24/25 Aufgabe 5 (22 点)}
+\ExamSubsection{問題内容}
+HarzダムをMDP/VFAとしてモデル化。設問では、貯水量・降水・放流・エネルギー発電・供給義務をMDP/VFAへ落とすこと。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、決定時点、状態 S\_t、決定 x\_t、外生情報 W\_\{t+1\}、遷移 S\_\{t+1\}=S\textasciicircum{}M(S\_t,x\_t,W\_\{t+1\})、報酬または費用 R\_t(S\_t,x\_t)、方策 X\_t\textasciicircum{}\textbackslash{}pi(S\_t)、目的関数を定義する。具体事例では、状態が何を含み、決定で何を選び、外生情報で何がランダムに起こるかを対応付ける。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS25 Exercise 6 (8 点)}
+\ExamSubsection{問題内容}
+動的在庫問題の外生プロセス・決定プロセス・状態空間・報酬。設問では、MDPを抽象要素で表すこと。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS25 Exercise 7 (6 点)}
+\ExamSubsection{問題内容}
+MDPの構成要素。設問では、状態、決定、外生情報、遷移、報酬、目的関数などを列挙すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、決定時点、状態 S\_t、決定 x\_t、外生情報 W\_\{t+1\}、遷移 S\_\{t+1\}=S\textasciicircum{}M(S\_t,x\_t,W\_\{t+1\})、報酬または費用 R\_t(S\_t,x\_t)、方策 X\_t\textasciicircum{}\textbackslash{}pi(S\_t)、目的関数を定義する。具体事例では、状態が何を含み、決定で何を選び、外生情報で何がランダムに起こるかを対応付ける。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}

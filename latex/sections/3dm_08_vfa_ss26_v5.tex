@@ -1,0 +1,1845 @@
+\section*{Lecture 8 - Value Function Approximation}
+\addcontentsline{toc}{section}{Lecture 8 - Value Function Approximation}
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{001}{Data Driven Decision Making}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{1}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定
+\item 講義 8 – 価値関数近似
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S001: 「Data Driven Decision Making」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S001: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{002}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{2}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Motivational Experiment（この用語は講義スライド上の専門語として扱う）
+\item 価値関数近似
+\item Case Study: Customer Acceptances + Approximation Architectures (if time is left)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{003}{Value Function}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{3}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 価値関数
+\item Expected future 報酬 is called the value 𝑉(𝑆𝑘𝑥 ) of 後決定状態 𝑆𝑘𝑥
+\item The value function maps a (post-決定) 状態 to the 期待される future
+\item 報酬
+\item 𝑅𝑘 (𝑆𝑘 , 𝑥)
+\item 𝑉(𝑆𝑘𝑥 )
+\item S0 SK
+\item SK
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Value Function」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S003: 「Value Function」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S003: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{004}{Policy Classes (Compare Powell 2011)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{4}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 方策 Classes (Compare Powell 2011)
+\item 方策関数近似
+\item Rule-Based（この用語は講義スライド上の専門語として扱う）
+\item ローリングホライズン再最適化
+\item 費用関数近似
+\item 先読み Models
+\item 価値関数近似 Optimization-Based
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Policy Classes (Compare Powell 2011)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S004: 「Policy Classes (Compare Powell 2011)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S004: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{005}{Policy Classes I}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{5}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 方策 Classes I
+\item 方策 function approximation:
+\item Transfer a rule-of-thumb into a 方策
+\item Rolling-Horizon Re-Optimization:（この用語は講義スライド上の専門語として扱う）
+\item Determine 決定 based on current
+\item information (myopic)（この用語は講義スライド上の専門語として扱う）
+\item Cost-Function Approximation:（この用語は講義スライド上の専門語として扱う）
+\item Manipulate 報酬 function or constraints to
+\item incentivize (/avoid) (in)flexible 決定s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Policy Classes I」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S005: 「Policy Classes I」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S005: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{006}{Policy Classes II: Lookahead}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{6}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 方策 Classes II: Lookahead
+\item Methods consider future changes via sampling of realizations（この用語は講義スライド上の専門語として扱う）
+\item ロールアウト algorithm:
+\item Simulate paths of sampled realizations and 決定s made by a base 方策
+\item Use simulated values with ベルマン Equation
+\item 複数シナリオアプローチ:
+\item Sample sets of realizations (scenarios)（この用語は講義スライド上の専門語として扱う）
+\item Solve scenarios individually（この用語は講義スライド上の専門語として扱う）
+\item Determine most similar solution → 決定
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Policy Classes II: Lookahead」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S006: 「Policy Classes II: Lookahead」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S006: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{007}{Excursus: Evaluating Policies}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{7}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Excursus: Evaluating Policies（この用語は講義スライド上の専門語として扱う）
+\item Calculations（この用語は講義スライド上の専門語として扱う）
+\item For each instance setting:（この用語は講義スライド上の専門語として扱う）
+\item Mean value（この用語は講義スライド上の専門語として扱う）
+\item Generate sufficiently large set of instance realizations（この用語は講義スライド上の専門語として扱う）
+\item Variance（この用語は講義スライド上の専門語として扱う）
+\item Different than training data in Lookaheads and VFAs（この用語は講義スライド上の専門語として扱う）
+\item Standard dev.（この用語は講義スライド上の専門語として扱う）
+\item Standard error（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Excursus: Evaluating Policies」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S007: 「Excursus: Evaluating Policies」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S007: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{008}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{8}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Motivational Experiment（この用語は講義スライド上の専門語として扱う）
+\item 価値関数近似
+\item Case Study: Customer Acceptances + Approximation Architectures（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{009}{Motivational Experiment: Fair (dynamic knapsack problem)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{9}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Motivational Experiment: Fair (動的 knapsack problem)
+\item Fair with an unknown number of rides（この用語は講義スライド上の専門語として扱う）
+\item Time horizon (60 minutes)（この用語は講義スライド上の専門語として扱う）
+\item Money (expires at end of horizon) (15€)（この用語は講義スライド上の専門語として扱う）
+\item Random occurrences of rides（この用語は講義スライド上の専門語として扱う）
+\item Every ride costs money and generates fun（この用語は講義スライド上の専門語として扱う）
+\item (報酬) www.ecfair.org
+\item Question: buy ride or not (no way back)（この用語は講義スライド上の専門語として扱う）
+\item Then, next (unknown) point of time with next（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Motivational Experiment: Fair (dynamic knapsack problem)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S009: 「Motivational Experiment: Fair (dynamic knapsack problem)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S009: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{010}{Dynamic knapsack problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{10}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic knapsack problem（この用語は講義スライド上の専門語として扱う）
+\item マルコフ意思決定過程:
+\item 決定 point: Next item
+\item 状態: Point of time, remaining capacity (money), new item
+\item 決定: Take item (or not)
+\item 報酬: Value of item (or 0)
+\item Post-決定 状態: Point of time, remaining capacity
+\item Stochastic information: realization of new item（この用語は講義スライド上の専門語として扱う）
+\item Transition: next point of time and item（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic knapsack problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S010: 「Dynamic knapsack problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S010: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{011}{Experiment}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{11}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Experiment（この用語は講義スライド上の専門語として扱う）
+\item Ride Time 報酬 (in Cost (in €) 決定 Money Total Fun
+\item fun)
+\item - 0 - - - 15 0
+\item 1. 3 10 5
+\item 2. 16 11 5
+\item 3. 18 8 3
+\item 4. 21 7 4
+\item 5. 23 10 7
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Experiment」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S011: 「Experiment」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S011: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{012}{Experiment}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{12}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Experiment（この用語は講義スライド上の専門語として扱う）
+\item Ride Time 報酬 (in Cost (in €) 決定 Money Total Fun
+\item fun)
+\item - 0 - - - 15 0
+\item 1. 3 10 5
+\item 2. 16 11 5
+\item 3. 18 8 3
+\item 4. 21 7 4
+\item 5. 23 10 7
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Experiment」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S012: 「Experiment」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S012: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{013}{What could we learn?}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{13}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item What could we learn?（この用語は講義スライド上の専門語として扱う）
+\item 情報モデル:
+\item Expected number of rides per visit（この用語は講義スライド上の専門語として扱う）
+\item Relation between costs and 報酬s
+\item Changes over time（この用語は講義スライド上の専門語として扱う）
+\item 決定 Making:
+\item Approximate value of money at a point of time（この用語は講義スライド上の専門語として扱う）
+\item 決定 between buying (or not) maxx∈𝑋 𝑆𝑘 𝑅 𝑆𝑘 , 𝑥 + 𝑉(𝑆𝑘𝑥 )
+\item Value depends on our 決定 making
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「What could we learn?」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S013: 「What could we learn?」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S013: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{014}{What do we need to learn?}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{14}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item What do we need to learn?（この用語は講義スライド上の専門語として扱う）
+\item Exogeneous information: Sampling from 分布
+\item Experience of interactions with exogeneous information: シミュレーション
+\item 決定s to generate interactions: ベルマン Equation
+\item Memory to store and update experience: Value function（この用語は講義スライド上の専門語として扱う）
+\item We repeatedly simulate sampled information, decide with the ベルマン Equation based on
+\item the value function and update the value function with the シミュレーション's outcome
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「What do we need to learn?」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S014: 「What do we need to learn?」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S014: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{015}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{15}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Motivational Experiment（この用語は講義スライド上の専門語として扱う）
+\item 価値関数近似
+\item Case Study: Customer Acceptances + Approximation Architectures（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{016}{𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{16}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ∗
+\item 𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+\item 𝑥∈𝑋(𝑆𝑘 )
+\item 価値関数近似 (Powell, 2011)
+\item Initial values 𝑉෠0 シミュレーション
+\item Generate 方策 𝝅𝑽𝑭𝑨
+\item 𝟎 w.r.t. 𝑉෠0
+\item Apply（この用語は講義スライド上の専門語として扱う）
+\item 状態
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S016: 「𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S016: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{017}{Storing the Approximate Value Function}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{17}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Storing the Approximate 価値関数
+\item 次元の呪い
+\item For example, 動的 routing for courier services
+\item Post-決定 状態:
+\item Point of time（この用語は講義スライド上の専門語として扱う）
+\item Set of customers（この用語は講義スライド上の専門語として扱う）
+\item Vehicle‘s position（この用語は講義スライド上の専門語として扱う）
+\item Planned tour（この用語は講義スライド上の専門語として扱う）
+\item We never observe the same 後決定状態 twice.
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Storing the Approximate Value Function」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S017: 「Storing the Approximate Value Function」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S017: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{018}{VFA: State Space Representation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{18}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item VFA: 状態 Space Representation
+\item Reduced representation of 状態 space necessary
+\item Two steps: 状態 Space
+\item 集約 summarizes 後決定状態
+\item to a vector of features A（この用語は講義スライド上の専門語として扱う）
+\item The value for each vector is stored using an（この用語は講義スライド上の専門語として扱う）
+\item approximation architecture (Feature) Vector Space（この用語は講義スライド上の専門語として扱う）
+\item 𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 1 … 𝑉𝑎𝑟𝑖𝑎𝑏𝑙𝑒 phase（この用語は講義スライド上の専門語として扱う）
+\item 𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 1 𝑣𝑎𝑙𝑢𝑒11 𝑣𝑎𝑙𝑢𝑒1… 𝑣𝑎𝑙𝑢𝑒1 training S（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「VFA: State Space Representation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S018: 「VFA: State Space Representation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S018: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{019}{Decision Making in Operations Research}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{19}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 決定 Making in オペレーションズ・リサーチ
+\item Fulfilment of demand with resources within an environment（この用語は講義スライド上の専門語として扱う）
+\item Demand: Products, service, delivery, transport, etc.…（この用語は講義スライド上の専門語として扱う）
+\item Resources: Workforce, machines, delivery/service fleet, budget（この用語は講義スライド上の専門語として扱う）
+\item Environment: Street network, weather conditions, energy prices, etc.（この用語は講義スライド上の専門語として扱う）
+\item 目的: Maximize fulfilled demand vs. 最小化する used resources
+\item 決定s: Assignment of resources to demand.
+\item Environment often defines constraints and resource consumption.（この用語は講義スライド上の専門語として扱う）
+\item Environment（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Decision Making in Operations Research」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S019: 「Decision Making in Operations Research」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S019: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{020}{Aggregation: Feature selection}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{20}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 集約: 特徴選択
+\item Features can represent environment, resources, and demand（この用語は講義スライド上の専門語として扱う）
+\item “特徴選択 is an art” (Warren Powell)
+\item Environment（この用語は講義スライド上の専門語として扱う）
+\item Point of time: later time in process, smaller value（この用語は講義スライド上の専門語として扱う）
+\item Traffic level: higher traffic, smaller value (less revenue)（この用語は講義スライド上の専門語として扱う）
+\item Energy prices (could be resource/demand):（この用語は講義スライド上の専門語として扱う）
+\item Higher prices, smaller value (if we need to buy energy)（この用語は講義スライド上の専門語として扱う）
+\item Higher prices, larger value (if we can sell energy)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Aggregation: Feature selection」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S020: 「Aggregation: Feature selection」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S020: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{021}{Feature selection: Resources}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{21}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 特徴選択: Resources
+\item Remaining vehicle capacity: more capacity, higher value（この用語は講義スライド上の専門語として扱う）
+\item Distribution of vehicles in the city: how to measure? Higher spread, higher value(?)（この用語は講義スライド上の専門語として扱う）
+\item Inventory levels: higher levels, higher value(?)（この用語は講義スライド上の専門語として扱う）
+\item Remaining advertising budget: higher budget, higher value(?)（この用語は講義スライド上の専門語として扱う）
+\item Number of workers in the system: more workers, higher value（この用語は講義スライド上の専門語として扱う）
+\item Percentage of skilled workers: higher percentage, higher value(?)（この用語は講義スライド上の専門語として扱う）
+\item Free server/production lines: more capacity, higher value（この用語は講義スライド上の専門語として扱う）
+\item Number of broken production lines: smaller number, higher value（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Feature selection: Resources」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S021: 「Feature selection: Resources」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S021: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{022}{Feature selection: Demand}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{22}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 特徴選択: Demand
+\item Number of customers/jobs: higher number, smaller value（この用語は講義スライド上の専門語として扱う）
+\item Number of different job types in the system: higher number, smaller value（この用語は講義スライド上の専門語として扱う）
+\item Average spread in customer locations: higher spread, smaller value（この用語は講義スライド上の専門語として扱う）
+\item Customer satisfaction level: higher level, higher value（この用語は講義スライド上の専門語として扱う）
+\item Urgency: how to measure? Higher urgency, smaller value（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Feature selection: Demand」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S022: 「Feature selection: Demand」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S022: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{023}{Feature selection: Combination}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{23}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 特徴選択: Combination
+\item Average 旅行時間s between customers (Environment + Demand) high times,
+\item smaller value（この用語は講義スライド上の専門語として扱う）
+\item Time a production line is empty again (Resource + Demand): nearer times, higher（この用語は講義スライド上の専門語として扱う）
+\item value（この用語は講義スライド上の専門語として扱う）
+\item Average time between job deadlines and planned finish time (Resource + Demand):（この用語は講義スライド上の専門語として扱う）
+\item larger times, higher value（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Feature selection: Combination」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S023: 「Feature selection: Combination」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S023: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{024}{Aggregation: Bias vs. Reliability}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{24}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 集約: Bias vs. Reliability
+\item Bias: deviation from aggregated to real value（この用語は講義スライド上の専門語として扱う）
+\item Reliability: enough feature observations（この用語は講義スライド上の専門語として扱う）
+\item Not enough vs. too many features（この用語は講義スライド上の専門語として扱う）
+\item Too general vs. too detailed features（この用語は講義スライド上の専門語として扱う）
+\item E.g., number of customers/jobs vs. individual（この用語は講義スライド上の専門語として扱う）
+\item customer locations / job specifications（この用語は講義スライド上の専門語として扱う）
+\item Compare Hastie et al., 2016（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Aggregation: Bias vs. Reliability」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S024: 「Aggregation: Bias vs. Reliability」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S024: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{025}{Example: Courier Service}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{25}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Courier Service
+\item Value significantly depends on point of time 𝑡（この用語は講義スライド上の専門語として扱う）
+\item and remaining time budget 𝑏 (time limit – current arrival time at depot)（この用語は講義スライド上の専門語として扱う）
+\item Aggregate 𝑆𝑘𝑥 to a 2-dimensional feature vector: A(𝑆𝑘𝑥 ) = 𝑣 = 𝑡, 𝑏（この用語は講義スライド上の専門語として扱う）
+\item 𝑡 = 60
+\item A 𝑣 = (60,120) x
+\item Ulmer, Mattfeld, Köster, Budgeting Time for Dynamic Vehicle Routing with Stochastic Requests, 交通・輸送 Science,
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Courier Service」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S025: 「Example: Courier Service」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S025: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{026}{Value function for a fixed point of time (Assumption)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{26}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Value function for a fixed point of time (Assumption)（この用語は講義スライド上の専門語として扱う）
+\item Monotonic increase（この用語は講義スライド上の専門語として扱う）
+\item Saturation（この用語は講義スライド上の専門語として扱う）
+\item Compare with 動的 knapsack problem
+\item 𝑉
+\item 𝑏
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Value function for a fixed point of time (Assumption)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S026: 「Value function for a fixed point of time (Assumption)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S026: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{027}{Approximation Architectures}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{27}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Approximation Architectures（この用語は講義スライド上の専門語として扱う）
+\item Input: Vector（この用語は講義スライド上の専門語として扱う）
+\item Output: Value（この用語は講義スライド上の専門語として扱う）
+\item Approximation（この用語は講義スライド上の専門語として扱う）
+\item Can be trained Architecture（この用語は講義スライド上の専門語として扱う）
+\item 例s:
+\item Lookup tables（この用語は講義スライド上の専門語として扱う）
+\item Parametric architectures (linear functions, etc.)（この用語は講義スライド上の専門語として扱う）
+\item Neural nets（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Approximation Architectures」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S027: 「Approximation Architectures」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S027: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{028}{Courier Service: Lookup Table}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{28}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Courier Service: Lookup Table（この用語は講義スライド上の専門語として扱う）
+\item Aggregate 𝑆𝑘𝑥 to a vector: A(𝑆𝑘𝑥 ) = 𝑣 = 𝑡, 𝑏（この用語は講義スライド上の専門語として扱う）
+\item Store values is lookup table with intervals（この用語は講義スライド上の専門語として扱う）
+\item Update entry values with running average（この用語は講義スライド上の専門語として扱う）
+\item 𝑡 = 60
+\item 𝑣 = (60,120) b x
+\item A
+\item t
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Courier Service: Lookup Table」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S028: 「Courier Service: Lookup Table」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S028: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{029}{𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{29}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ∗
+\item 𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+\item Courier Service: 決定 Making 𝑥∈𝑋(𝑆𝑘 )
+\item Use current value for 決定 making via ベルマン Equation
+\item E.g., current value of vector is 3.2（この用語は講義スライド上の専門語として扱う）
+\item 3.2
+\item b x
+\item t
+\item 𝑣 = (60,120) S ෠
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S029: 「𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S029: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{030}{Courier Service: Learning Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{30}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Courier Service: Learning Process（この用語は講義スライド上の専門語として扱う）
+\item Percentage of served customers（この用語は講義スライド上の専門語として扱う）
+\item First 200,000 runs（この用語は講義スライド上の専門語として扱う）
+\item Moving average over 10,000 runs（この用語は講義スライド上の専門語として扱う）
+\item Fast increase（この用語は講義スライド上の専門語として扱う）
+\item Saturation（この用語は講義スライド上の専門語として扱う）
+\item First 5,000 runs（この用語は講義スライド上の専門語として扱う）
+\item Average over 1,000 runs（この用語は講義スライド上の専門語として扱う）
+\item Initial decrease（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Courier Service: Learning Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S030: 「Courier Service: Learning Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S030: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{031}{Value function for a fixed point of time}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{31}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Value function for a fixed point of time（この用語は講義スライド上の専門語として扱う）
+\item Monotonic increase（この用語は講義スライド上の専門語として扱う）
+\item Saturation（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Value function for a fixed point of time」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S031: 「Value function for a fixed point of time」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S031: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{032}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{32}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Motivational Experiment（この用語は講義スライド上の専門語として扱う）
+\item 価値関数近似
+\item Case Study: Customer Acceptances + Approximation Architectures (if time is left)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{033}{Dynamic Customer Acceptance Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{33}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic Customer Acceptance Problem（この用語は講義スライド上の専門語として扱う）
+\item Capacitated vehicle（この用語は講義スライド上の専門語として扱う）
+\item Driver with working hours（この用語は講義スライド上の専門語として扱う）
+\item Customers request next-day delivery over the day（この用語は講義スライド上の専門語として扱う）
+\item Request comprises location, size, and revenue（この用語は講義スライド上の専門語として扱う）
+\item 決定s: Acceptance or rejection of request and routing
+\item Time Space（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Customer Acceptance Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S033: 「Dynamic Customer Acceptance Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S033: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{034}{Dynamic Customer Acceptance Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{34}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic Customer Acceptance Problem（この用語は講義スライド上の専門語として扱う）
+\item Capacitated vehicle（この用語は講義スライド上の専門語として扱う）
+\item Driver with working hours（この用語は講義スライド上の専門語として扱う）
+\item Customers request next-day delivery over the day（この用語は講義スライド上の専門語として扱う）
+\item Request comprises location, size, and revenue（この用語は講義スライド上の専門語として扱う）
+\item 決定s: Acceptance or rejection of request and routing
+\item Time Space（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Customer Acceptance Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S034: 「Dynamic Customer Acceptance Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S034: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{035}{Dynamic Customer Acceptance Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{35}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic Customer Acceptance Problem（この用語は講義スライド上の専門語として扱う）
+\item Capacitated vehicle（この用語は講義スライド上の専門語として扱う）
+\item Driver with working hours 3（この用語は講義スライド上の専門語として扱う）
+\item Customers request next-day delivery over the day（この用語は講義スライド上の専門語として扱う）
+\item Request comprises location, size, and revenue（この用語は講義スライド上の専門語として扱う）
+\item 決定s: Acceptance or rejection of request and routing
+\item Time Space（この用語は講義スライド上の専門語として扱う）
+\item …
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Customer Acceptance Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S035: 「Dynamic Customer Acceptance Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S035: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{036}{Dynamic Customer Acceptance Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{36}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic Customer Acceptance Problem（この用語は講義スライド上の専門語として扱う）
+\item マルコフ意思決定過程
+\item 決定 point: New request
+\item 状態: 3
+\item Point of time（この用語は講義スライド上の専門語として扱う）
+\item Accepted customers and tour（この用語は講義スライド上の専門語として扱う）
+\item New request（この用語は講義スライド上の専門語として扱う）
+\item 決定:
+\item Acceptance/Rejection（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Customer Acceptance Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S036: 「Dynamic Customer Acceptance Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S036: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{037}{Challenges}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{37}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Challenges（この用語は講義スライド上の専門語として扱う）
+\item (Post-決定) 状態 space is too large
+\item Point of time（この用語は講義スライド上の専門語として扱う）
+\item Customer locations（この用語は講義スライド上の専門語として扱う）
+\item Planned route（この用語は講義スライド上の専門語として扱う）
+\item → 状態 space aggregation 1
+\item How to model the value function?（この用語は講義スライド上の専門語として扱う）
+\item Parametric (linear function)（この用語は講義スライド上の専門語として扱う）
+\item Non-parametric (lookup table) 2（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Challenges」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S037: 「Challenges」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S037: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{038}{State Space Aggregation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{38}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 状態 Space 集約
+\item Representation of a 状態 by a set of parameters:
+\item Point of time 𝑡（この用語は講義スライド上の専門語として扱う）
+\item Free capacities（この用語は講義スライド上の専門語として扱う）
+\item In Time 𝑏（この用語は講義スライド上の専門語として扱う）
+\item In Space 𝜅 Time Space（この用語は講義スライド上の専門語として扱う）
+\item 状態 is represented by vector (𝑡, 𝑏, 𝜅)
+\item Approximate 𝑉 𝑡, 𝑏, 𝜅（この用語は講義スライド上の専門語として扱う）
+\item 𝑏 𝜅
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「State Space Aggregation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S038: 「State Space Aggregation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S038: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{039}{How to model the value-function?}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{39}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item How to model the value-function?（この用語は講義スライド上の専門語として扱う）
+\item Non-Parametric Parametric（この用語は講義スライド上の専門語として扱う）
+\item Approximate individual values • Approximate parameters of a (linear)（この用語は講義スライド上の専門語として扱う）
+\item Partitioning of vector space functional form（この用語は講義スライド上の専門語として扱う）
+\item Storage in a lookup table • Determine parameters via regression（この用語は講義スライド上の専門語として扱う）
+\item b
+\item t
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「How to model the value-function?」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S039: 「How to model the value-function?」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S039: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{040}{How to model the value-function?}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{40}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item How to model the value-function?（この用語は講義スライド上の専門語として扱う）
+\item Non-Parametric Parametric（この用語は講義スライド上の専門語として扱う）
+\item Approximate individual values • Approximate parameters of a functional（この用語は講義スライド上の専門語として扱う）
+\item Partitioning of vector space form（この用語は講義スライド上の専門語として扱う）
+\item Storage in a lookup table • E.g., linear approximation（この用語は講義スライド上の専門語として扱う）
+\item Determine parameters via regression（この用語は講義スライド上の専門語として扱う）
+\item 利点: local detail (less bias) • 利点: global reliability
+\item 欠点: less reliable • 欠点: bias
+\item Works well for routing • Works well for knapsack problems（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「How to model the value-function?」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S040: 「How to model the value-function?」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S040: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{041}{Meso-Parametric VFA}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{41}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Meso-Parametric VFA（この用語は講義スライド上の専門語として扱う）
+\item Combination of Parametric (linear) and Non-Parametric (lookup table) VFA（この用語は講義スライド上の専門語として扱う）
+\item Approximated value function 𝑉 𝑚（この用語は講義スライド上の専門語として扱う）
+\item 𝑉 𝑚 (𝑆𝑘𝑥 ) = 𝜆𝑉 𝑝 (𝑆𝑘𝑥 ) + (1 − 𝜆)𝑉 𝑛 (𝑆𝑘𝑥 )
+\item Procedure:（この用語は講義スライド上の専門語として扱う）
+\item Approximate both VFAs simultaneously: 𝑉 𝑝 , 𝑉 𝑛（この用語は講義スライド上の専門語として扱う）
+\item Determine value as weighted combination（この用語は講義スライド上の専門語として扱う）
+\item Tuning:（この用語は講義スライド上の専門語として扱う）
+\item Determination of 𝜆 by enumeration: 𝜆 = 0.0,0.1, … , 1.0（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Meso-Parametric VFA」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S041: 「Meso-Parametric VFA」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S041: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{042}{Procedure}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{42}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Procedure（この用語は講義スライド上の専門語として扱う）
+\item シミュレーション
+\item Apply（この用語は講義スライド上の専門語として扱う）
+\item 状態
+\item Update（この用語は講義スライド上の専門語として扱う）
+\item Approximate ベルマン Equation
+\item Request（この用語は講義スライド上の専門語として扱う）
+\item Acces（この用語は講義スライド上の専門語として扱う）
+\item Value（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Procedure」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S042: 「Procedure」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S042: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{043}{Computational Evaluation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{43}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Computational Evaluation（この用語は講義スライド上の専門語として扱う）
+\item Time: 480 minutes（この用語は講義スライド上の専門語として扱う）
+\item Spatial capacity:（この用語は講義スライド上の専門語として扱う）
+\item medium van（この用語は講義スライド上の専門語として扱う）
+\item large van（この用語は講義スライド上の専門語として扱う）
+\item small truck（この用語は講義スライド上の専門語として扱う）
+\item medium truck（この用語は講義スライド上の専門語として扱う）
+\item Shift in bottleneck resource:（この用語は講義スライド上の専門語として扱う）
+\item High capacity: routing problem (N-VFA beneficial)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Computational Evaluation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S043: 「Computational Evaluation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S043: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{044}{Customer Data}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{44}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Customer Data（この用語は講義スライド上の専門語として扱う）
+\item Number of requests: 50（この用語は講義スライド上の専門語として扱う）
+\item Customer locations: Iowa City（この用語は講義スライド上の専門語として扱う）
+\item Routing: Cheapest Insertion（この用語は講義スライド上の専門語として扱う）
+\item (works well for Iowa City,（この用語は講義スライド上の専門語として扱う）
+\item Ulmer and Thomas, 2019)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Customer Data」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S044: 「Customer Data」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S044: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{045}{Policies}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{45}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Policies（この用語は講義スライド上の専門語として扱う）
+\item VFAs:（この用語は講義スライド上の専門語として扱う）
+\item M-VFA: Simultaneous approximation of M-VFA(N) and M-VFA(P)-components（この用語は講義スライド上の専門語として扱う）
+\item N-VFA: Only Non-Parametric VFA（この用語は講義スライド上の専門語として扱う）
+\item P-VFA: Only Parametric VFA（この用語は講義スライド上の専門語として扱う）
+\item E-VFA: Ex post – combination (What is the value of simultaneous approximation?)（この用語は講義スライド上の専門語として扱う）
+\item Benchmark:（この用語は講義スライド上の専門語として扱う）
+\item ロールアウト Algorithm
+\item Simulate the rest-of-the-day from a current 状態 online
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Policies」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S045: 「Policies」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S045: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{046}{Results: Comparison to Rollout Algorithm}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{46}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Results: Comparison to ロールアウト Algorithm
+\item All VFAs are substantially better（この用語は講義スライド上の専門語として扱う）
+\item ロールアウト algorithm with myopic base 方策 results in poor approximations.
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Results: Comparison to Rollout Algorithm」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S046: 「Results: Comparison to Rollout Algorithm」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S046: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{047}{Knapsack vs. Routing Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{47}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Knapsack vs. Routing Problem（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Knapsack vs. Routing Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S047: 「Knapsack vs. Routing Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S047: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{048}{• With larger vehicles capacity is no longer an issue: The knapsack component of the problem vanishes}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{48}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item With larger vehicles capacity is no longer an issue: The knapsack component of the problem vanishes（この用語は講義スライド上の専門語として扱う）
+\item Instead, the routing component becomes more important and non-parametric VFA dominates（この用語は講義スライド上の専門語として扱う）
+\item Knapsack Routing（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「• With larger vehicles capacity is no longer an issue: The knapsack component of the problem vanishes」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S048: 「• With larger vehicles capacity is no longer an issue: The knapsack component of the problem vanishes」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S048: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{049}{Approximated Value Function}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{49}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Approximated 価値関数
+\item Zero capacity leads to（この用語は講義スライド上の専門語として扱う）
+\item value of zero (in theory)（この用語は講義スライド上の専門語として扱う）
+\item Monotonicity in value（この用語は講義スライド上の専門語として扱う）
+\item function（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Approximated Value Function」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S049: 「Approximated Value Function」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S049: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{050}{Approximation Process Improvement 𝜆}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{50}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Approximation Process Improvement 𝜆（この用語は講義スライド上の専門語として扱う）
+\item Varying 𝜆 Learning runs（この用語は講義スライド上の専門語として扱う）
+\item Comparison to rollout（この用語は講義スライド上の専門語として扱う）
+\item 𝜆 = 0: non-parametric（この用語は講義スライド上の専門語として扱う）
+\item 𝜆 = 1: parametric（この用語は講義スライド上の専門語として扱う）
+\item We see differences in（この用語は講義スライド上の専門語として扱う）
+\item approximation speed（この用語は講義スライド上の専門語として扱う）
+\item Individual approximations（この用語は講義スライド上の専門語として扱う）
+\item inferior（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Approximation Process Improvement 𝜆」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S050: 「Approximation Process Improvement 𝜆」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S050: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{051}{Summary of the Case Study}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{51}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Summary of the Case Study（この用語は講義スライド上の専門語として扱う）
+\item Value function approximations can consider longer-term effects of 決定s and
+\item anticipatory 決定 making (in contrast to a rollout algorithm)
+\item The approximation architecture should be selected with respect to the (assumed) value（この用語は講義スライド上の専門語として扱う）
+\item function shape/behavior:（この用語は講義スライド上の専門語として扱う）
+\item Generality vs. Detail（この用語は講義スライド上の専門語として扱う）
+\item Less reliability vs. Less bias（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。
+\item simulation horizonは終端効果、計算時間、将来情報の信頼性に依存する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Summary of the Case Study」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Rollout は、現在の候補決定を選んだ後、将来をある方策でシミュレーションして総報酬を見積もる方法である。単に現在報酬だけを見るのではなく、決定後の状態が将来どのような結果を生むかを評価する点が重要である。\par
+Post-decision state rollout では、まず候補決定 x を実行した直後の後決定状態 S\textasciicircum{}x を作る。その後、外生情報をサンプリングし、ベース方策で未来を進める。これを複数回繰り返して平均すれば、その候補決定の期待的な将来性能を近似できる。\par
+ホライズンを長くすれば終端効果や長期的影響を考えられるが、計算量が増え、遠い将来の予測は不確実になる。短いホライズンは速いが近視眼的になる可能性がある。在庫やダムのように長期的な蓄積が重要な問題では長めのホライズンが必要になりやすい。食品配送のように注文が短時間で完結する問題では短めのホライズンでも有効な場合がある。\par
+Rolloutの欠点は、各候補決定について多くの未来シミュレーションが必要になり計算負荷が大きいことである。また、ベース方策が悪いと評価も悪くなり、サンプリング数が少ないと推定が不安定になる。\par
+試験では、Rolloutを将来価値近似やlook-aheadと関連づけて説明する。候補決定を比べる、後決定状態から未来をサンプルする、ベース方策で将来を進める、平均性能で選ぶ、という流れを書くとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S051: 「Summary of the Case Study」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Rolloutは候補決定後の状態から将来方策をシミュレーションし、現在決定を評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S051: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 8 - Value Function Approximation}{052}{Summary}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{52}{../Materials/2026/3DM_08_VFA_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item まとめ
+\item Value function approximations can shift calculation effort to a learning phase（この用語は講義スライド上の専門語として扱う）
+\item Steps:（この用語は講義スライド上の専門語として扱う）
+\item 集約 to 状態 features
+\item Storage of feature vectors in approximation architecture（この用語は講義スライド上の専門語として扱う）
+\item 利点:
+\item Fast（この用語は講義スライド上の専門語として扱う）
+\item Consideration of information and 決定 space
+\item 欠点:
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。
+\item 状態そのものではなく、価値を説明する特徴量設計が重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Summary」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Value Function Approximation は、各状態の将来価値を厳密に保存する代わりに、特徴量を使って近似する方法である。全状態を列挙できないため、状態の本質的な性質を少数の特徴で表し、その特徴から将来価値を予測する。\par
+後決定状態を使うVFAでは、現在決定を行った後の状態 S\textasciicircum{}x に対して価値 \textbackslash{}hat\{V\}(S\textasciicircum{}x) を推定する。そして R(S,x)+\textbackslash{}hat\{V\}(S\textasciicircum{}x) が最大になる決定を選ぶ。これにより、毎回遠い未来をロールアウトしなくても将来影響を考慮できる。\par
+特徴量の例として配送では、残り注文数、車両の空き容量、車両が需要密度の高い地域にいるか、残り時間、遅延している注文数、将来需要予測などがある。在庫では在庫量、需要予測、残り期間、容量余裕、欠品リスクが特徴になる。\par
+VFAの難しさは、良い特徴量を選ぶことと、価値近似を安定に学習することである。重要な情報を特徴量に入れなければ価値推定は間違う。一方で特徴量が多すぎると学習に必要なデータが増え、過学習や次元の呪いが再び問題になる。\par
+試験では、VFAの式を説明するだけでなく、具体問題でどの特徴量が将来価値を説明するかを提案することが重要である。単に『機械学習で価値を予測する』ではなく、何を入力し、何を出力し、その出力を現在決定にどう使うかを書く。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L08-S052: 「Summary」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、VFAは将来価値を特徴量に基づいて近似し、現在決定に組み込む。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L08-S052: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+\clearpage\ExamHeader{Lecture 8 - Value Function Approximation}
+\ExamQuestion{WS22/23 Aufgabe 11 (4 点)}
+\ExamSubsection{問題内容}
+VFAの状態空間からの変換ステップ。設問では、状態/後決定状態の集約、特徴量化、価値近似への変換を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、VFAが状態または後決定状態の将来価値を特徴量から近似する方法であると説明する。決定評価では R(S,x)+\textbackslash{}hat V(S\textasciicircum{}x) を使う。特徴量には残り需要、リソース余裕、時間、位置、需要密度などがあり、feature selectionとdimensionality reductionを区別する。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS24 Aufgabe 3b (4 点)}
+\ExamSubsection{問題内容}
+Post-Decision Stateを特徴量に集約したVFAの意思決定。設問では、近似価値を含めた期待総報酬で決定を選ぶこと。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、VFAが状態または後決定状態の将来価値を特徴量から近似する方法であると説明する。決定評価では R(S,x)+\textbackslash{}hat V(S\textasciicircum{}x) を使う。特徴量には残り需要、リソース余裕、時間、位置、需要密度などがあり、feature selectionとdimensionality reductionを区別する。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}

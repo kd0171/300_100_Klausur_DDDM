@@ -1,0 +1,1438 @@
+\section*{Lecture 3 - Uncertainty}
+\addcontentsline{toc}{section}{Lecture 3 - Uncertainty}
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{001}{表紙}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{1}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Data Driven Decision Making
+\item 第3回 - 不確実性
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{002}{復習と本日}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{2}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Business Analytics の全プロセス。
+\item 情報モデルと意思決定モデル。
+\item データが最初に来る。
+\item 正しい情報モデルを見つけることは難しい。
+\item より精緻な情報モデルにより意思決定の複雑性が増す。
+\item 情報モデルにおける不確実性。
+\item 不確実性をどのようにモデル化できるか。
+\item 不確実性の下でどのように意思決定できるか。
+\item ケーススタディ: 不確実な旅行時間を持つ配送ルーティング。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 不確実性は、需要・リソース・環境の変化として整理できる。
+\item 頻度、範囲、破壊力、予測可能性で性質が異なる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「復習と本日」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+不確実性とは、意思決定時点では将来の状態や入力値が完全には分からないことである。配送であれば、注文がどこから来るか、交通がどれだけ混むか、サービス時間が何分か、ドライバーが利用可能かどうかが事前には確定していない。\par
+不確実性は一種類ではない。需要不確実性は、顧客からの注文の発生時刻、場所、量に関する不確実性である。リソース不確実性は、車両故障、ドライバーのキャンセル、バッテリー残量、積載能力に関する不確実性である。環境不確実性は、交通、天候、道路工事、事故、駐車可能性に関する不確実性である。\par
+不確実性は、頻度、範囲、破壊力、予測可能性によって性質が異なる。例えば日々の交通変動は頻繁に起きるが、過去データからある程度予測できる。一方で、大規模事故や道路閉鎖は低頻度だが、発生すれば計画を大きく壊す。\par
+不確実性を無視して平均値だけで計画すると、平均的には良く見えるが実行時に頻繁に遅れる計画になる可能性がある。特に複数顧客を連続して訪問するルーティングでは、一つの遅延が後続訪問に波及するため、単独の平均時間以上にリスクが大きい。\par
+試験答案では、不確実性の例を挙げるだけでなく、それが情報モデルと意思決定モデルにどう影響するかを書くとよい。情報モデルでは確率分布や区間として表現し、意思決定モデルでは期待値、リスク、ロバスト性、再最適化などを考える。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S002: 「復習と本日」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、不確実性は、需要・リソース・環境の変化として整理できる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S002: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{003}{アジェンダ}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{3}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ: 都市物流におけるロバスト車両ルーティング。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{004}{導入}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{4}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例
+\item 違い
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 不確実性は、需要・リソース・環境の変化として整理できる。
+\item 頻度、範囲、破壊力、予測可能性で性質が異なる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「導入」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+不確実性とは、意思決定時点では将来の状態や入力値が完全には分からないことである。配送であれば、注文がどこから来るか、交通がどれだけ混むか、サービス時間が何分か、ドライバーが利用可能かどうかが事前には確定していない。\par
+不確実性は一種類ではない。需要不確実性は、顧客からの注文の発生時刻、場所、量に関する不確実性である。リソース不確実性は、車両故障、ドライバーのキャンセル、バッテリー残量、積載能力に関する不確実性である。環境不確実性は、交通、天候、道路工事、事故、駐車可能性に関する不確実性である。\par
+不確実性は、頻度、範囲、破壊力、予測可能性によって性質が異なる。例えば日々の交通変動は頻繁に起きるが、過去データからある程度予測できる。一方で、大規模事故や道路閉鎖は低頻度だが、発生すれば計画を大きく壊す。\par
+不確実性を無視して平均値だけで計画すると、平均的には良く見えるが実行時に頻繁に遅れる計画になる可能性がある。特に複数顧客を連続して訪問するルーティングでは、一つの遅延が後続訪問に波及するため、単独の平均時間以上にリスクが大きい。\par
+試験答案では、不確実性の例を挙げるだけでなく、それが情報モデルと意思決定モデルにどう影響するかを書くとよい。情報モデルでは確率分布や区間として表現し、意思決定モデルでは期待値、リスク、ロバスト性、再最適化などを考える。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S004: 「導入」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、不確実性は、需要・リソース・環境の変化として整理できる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S004: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{005}{モビリティと物流における不確実性}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{5}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 顧客: 依頼、需要量、サービス時間、利用可能性、行動。
+\item ドライバー: 利用可能性、行動、航続距離、スキル。
+\item 環境: 旅行時間、駐車、ネットワーク利用可能性。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 不確実性は、需要・リソース・環境の変化として整理できる。
+\item 頻度、範囲、破壊力、予測可能性で性質が異なる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「モビリティと物流における不確実性」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+不確実性とは、意思決定時点では将来の状態や入力値が完全には分からないことである。配送であれば、注文がどこから来るか、交通がどれだけ混むか、サービス時間が何分か、ドライバーが利用可能かどうかが事前には確定していない。\par
+不確実性は一種類ではない。需要不確実性は、顧客からの注文の発生時刻、場所、量に関する不確実性である。リソース不確実性は、車両故障、ドライバーのキャンセル、バッテリー残量、積載能力に関する不確実性である。環境不確実性は、交通、天候、道路工事、事故、駐車可能性に関する不確実性である。\par
+不確実性は、頻度、範囲、破壊力、予測可能性によって性質が異なる。例えば日々の交通変動は頻繁に起きるが、過去データからある程度予測できる。一方で、大規模事故や道路閉鎖は低頻度だが、発生すれば計画を大きく壊す。\par
+不確実性を無視して平均値だけで計画すると、平均的には良く見えるが実行時に頻繁に遅れる計画になる可能性がある。特に複数顧客を連続して訪問するルーティングでは、一つの遅延が後続訪問に波及するため、単独の平均時間以上にリスクが大きい。\par
+試験答案では、不確実性の例を挙げるだけでなく、それが情報モデルと意思決定モデルにどう影響するかを書くとよい。情報モデルでは確率分布や区間として表現し、意思決定モデルでは期待値、リスク、ロバスト性、再最適化などを考える。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S005: 「モビリティと物流における不確実性」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、不確実性は、需要・リソース・環境の変化として整理できる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S005: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{006}{旅行時間の不確実性}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{6}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 天候
+\item 交通
+\item 交通管理
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 不確実性は、需要・リソース・環境の変化として整理できる。
+\item 頻度、範囲、破壊力、予測可能性で性質が異なる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「旅行時間の不確実性」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+不確実性とは、意思決定時点では将来の状態や入力値が完全には分からないことである。配送であれば、注文がどこから来るか、交通がどれだけ混むか、サービス時間が何分か、ドライバーが利用可能かどうかが事前には確定していない。\par
+不確実性は一種類ではない。需要不確実性は、顧客からの注文の発生時刻、場所、量に関する不確実性である。リソース不確実性は、車両故障、ドライバーのキャンセル、バッテリー残量、積載能力に関する不確実性である。環境不確実性は、交通、天候、道路工事、事故、駐車可能性に関する不確実性である。\par
+不確実性は、頻度、範囲、破壊力、予測可能性によって性質が異なる。例えば日々の交通変動は頻繁に起きるが、過去データからある程度予測できる。一方で、大規模事故や道路閉鎖は低頻度だが、発生すれば計画を大きく壊す。\par
+不確実性を無視して平均値だけで計画すると、平均的には良く見えるが実行時に頻繁に遅れる計画になる可能性がある。特に複数顧客を連続して訪問するルーティングでは、一つの遅延が後続訪問に波及するため、単独の平均時間以上にリスクが大きい。\par
+試験答案では、不確実性の例を挙げるだけでなく、それが情報モデルと意思決定モデルにどう影響するかを書くとよい。情報モデルでは確率分布や区間として表現し、意思決定モデルでは期待値、リスク、ロバスト性、再最適化などを考える。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S006: 「旅行時間の不確実性」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、不確実性は、需要・リソース・環境の変化として整理できる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S006: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{007}{起こり得る結果}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{7}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 計画活動の完全なキャンセル
+\item 計画活動の中断
+\item 一般的に望ましくない効果
+\item 意思決定において不確実性を考慮することは重要である。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 不確実性は、需要・リソース・環境の変化として整理できる。
+\item 頻度、範囲、破壊力、予測可能性で性質が異なる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「起こり得る結果」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+不確実性とは、意思決定時点では将来の状態や入力値が完全には分からないことである。配送であれば、注文がどこから来るか、交通がどれだけ混むか、サービス時間が何分か、ドライバーが利用可能かどうかが事前には確定していない。\par
+不確実性は一種類ではない。需要不確実性は、顧客からの注文の発生時刻、場所、量に関する不確実性である。リソース不確実性は、車両故障、ドライバーのキャンセル、バッテリー残量、積載能力に関する不確実性である。環境不確実性は、交通、天候、道路工事、事故、駐車可能性に関する不確実性である。\par
+不確実性は、頻度、範囲、破壊力、予測可能性によって性質が異なる。例えば日々の交通変動は頻繁に起きるが、過去データからある程度予測できる。一方で、大規模事故や道路閉鎖は低頻度だが、発生すれば計画を大きく壊す。\par
+不確実性を無視して平均値だけで計画すると、平均的には良く見えるが実行時に頻繁に遅れる計画になる可能性がある。特に複数顧客を連続して訪問するルーティングでは、一つの遅延が後続訪問に波及するため、単独の平均時間以上にリスクが大きい。\par
+試験答案では、不確実性の例を挙げるだけでなく、それが情報モデルと意思決定モデルにどう影響するかを書くとよい。情報モデルでは確率分布や区間として表現し、意思決定モデルでは期待値、リスク、ロバスト性、再最適化などを考える。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S007: 「起こり得る結果」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、不確実性は、需要・リソース・環境の変化として整理できる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S007: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{008}{アジェンダ}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{8}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ: 都市物流におけるロバスト車両ルーティング。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{009}{不確実性のモデリング}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{9}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item モデルの選択は情報レベルに依存する。
+\item 1. Deterministic: すべての情報が既知である。
+\item 2. Stochastic: 異なる情報実現の確率が既知である。
+\item 3. Quasi-stochastic: 情報実現の確率が未知である。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「不確実性のモデリング」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S009: 「不確実性のモデリング」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S009: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{010}{基礎}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{10}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 確率分布。
+\item 離散または連続。
+\item 確率変数 X は実現値 x\_1, ..., x\_i を持つ。例: x\_1=20 km/h。
+\item 対応する実現値 x\_i の確率 p\_1, ..., p\_i。
+\item 期待値: mu = E[X] = sum\_i p\_i x\_i、または積分。
+\item 分散。
+\item 標準偏差。
+\item 変動係数: CV = sigma / mu。
+\item 中央値と分位点。
+\item これらの指標は意思決定プロセスに組み込める。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 期待値は平均性能、分散や分位点はリスクを表す。
+\item 分布フィットでは可視化、パラメータ推定、適合度確認が必要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「基礎」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率分布は、不確実な変数がどの値をどれくらいの確率で取るかを表す。配送では、旅行時間、サービス時間、注文間隔、需要量、キャンセル数などを分布で表せる。分布を使うことで、単一の平均値ではなく、ばらつきや極端な値も考慮できる。\par
+期待値は長期的な平均を表すが、期待値だけでは不十分なことが多い。平均20分の旅行時間でも、ほとんどが18-22分なのか、10分と50分が混在しているのかでは、計画上のリスクが全く違う。分散や標準偏差は、このばらつきの大きさを表す。\par
+分位点はサービスレベルを考える際に重要である。例えば90\%分位点が35分なら、90\%のケースで35分以内に到着することを意味する。顧客に到着時間を約束する場合、平均よりも上位分位点を見る方が安全な計画につながる。\par
+実データから分布を決めるには、まず観測値を集め、外れ値や欠損を確認し、ヒストグラムや箱ひげ図で形を見る。その後、正規分布、対数正規分布、ガンマ分布など候補を選び、平均や分散などのパラメータを推定し、適合度を確認する。\par
+サービス時間のように負にならない値では、正規分布よりも右裾を持つ非負分布が自然な場合がある。家電修理や在宅介護では、多くの作業は短時間で終わるが、例外的に長い作業が起こる。試験では、分布名だけでなく、なぜその形が現実に合うのかを説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S010: 「基礎」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、期待値は平均性能、分散や分位点はリスクを表す。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S010: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{011}{確率分布の決定}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{11}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 理論分布と対応パラメータを単純に仮定する。
+\item 例
+\item 既存データへの確率分布の選択と調整、つまり fitting。
+\item 手順
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 期待値は平均性能、分散や分位点はリスクを表す。
+\item 分布フィットでは可視化、パラメータ推定、適合度確認が必要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「確率分布の決定」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率分布は、不確実な変数がどの値をどれくらいの確率で取るかを表す。配送では、旅行時間、サービス時間、注文間隔、需要量、キャンセル数などを分布で表せる。分布を使うことで、単一の平均値ではなく、ばらつきや極端な値も考慮できる。\par
+期待値は長期的な平均を表すが、期待値だけでは不十分なことが多い。平均20分の旅行時間でも、ほとんどが18-22分なのか、10分と50分が混在しているのかでは、計画上のリスクが全く違う。分散や標準偏差は、このばらつきの大きさを表す。\par
+分位点はサービスレベルを考える際に重要である。例えば90\%分位点が35分なら、90\%のケースで35分以内に到着することを意味する。顧客に到着時間を約束する場合、平均よりも上位分位点を見る方が安全な計画につながる。\par
+実データから分布を決めるには、まず観測値を集め、外れ値や欠損を確認し、ヒストグラムや箱ひげ図で形を見る。その後、正規分布、対数正規分布、ガンマ分布など候補を選び、平均や分散などのパラメータを推定し、適合度を確認する。\par
+サービス時間のように負にならない値では、正規分布よりも右裾を持つ非負分布が自然な場合がある。家電修理や在宅介護では、多くの作業は短時間で終わるが、例外的に長い作業が起こる。試験では、分布名だけでなく、なぜその形が現実に合うのかを説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S011: 「確率分布の決定」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、期待値は平均性能、分散や分位点はリスクを表す。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S011: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{012}{理論的な確率密度関数}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{12}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 複数の理論的確率密度関数の形。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 期待値は平均性能、分散や分位点はリスクを表す。
+\item 分布フィットでは可視化、パラメータ推定、適合度確認が必要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「理論的な確率密度関数」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率分布は、不確実な変数がどの値をどれくらいの確率で取るかを表す。配送では、旅行時間、サービス時間、注文間隔、需要量、キャンセル数などを分布で表せる。分布を使うことで、単一の平均値ではなく、ばらつきや極端な値も考慮できる。\par
+期待値は長期的な平均を表すが、期待値だけでは不十分なことが多い。平均20分の旅行時間でも、ほとんどが18-22分なのか、10分と50分が混在しているのかでは、計画上のリスクが全く違う。分散や標準偏差は、このばらつきの大きさを表す。\par
+分位点はサービスレベルを考える際に重要である。例えば90\%分位点が35分なら、90\%のケースで35分以内に到着することを意味する。顧客に到着時間を約束する場合、平均よりも上位分位点を見る方が安全な計画につながる。\par
+実データから分布を決めるには、まず観測値を集め、外れ値や欠損を確認し、ヒストグラムや箱ひげ図で形を見る。その後、正規分布、対数正規分布、ガンマ分布など候補を選び、平均や分散などのパラメータを推定し、適合度を確認する。\par
+サービス時間のように負にならない値では、正規分布よりも右裾を持つ非負分布が自然な場合がある。家電修理や在宅介護では、多くの作業は短時間で終わるが、例外的に長い作業が起こる。試験では、分布名だけでなく、なぜその形が現実に合うのかを説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S012: 「理論的な確率密度関数」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、期待値は平均性能、分散や分位点はリスクを表す。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S012: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{013}{例: 都市旅行時間分布 I}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{13}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 一つの道路区間における旅行時間観測。
+\item 横軸は旅行時間、縦軸は頻度。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 期待値は平均性能、分散や分位点はリスクを表す。
+\item 分布フィットでは可視化、パラメータ推定、適合度確認が必要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「例: 都市旅行時間分布 I」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率分布は、不確実な変数がどの値をどれくらいの確率で取るかを表す。配送では、旅行時間、サービス時間、注文間隔、需要量、キャンセル数などを分布で表せる。分布を使うことで、単一の平均値ではなく、ばらつきや極端な値も考慮できる。\par
+期待値は長期的な平均を表すが、期待値だけでは不十分なことが多い。平均20分の旅行時間でも、ほとんどが18-22分なのか、10分と50分が混在しているのかでは、計画上のリスクが全く違う。分散や標準偏差は、このばらつきの大きさを表す。\par
+分位点はサービスレベルを考える際に重要である。例えば90\%分位点が35分なら、90\%のケースで35分以内に到着することを意味する。顧客に到着時間を約束する場合、平均よりも上位分位点を見る方が安全な計画につながる。\par
+実データから分布を決めるには、まず観測値を集め、外れ値や欠損を確認し、ヒストグラムや箱ひげ図で形を見る。その後、正規分布、対数正規分布、ガンマ分布など候補を選び、平均や分散などのパラメータを推定し、適合度を確認する。\par
+サービス時間のように負にならない値では、正規分布よりも右裾を持つ非負分布が自然な場合がある。家電修理や在宅介護では、多くの作業は短時間で終わるが、例外的に長い作業が起こる。試験では、分布名だけでなく、なぜその形が現実に合うのかを説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S013: 「例: 都市旅行時間分布 I」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、期待値は平均性能、分散や分位点はリスクを表す。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S013: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{014}{ソフトウェアによるフィッティング}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{14}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 支援ツール: Python とライブラリ。
+\item 自動ツール: EasyFit。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 期待値は平均性能、分散や分位点はリスクを表す。
+\item 分布フィットでは可視化、パラメータ推定、適合度確認が必要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「ソフトウェアによるフィッティング」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率分布は、不確実な変数がどの値をどれくらいの確率で取るかを表す。配送では、旅行時間、サービス時間、注文間隔、需要量、キャンセル数などを分布で表せる。分布を使うことで、単一の平均値ではなく、ばらつきや極端な値も考慮できる。\par
+期待値は長期的な平均を表すが、期待値だけでは不十分なことが多い。平均20分の旅行時間でも、ほとんどが18-22分なのか、10分と50分が混在しているのかでは、計画上のリスクが全く違う。分散や標準偏差は、このばらつきの大きさを表す。\par
+分位点はサービスレベルを考える際に重要である。例えば90\%分位点が35分なら、90\%のケースで35分以内に到着することを意味する。顧客に到着時間を約束する場合、平均よりも上位分位点を見る方が安全な計画につながる。\par
+実データから分布を決めるには、まず観測値を集め、外れ値や欠損を確認し、ヒストグラムや箱ひげ図で形を見る。その後、正規分布、対数正規分布、ガンマ分布など候補を選び、平均や分散などのパラメータを推定し、適合度を確認する。\par
+サービス時間のように負にならない値では、正規分布よりも右裾を持つ非負分布が自然な場合がある。家電修理や在宅介護では、多くの作業は短時間で終わるが、例外的に長い作業が起こる。試験では、分布名だけでなく、なぜその形が現実に合うのかを説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S014: 「ソフトウェアによるフィッティング」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、期待値は平均性能、分散や分位点はリスクを表す。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S014: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{015}{例: 都市旅行時間分布 II}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{15}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 旅行時間の頻度または密度。
+\item 観測分布に理論分布を当てはめる。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 期待値は平均性能、分散や分位点はリスクを表す。
+\item 分布フィットでは可視化、パラメータ推定、適合度確認が必要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「例: 都市旅行時間分布 II」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率分布は、不確実な変数がどの値をどれくらいの確率で取るかを表す。配送では、旅行時間、サービス時間、注文間隔、需要量、キャンセル数などを分布で表せる。分布を使うことで、単一の平均値ではなく、ばらつきや極端な値も考慮できる。\par
+期待値は長期的な平均を表すが、期待値だけでは不十分なことが多い。平均20分の旅行時間でも、ほとんどが18-22分なのか、10分と50分が混在しているのかでは、計画上のリスクが全く違う。分散や標準偏差は、このばらつきの大きさを表す。\par
+分位点はサービスレベルを考える際に重要である。例えば90\%分位点が35分なら、90\%のケースで35分以内に到着することを意味する。顧客に到着時間を約束する場合、平均よりも上位分位点を見る方が安全な計画につながる。\par
+実データから分布を決めるには、まず観測値を集め、外れ値や欠損を確認し、ヒストグラムや箱ひげ図で形を見る。その後、正規分布、対数正規分布、ガンマ分布など候補を選び、平均や分散などのパラメータを推定し、適合度を確認する。\par
+サービス時間のように負にならない値では、正規分布よりも右裾を持つ非負分布が自然な場合がある。家電修理や在宅介護では、多くの作業は短時間で終わるが、例外的に長い作業が起こる。試験では、分布名だけでなく、なぜその形が現実に合うのかを説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S015: 「例: 都市旅行時間分布 II」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、期待値は平均性能、分散や分位点はリスクを表す。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S015: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{016}{確率的モデリングの問題点}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{16}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データが利用できない
+\item 利用可能データが限られる
+\item 道路セグメントごとの独立分布を畳み込んで経路旅行時間を計算する仮定では、相関が無視される。
+\item 実際には、隣接道路セグメントの相関が重要である。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「確率的モデリングの問題点」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S016: 「確率的モデリングの問題点」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S016: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{017}{準確率的モデリング}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{17}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item シナリオに基づく
+\item 区間に基づく
+\item シナリオと区間は、ドメイン知識またはデータから導出できる。
+\item 確率分布を直接モデル化せず、不確実性の推定を表す。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「準確率的モデリング」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S017: 「準確率的モデリング」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S017: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{018}{データからシナリオを構築 I}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{18}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 旅行時間の単一観測の例。
+\item Braunschweig, Hildesheimer Strasse, 月曜16-17時、n=20。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「データからシナリオを構築 I」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S018: 「データからシナリオを構築 I」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S018: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{019}{データからシナリオを構築 II}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{19}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 構築するシナリオ数を決める。例: 5。
+\item 極端シナリオを選ぶ。最良ケース・最悪ケース。
+\item 中間シナリオを選ぶ。
+\item 選択はドメイン知識に基づく。
+\item 一般にはシナリオ数を増やすと推定精度は高まる。
+\item ただし意思決定の複雑性も増す。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「データからシナリオを構築 II」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S019: 「データからシナリオを構築 II」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S019: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{020}{データから区間を決める}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{20}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 限界
+\item 限界の調整
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「データから区間を決める」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S020: 「データから区間を決める」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S020: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{021}{アジェンダ}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{21}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{022}{例: ナップサック問題 I}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{22}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 泥棒がナップサックを持って家に入り、後で売るために物を盗む。
+\item 各物品には価値と重さがある。
+\item 物品の組合せの総重量はナップサック容量に収まらなければならない。
+\item 売却価格の合計が最大となる組合せを探す。
+\item 決定論的環境
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。
+\item Monte Carlo sampling は期待値を標本平均で近似する方法である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「例: ナップサック問題 I」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率的意思決定では、意思決定者は現在の情報に基づいて決定 x を選ぶが、その後にランダム情報 xi が実現する。例えばルートを選んだ後に、実際の交通、サービス時間、注文キャンセルが判明する。したがって、費用 F(x,xi) は意思決定時点では確定していない。\par
+このため、単一の実現値に対する費用を最小化するのではなく、期待費用 E[F(x,xi)]、分散、分位点、確率制約、リスク尺度などを使って評価する。リスク中立なら期待値中心でよいが、遅延に厳しいサービスでは分散や上位分位点も重要になる。\par
+Monte Carlo Sampling は、確率分布から多数のシナリオを生成し、それぞれで費用を計算して平均する方法である。解析的に期待値を計算できない場合でも、サンプル平均によって近似できる。サンプル数が増えるほど推定は安定するが、計算量も増える。\par
+期待値-分散原理では、平均性能とリスクを同時に見る。例えばルートAは平均45分だがばらつきが大きく、ルートBは平均50分だが安定している場合、時間厳守が重要ならBを選ぶ理由がある。平均だけではサービス信頼性を評価できない。\par
+試験では、F(x,xi)を直接最適化できない理由を明確に述べる。xi は決定時点で未知のランダム変数であり、事前に分かるのは分布やサンプルだけである。そのため、期待値やリスクを使う、という流れで説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S022: 「例: ナップサック問題 I」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S022: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{023}{例: ナップサック問題 II}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{23}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 確率的環境
+\item 例
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。
+\item Monte Carlo sampling は期待値を標本平均で近似する方法である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「例: ナップサック問題 II」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率的意思決定では、意思決定者は現在の情報に基づいて決定 x を選ぶが、その後にランダム情報 xi が実現する。例えばルートを選んだ後に、実際の交通、サービス時間、注文キャンセルが判明する。したがって、費用 F(x,xi) は意思決定時点では確定していない。\par
+このため、単一の実現値に対する費用を最小化するのではなく、期待費用 E[F(x,xi)]、分散、分位点、確率制約、リスク尺度などを使って評価する。リスク中立なら期待値中心でよいが、遅延に厳しいサービスでは分散や上位分位点も重要になる。\par
+Monte Carlo Sampling は、確率分布から多数のシナリオを生成し、それぞれで費用を計算して平均する方法である。解析的に期待値を計算できない場合でも、サンプル平均によって近似できる。サンプル数が増えるほど推定は安定するが、計算量も増える。\par
+期待値-分散原理では、平均性能とリスクを同時に見る。例えばルートAは平均45分だがばらつきが大きく、ルートBは平均50分だが安定している場合、時間厳守が重要ならBを選ぶ理由がある。平均だけではサービス信頼性を評価できない。\par
+試験では、F(x,xi)を直接最適化できない理由を明確に述べる。xi は決定時点で未知のランダム変数であり、事前に分かるのは分布やサンプルだけである。そのため、期待値やリスクを使う、という流れで説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S023: 「例: ナップサック問題 II」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S023: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{024}{不確実性下の意思決定}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{24}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 確率的意思決定は準確率的意思決定と異なる。
+\item 不確実性は目的関数と制約のどちらにも影響し得る。
+\item 実現値は決定後に現れる。
+\item 確率的意思決定: 期待値と偏差が既知である。
+\item 準確率的意思決定: 期待値と偏差が未知である。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「不確実性下の意思決定」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S024: 「不確実性下の意思決定」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S024: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{025}{確率的意思決定}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{25}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item X はすべての実行可能決定の領域である。
+\item x は特定の決定である。
+\item xi はランダム情報であり、決定後に利用可能になる。
+\item F は最小化される費用関数であり、F(x,xi) と表される。
+\item F(x,xi) を直接最適化することはできない。
+\item 期待値 E[F(x,xi)] を最小化する。
+\item 最適値と最適決定集合を定義する。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。
+\item Monte Carlo sampling は期待値を標本平均で近似する方法である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「確率的意思決定」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率的意思決定では、意思決定者は現在の情報に基づいて決定 x を選ぶが、その後にランダム情報 xi が実現する。例えばルートを選んだ後に、実際の交通、サービス時間、注文キャンセルが判明する。したがって、費用 F(x,xi) は意思決定時点では確定していない。\par
+このため、単一の実現値に対する費用を最小化するのではなく、期待費用 E[F(x,xi)]、分散、分位点、確率制約、リスク尺度などを使って評価する。リスク中立なら期待値中心でよいが、遅延に厳しいサービスでは分散や上位分位点も重要になる。\par
+Monte Carlo Sampling は、確率分布から多数のシナリオを生成し、それぞれで費用を計算して平均する方法である。解析的に期待値を計算できない場合でも、サンプル平均によって近似できる。サンプル数が増えるほど推定は安定するが、計算量も増える。\par
+期待値-分散原理では、平均性能とリスクを同時に見る。例えばルートAは平均45分だがばらつきが大きく、ルートBは平均50分だが安定している場合、時間厳守が重要ならBを選ぶ理由がある。平均だけではサービス信頼性を評価できない。\par
+試験では、F(x,xi)を直接最適化できない理由を明確に述べる。xi は決定時点で未知のランダム変数であり、事前に分かるのは分布やサンプルだけである。そのため、期待値やリスクを使う、という流れで説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S025: 「確率的意思決定」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S025: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{026}{確率的意思決定 II: Monte Carlo Sampling}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{26}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ランダム情報 xi から n 個のシナリオ xi\_i を選ぶ。
+\item 目的関数 E[F(x,xi)] を標本平均で近似する。
+\item 右辺の決定論的問題を解く。
+\item 近似最適値を求める。
+\item 例
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。
+\item Monte Carlo sampling は期待値を標本平均で近似する方法である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「確率的意思決定 II: Monte Carlo Sampling」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率的意思決定では、意思決定者は現在の情報に基づいて決定 x を選ぶが、その後にランダム情報 xi が実現する。例えばルートを選んだ後に、実際の交通、サービス時間、注文キャンセルが判明する。したがって、費用 F(x,xi) は意思決定時点では確定していない。\par
+このため、単一の実現値に対する費用を最小化するのではなく、期待費用 E[F(x,xi)]、分散、分位点、確率制約、リスク尺度などを使って評価する。リスク中立なら期待値中心でよいが、遅延に厳しいサービスでは分散や上位分位点も重要になる。\par
+Monte Carlo Sampling は、確率分布から多数のシナリオを生成し、それぞれで費用を計算して平均する方法である。解析的に期待値を計算できない場合でも、サンプル平均によって近似できる。サンプル数が増えるほど推定は安定するが、計算量も増える。\par
+期待値-分散原理では、平均性能とリスクを同時に見る。例えばルートAは平均45分だがばらつきが大きく、ルートBは平均50分だが安定している場合、時間厳守が重要ならBを選ぶ理由がある。平均だけではサービス信頼性を評価できない。\par
+試験では、F(x,xi)を直接最適化できない理由を明確に述べる。xi は決定時点で未知のランダム変数であり、事前に分かるのは分布やサンプルだけである。そのため、期待値やリスクを使う、という流れで説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S026: 「確率的意思決定 II: Monte Carlo Sampling」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S026: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{027}{確率的意思決定 III: 期待値-分散原理}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{27}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item x は期待値と分散を用いる選好関数で評価される。
+\item より精密な目的関数のために分散を組み込む。
+\item 分散は q で重み付けされる: mu(x) + q sigma\textasciicircum{}2(x)。
+\item q=-1: リスクへの親和性が高い。
+\item q=0: リスク中立。
+\item q=1: リスク回避。
+\item 例
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。
+\item Monte Carlo sampling は期待値を標本平均で近似する方法である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「確率的意思決定 III: 期待値-分散原理」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率的意思決定では、意思決定者は現在の情報に基づいて決定 x を選ぶが、その後にランダム情報 xi が実現する。例えばルートを選んだ後に、実際の交通、サービス時間、注文キャンセルが判明する。したがって、費用 F(x,xi) は意思決定時点では確定していない。\par
+このため、単一の実現値に対する費用を最小化するのではなく、期待費用 E[F(x,xi)]、分散、分位点、確率制約、リスク尺度などを使って評価する。リスク中立なら期待値中心でよいが、遅延に厳しいサービスでは分散や上位分位点も重要になる。\par
+Monte Carlo Sampling は、確率分布から多数のシナリオを生成し、それぞれで費用を計算して平均する方法である。解析的に期待値を計算できない場合でも、サンプル平均によって近似できる。サンプル数が増えるほど推定は安定するが、計算量も増える。\par
+期待値-分散原理では、平均性能とリスクを同時に見る。例えばルートAは平均45分だがばらつきが大きく、ルートBは平均50分だが安定している場合、時間厳守が重要ならBを選ぶ理由がある。平均だけではサービス信頼性を評価できない。\par
+試験では、F(x,xi)を直接最適化できない理由を明確に述べる。xi は決定時点で未知のランダム変数であり、事前に分かるのは分布やサンプルだけである。そのため、期待値やリスクを使う、という流れで説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S027: 「確率的意思決定 III: 期待値-分散原理」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、決定 x の後にランダム情報 xi が実現するため、期待値やリスク基準で評価する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S027: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{028}{準確率的意思決定 I: Hurwicz基準}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{28}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 最悪実現と最良実現を考慮する。
+\item 楽観パラメータ lambda in [0,1] を用いて重み付き和を計算する。
+\item (1-lambda) × worst case + lambda × best case。
+\item 例
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Hurwicz は最良ケースと最悪ケースの重み付け、minmax regret は最大の後悔を最小化する。
+\item regret は、実現シナリオを事前に知っていた場合の最適解との差である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「準確率的意思決定 I: Hurwicz基準」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Quasi-stochastic な状況では、確率分布は分からないが、複数のシナリオや区間は分かる。例えば旅行時間が10-25分の範囲にあることは分かるが、10分になる確率、25分になる確率は分からない。このような場合、期待値を正確には計算できない。\par
+Hurwicz基準は、最良ケースと最悪ケースを楽観係数で重み付けして評価する。楽観的な意思決定者は最良ケースを重視し、悲観的な意思決定者は最悪ケースを重視する。これは簡単だが、係数の選び方に主観が入る。\par
+Minmax regret は、各シナリオで『そのシナリオを事前に知っていれば選べた最適解』との差を regret として測る。候補解ごとに全シナリオの regret を計算し、その最大 regret が最小の解を選ぶ。これは、最悪の後悔を抑える基準である。\par
+regret の直感は、後から結果が分かったときに『別の解なら大幅に良かった』という損失を小さくすることである。単純な最悪ケース最適化よりも、各シナリオでの相対的な失敗を見ている点が特徴である。\par
+具体例として、平均的に短いが渋滞時に極端に悪化するルートと、少し長いが安定したルートがある。minmax regret は、各交通シナリオで最良ルートとの差を比べ、最悪の差が小さい安定ルートを選ぶ可能性がある。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S028: 「準確率的意思決定 I: Hurwicz基準」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Hurwicz は最良ケースと最悪ケースの重み付け、minmax regret は最大の後悔を最小化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S028: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{029}{準確率的意思決定 II: Minmax-Regret基準}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{29}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item あるシナリオにおける悲観的決定を、同じシナリオで完全情報がある場合の最良決定と比較する。
+\item Regret は、同じシナリオにおける最良決定からの乖離である。
+\item 例
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Hurwicz は最良ケースと最悪ケースの重み付け、minmax regret は最大の後悔を最小化する。
+\item regret は、実現シナリオを事前に知っていた場合の最適解との差である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「準確率的意思決定 II: Minmax-Regret基準」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Quasi-stochastic な状況では、確率分布は分からないが、複数のシナリオや区間は分かる。例えば旅行時間が10-25分の範囲にあることは分かるが、10分になる確率、25分になる確率は分からない。このような場合、期待値を正確には計算できない。\par
+Hurwicz基準は、最良ケースと最悪ケースを楽観係数で重み付けして評価する。楽観的な意思決定者は最良ケースを重視し、悲観的な意思決定者は最悪ケースを重視する。これは簡単だが、係数の選び方に主観が入る。\par
+Minmax regret は、各シナリオで『そのシナリオを事前に知っていれば選べた最適解』との差を regret として測る。候補解ごとに全シナリオの regret を計算し、その最大 regret が最小の解を選ぶ。これは、最悪の後悔を抑える基準である。\par
+regret の直感は、後から結果が分かったときに『別の解なら大幅に良かった』という損失を小さくすることである。単純な最悪ケース最適化よりも、各シナリオでの相対的な失敗を見ている点が特徴である。\par
+具体例として、平均的に短いが渋滞時に極端に悪化するルートと、少し長いが安定したルートがある。minmax regret は、各交通シナリオで最良ルートとの差を比べ、最悪の差が小さい安定ルートを選ぶ可能性がある。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S029: 「準確率的意思決定 II: Minmax-Regret基準」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Hurwicz は最良ケースと最悪ケースの重み付け、minmax regret は最大の後悔を最小化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S029: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{030}{アジェンダ}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{30}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{031}{ケーススタディ: 都市物流のロバスト車両ルーティング}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{31}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 都市物流の課題
+\item 都市交通システム
+\item 都市物流の車両ルーティングへ、旅行時間不確実性の情報を統合する。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。
+\item 都市物流では効率性と信頼性のトレードオフが重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「ケーススタディ: 都市物流のロバスト車両ルーティング」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+都市物流では、旅行時間の変動、狭い時間窓、駐車問題、顧客の待ち時間、車両数制約が重なるため、平均旅行時間だけを最小化する計画では不十分なことが多い。平均では良くても、渋滞や遅いサービスが起きると多くの顧客に遅延が伝播する。\par
+区間旅行時間 [l,u] は、各アークの旅行時間が下限 l と上限 u の間にあると表す方法である。確率分布を正確に推定できない場合でも、過去データの分位点や専門知識から現実的な範囲を作ることができる。これは準確率的情報モデルの典型である。\par
+ロバストなルートは、平均ケースで必ず最短とは限らない。しかし、複数の交通シナリオや悪条件に対して大きく悪化しにくい。顧客サービスや時間約束が重要な場合、少し長いが安定したルートの方が、実務上は優れていることがある。\par
+一方で、ロバスト性を重視しすぎると過度に保守的な解になる。すべての最悪ケースだけを想定すると、余裕を取りすぎてコストが大きくなる可能性がある。したがって、効率性、信頼性、後悔、サービスレベルのバランスを考える必要がある。\par
+試験では、ロバスト解を『どんな場合でも絶対に最適な解』とは書かない。正しくは、複数の不確実なシナリオに対して性能が大きく崩れにくい解である。平均最適、最悪ケース最適、minmax regret の違いも説明できるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S031: 「ケーススタディ: 都市物流のロバスト車両ルーティング」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S031: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{032}{都市物流における役割}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{32}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Shipping Company
+\item Logistic service provider
+\item alpha サービスレベルは旅行時間の影響を受ける。
+\item 旅行時間の不確実性に関する情報は計画段階で考慮されなければならない。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。
+\item 都市物流では効率性と信頼性のトレードオフが重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「都市物流における役割」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+都市物流では、旅行時間の変動、狭い時間窓、駐車問題、顧客の待ち時間、車両数制約が重なるため、平均旅行時間だけを最小化する計画では不十分なことが多い。平均では良くても、渋滞や遅いサービスが起きると多くの顧客に遅延が伝播する。\par
+区間旅行時間 [l,u] は、各アークの旅行時間が下限 l と上限 u の間にあると表す方法である。確率分布を正確に推定できない場合でも、過去データの分位点や専門知識から現実的な範囲を作ることができる。これは準確率的情報モデルの典型である。\par
+ロバストなルートは、平均ケースで必ず最短とは限らない。しかし、複数の交通シナリオや悪条件に対して大きく悪化しにくい。顧客サービスや時間約束が重要な場合、少し長いが安定したルートの方が、実務上は優れていることがある。\par
+一方で、ロバスト性を重視しすぎると過度に保守的な解になる。すべての最悪ケースだけを想定すると、余裕を取りすぎてコストが大きくなる可能性がある。したがって、効率性、信頼性、後悔、サービスレベルのバランスを考える必要がある。\par
+試験では、ロバスト解を『どんな場合でも絶対に最適な解』とは書かない。正しくは、複数の不確実なシナリオに対して性能が大きく崩れにくい解である。平均最適、最悪ケース最適、minmax regret の違いも説明できるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S032: 「都市物流における役割」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S032: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{033}{旅行時間不確実性のモデル化}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{33}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Quasi-stochastic
+\item Stochastic
+\item 都市物流には区間旅行時間が適切な情報モデルである。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。
+\item 都市物流では効率性と信頼性のトレードオフが重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「旅行時間不確実性のモデル化」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+都市物流では、旅行時間の変動、狭い時間窓、駐車問題、顧客の待ち時間、車両数制約が重なるため、平均旅行時間だけを最小化する計画では不十分なことが多い。平均では良くても、渋滞や遅いサービスが起きると多くの顧客に遅延が伝播する。\par
+区間旅行時間 [l,u] は、各アークの旅行時間が下限 l と上限 u の間にあると表す方法である。確率分布を正確に推定できない場合でも、過去データの分位点や専門知識から現実的な範囲を作ることができる。これは準確率的情報モデルの典型である。\par
+ロバストなルートは、平均ケースで必ず最短とは限らない。しかし、複数の交通シナリオや悪条件に対して大きく悪化しにくい。顧客サービスや時間約束が重要な場合、少し長いが安定したルートの方が、実務上は優れていることがある。\par
+一方で、ロバスト性を重視しすぎると過度に保守的な解になる。すべての最悪ケースだけを想定すると、余裕を取りすぎてコストが大きくなる可能性がある。したがって、効率性、信頼性、後悔、サービスレベルのバランスを考える必要がある。\par
+試験では、ロバスト解を『どんな場合でも絶対に最適な解』とは書かない。正しくは、複数の不確実なシナリオに対して性能が大きく崩れにくい解である。平均最適、最悪ケース最適、minmax regret の違いも説明できるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S033: 「旅行時間不確実性のモデル化」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S033: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{034}{情報モデルデータの生成}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{34}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Shifted Gamma distribution。
+\item パラメータ
+\item サンプリングアプローチ。
+\item 500個の観測をランダムに抽出する。
+\item 接続の例: 平均旅行時間15.5、変動係数10\%と30\%。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 期待値は平均性能、分散や分位点はリスクを表す。
+\item 分布フィットでは可視化、パラメータ推定、適合度確認が必要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「情報モデルデータの生成」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+確率分布は、不確実な変数がどの値をどれくらいの確率で取るかを表す。配送では、旅行時間、サービス時間、注文間隔、需要量、キャンセル数などを分布で表せる。分布を使うことで、単一の平均値ではなく、ばらつきや極端な値も考慮できる。\par
+期待値は長期的な平均を表すが、期待値だけでは不十分なことが多い。平均20分の旅行時間でも、ほとんどが18-22分なのか、10分と50分が混在しているのかでは、計画上のリスクが全く違う。分散や標準偏差は、このばらつきの大きさを表す。\par
+分位点はサービスレベルを考える際に重要である。例えば90\%分位点が35分なら、90\%のケースで35分以内に到着することを意味する。顧客に到着時間を約束する場合、平均よりも上位分位点を見る方が安全な計画につながる。\par
+実データから分布を決めるには、まず観測値を集め、外れ値や欠損を確認し、ヒストグラムや箱ひげ図で形を見る。その後、正規分布、対数正規分布、ガンマ分布など候補を選び、平均や分散などのパラメータを推定し、適合度を確認する。\par
+サービス時間のように負にならない値では、正規分布よりも右裾を持つ非負分布が自然な場合がある。家電修理や在宅介護では、多くの作業は短時間で終わるが、例外的に長い作業が起こる。試験では、分布名だけでなく、なぜその形が現実に合うのかを説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S034: 「情報モデルデータの生成」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、期待値は平均性能、分散や分位点はリスクを表す。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S034: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{035}{情報モデル}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{35}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 二つの旅行時間行列。
+\item U: 区間旅行時間の上限。ピーク交通の95\%分位点。
+\item L: 区間旅行時間の下限。オフピーク交通の5\%分位点。
+\item l\_ij <= u\_ij。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。
+\item 都市物流では効率性と信頼性のトレードオフが重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「情報モデル」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+都市物流では、旅行時間の変動、狭い時間窓、駐車問題、顧客の待ち時間、車両数制約が重なるため、平均旅行時間だけを最小化する計画では不十分なことが多い。平均では良くても、渋滞や遅いサービスが起きると多くの顧客に遅延が伝播する。\par
+区間旅行時間 [l,u] は、各アークの旅行時間が下限 l と上限 u の間にあると表す方法である。確率分布を正確に推定できない場合でも、過去データの分位点や専門知識から現実的な範囲を作ることができる。これは準確率的情報モデルの典型である。\par
+ロバストなルートは、平均ケースで必ず最短とは限らない。しかし、複数の交通シナリオや悪条件に対して大きく悪化しにくい。顧客サービスや時間約束が重要な場合、少し長いが安定したルートの方が、実務上は優れていることがある。\par
+一方で、ロバスト性を重視しすぎると過度に保守的な解になる。すべての最悪ケースだけを想定すると、余裕を取りすぎてコストが大きくなる可能性がある。したがって、効率性、信頼性、後悔、サービスレベルのバランスを考える必要がある。\par
+試験では、ロバスト解を『どんな場合でも絶対に最適な解』とは書かない。正しくは、複数の不確実なシナリオに対して性能が大きく崩れにくい解である。平均最適、最悪ケース最適、minmax regret の違いも説明できるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S035: 「情報モデル」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S035: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{036}{Minmax Regret基準を持つRobust TSP}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{36}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ツアーで使う辺。
+\item 使わない辺。
+\item Minmax regret により、複数の旅行時間実現に対して後悔の大きいルートを避ける。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Hurwicz は最良ケースと最悪ケースの重み付け、minmax regret は最大の後悔を最小化する。
+\item regret は、実現シナリオを事前に知っていた場合の最適解との差である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Minmax Regret基準を持つRobust TSP」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Quasi-stochastic な状況では、確率分布は分からないが、複数のシナリオや区間は分かる。例えば旅行時間が10-25分の範囲にあることは分かるが、10分になる確率、25分になる確率は分からない。このような場合、期待値を正確には計算できない。\par
+Hurwicz基準は、最良ケースと最悪ケースを楽観係数で重み付けして評価する。楽観的な意思決定者は最良ケースを重視し、悲観的な意思決定者は最悪ケースを重視する。これは簡単だが、係数の選び方に主観が入る。\par
+Minmax regret は、各シナリオで『そのシナリオを事前に知っていれば選べた最適解』との差を regret として測る。候補解ごとに全シナリオの regret を計算し、その最大 regret が最小の解を選ぶ。これは、最悪の後悔を抑える基準である。\par
+regret の直感は、後から結果が分かったときに『別の解なら大幅に良かった』という損失を小さくすることである。単純な最悪ケース最適化よりも、各シナリオでの相対的な失敗を見ている点が特徴である。\par
+具体例として、平均的に短いが渋滞時に極端に悪化するルートと、少し長いが安定したルートがある。minmax regret は、各交通シナリオで最良ルートとの差を比べ、最悪の差が小さい安定ルートを選ぶ可能性がある。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S036: 「Minmax Regret基準を持つRobust TSP」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Hurwicz は最良ケースと最悪ケースの重み付け、minmax regret は最大の後悔を最小化する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S036: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{037}{何を達成したいか}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{37}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 多くの交通速度シナリオで実装できるルートを見つけたい。
+\item 旅行時間という効率性と、時間厳守というサービス信頼性のトレードオフを扱う。
+\item 最良ケースだけを考えることは選択肢ではない。実行可能性を破る。
+\item 道路セグメントごとの最良・最悪速度の平均はサービス品質を悪化させ得る。
+\item 最悪ケース速度を考えると効率は悪いがサービス品質は良い。
+\item regret に基づくアプローチが効率性と信頼性のバランスを取ることを期待する。
+\item 評価: 自己設定した到着時刻からの早着・遅着の合計偏差。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。
+\item 都市物流では効率性と信頼性のトレードオフが重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「何を達成したいか」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+都市物流では、旅行時間の変動、狭い時間窓、駐車問題、顧客の待ち時間、車両数制約が重なるため、平均旅行時間だけを最小化する計画では不十分なことが多い。平均では良くても、渋滞や遅いサービスが起きると多くの顧客に遅延が伝播する。\par
+区間旅行時間 [l,u] は、各アークの旅行時間が下限 l と上限 u の間にあると表す方法である。確率分布を正確に推定できない場合でも、過去データの分位点や専門知識から現実的な範囲を作ることができる。これは準確率的情報モデルの典型である。\par
+ロバストなルートは、平均ケースで必ず最短とは限らない。しかし、複数の交通シナリオや悪条件に対して大きく悪化しにくい。顧客サービスや時間約束が重要な場合、少し長いが安定したルートの方が、実務上は優れていることがある。\par
+一方で、ロバスト性を重視しすぎると過度に保守的な解になる。すべての最悪ケースだけを想定すると、余裕を取りすぎてコストが大きくなる可能性がある。したがって、効率性、信頼性、後悔、サービスレベルのバランスを考える必要がある。\par
+試験では、ロバスト解を『どんな場合でも絶対に最適な解』とは書かない。正しくは、複数の不確実なシナリオに対して性能が大きく崩れにくい解である。平均最適、最悪ケース最適、minmax regret の違いも説明できるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S037: 「何を達成したいか」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S037: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{038}{問題設定}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{38}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 二階層配送ネットワーク。
+\item サテライトは積み替え地点である。
+\item デポから積み替え地点へ車両群で配送する。
+\item 最終配送は各積み替え地点から始まる。
+\item 目的: 積み替え地点での待機時間を含む旅行時間を最小化する。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。
+\item 都市物流では効率性と信頼性のトレードオフが重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「問題設定」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+都市物流では、旅行時間の変動、狭い時間窓、駐車問題、顧客の待ち時間、車両数制約が重なるため、平均旅行時間だけを最小化する計画では不十分なことが多い。平均では良くても、渋滞や遅いサービスが起きると多くの顧客に遅延が伝播する。\par
+区間旅行時間 [l,u] は、各アークの旅行時間が下限 l と上限 u の間にあると表す方法である。確率分布を正確に推定できない場合でも、過去データの分位点や専門知識から現実的な範囲を作ることができる。これは準確率的情報モデルの典型である。\par
+ロバストなルートは、平均ケースで必ず最短とは限らない。しかし、複数の交通シナリオや悪条件に対して大きく悪化しにくい。顧客サービスや時間約束が重要な場合、少し長いが安定したルートの方が、実務上は優れていることがある。\par
+一方で、ロバスト性を重視しすぎると過度に保守的な解になる。すべての最悪ケースだけを想定すると、余裕を取りすぎてコストが大きくなる可能性がある。したがって、効率性、信頼性、後悔、サービスレベルのバランスを考える必要がある。\par
+試験では、ロバスト解を『どんな場合でも絶対に最適な解』とは書かない。正しくは、複数の不確実なシナリオに対して性能が大きく崩れにくい解である。平均最適、最悪ケース最適、minmax regret の違いも説明できるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S038: 「問題設定」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S038: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{039}{結果}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{39}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 手法
+\item 評価
+\item 評価基準
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。
+\item 都市物流では効率性と信頼性のトレードオフが重要である。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「結果」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+都市物流では、旅行時間の変動、狭い時間窓、駐車問題、顧客の待ち時間、車両数制約が重なるため、平均旅行時間だけを最小化する計画では不十分なことが多い。平均では良くても、渋滞や遅いサービスが起きると多くの顧客に遅延が伝播する。\par
+区間旅行時間 [l,u] は、各アークの旅行時間が下限 l と上限 u の間にあると表す方法である。確率分布を正確に推定できない場合でも、過去データの分位点や専門知識から現実的な範囲を作ることができる。これは準確率的情報モデルの典型である。\par
+ロバストなルートは、平均ケースで必ず最短とは限らない。しかし、複数の交通シナリオや悪条件に対して大きく悪化しにくい。顧客サービスや時間約束が重要な場合、少し長いが安定したルートの方が、実務上は優れていることがある。\par
+一方で、ロバスト性を重視しすぎると過度に保守的な解になる。すべての最悪ケースだけを想定すると、余裕を取りすぎてコストが大きくなる可能性がある。したがって、効率性、信頼性、後悔、サービスレベルのバランスを考える必要がある。\par
+試験では、ロバスト解を『どんな場合でも絶対に最適な解』とは書かない。正しくは、複数の不確実なシナリオに対して性能が大きく崩れにくい解である。平均最適、最悪ケース最適、minmax regret の違いも説明できるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S039: 「結果」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ロバスト解は、単一平均ケースで最短ではなく、複数シナリオで大きく崩れにくい解である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S039: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{040}{まとめ}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{40}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 不確実性は情報モデルと意思決定モデルで考慮されるべきである。
+\item 不確実性は多くの応用に影響し、意思決定に大きな影響を及ぼし得る。
+\item 意思決定に関連するデータを有効に使うには、不確実性を適切にモデル化する必要がある。
+\item 意思決定モデルは、応用と不確実性のモデリングに応じて選択されなければならない。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。
+\item 確率分布がある場合とない場合で、使える評価基準が変わる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「まとめ」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Deterministic model は、入力値が既知で固定されていると仮定する。例えば、AからBへの旅行時間を常に15分と置く。これは単純で計算しやすいが、実際の交通変動やサービス時間のばらつきを無視するため、現実で計画が崩れることがある。\par
+Stochastic model は、不確実な変数を確率分布として表す。旅行時間が平均20分・標準偏差5分の分布に従う、注文発生がポアソン過程に従う、サービス時間が対数正規分布に従う、といった表現である。確率が分かるため、期待費用、分散、分位点、確率制約、サンプリングを使える。\par
+Quasi-stochastic model は、確率分布は分からないが、起こり得るシナリオや値の範囲は分かる場合に使う。例えば、旅行時間が10分から25分の間であることは分かるが、その確率は分からない場合である。このとき、区間、代表シナリオ、最悪ケース、Hurwicz基準、minmax regret が使われる。\par
+確率分布が十分に推定できるなら stochastic model が自然である。しかし、過去データが少ない、新しいサービスで履歴がない、環境が変化して過去データが当てにならない場合は quasi-stochastic model が有用である。どちらを使うかは、データ量、分布仮定の妥当性、意思決定の目的によって決まる。\par
+試験では、stochastic と quasi-stochastic の違いを『不確実であるかどうか』ではなく『確率情報を持っているかどうか』で説明する。どちらも不確実性を扱うが、stochastic は確率を使い、quasi-stochastic は確率なしで区間やシナリオを使う。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S040: 「まとめ」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、deterministic, stochastic, quasi-stochastic の違いは、将来値と確率情報をどう扱うかで決まる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S040: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 3 - Uncertainty}{041}{さらなる問い}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{41}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 変化に反応できるか。
+\item 例: 現在の交通情報に基づいてTSPを再計画する。これは dynamic decision making である。
+\item 将来の不確実な発展を予測できるか。
+\item 例: 渋滞リスクのある地域を避ける。
+\item Anticipation。
+\item Stochastic dynamic decision making。
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item 不確実性は、需要・リソース・環境の変化として整理できる。
+\item 頻度、範囲、破壊力、予測可能性で性質が異なる。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「さらなる問い」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+不確実性とは、意思決定時点では将来の状態や入力値が完全には分からないことである。配送であれば、注文がどこから来るか、交通がどれだけ混むか、サービス時間が何分か、ドライバーが利用可能かどうかが事前には確定していない。\par
+不確実性は一種類ではない。需要不確実性は、顧客からの注文の発生時刻、場所、量に関する不確実性である。リソース不確実性は、車両故障、ドライバーのキャンセル、バッテリー残量、積載能力に関する不確実性である。環境不確実性は、交通、天候、道路工事、事故、駐車可能性に関する不確実性である。\par
+不確実性は、頻度、範囲、破壊力、予測可能性によって性質が異なる。例えば日々の交通変動は頻繁に起きるが、過去データからある程度予測できる。一方で、大規模事故や道路閉鎖は低頻度だが、発生すれば計画を大きく壊す。\par
+不確実性を無視して平均値だけで計画すると、平均的には良く見えるが実行時に頻繁に遅れる計画になる可能性がある。特に複数顧客を連続して訪問するルーティングでは、一つの遅延が後続訪問に波及するため、単独の平均時間以上にリスクが大きい。\par
+試験答案では、不確実性の例を挙げるだけでなく、それが情報モデルと意思決定モデルにどう影響するかを書くとよい。情報モデルでは確率分布や区間として表現し、意思決定モデルでは期待値、リスク、ロバスト性、再最適化などを考える。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L03-S041: 「さらなる問い」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、不確実性は、需要・リソース・環境の変化として整理できる。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L03-S041: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+\clearpage\ExamHeader{Lecture 3 - Uncertainty}
+\ExamQuestion{WS22/23 Aufgabe 5 (6 点)}
+\ExamSubsection{問題内容}
+旅行時間の不確実性、確率的/準確率的、ロバスト解。設問では、確率分布がある場合とない場合、ロバスト性の意味を区別すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS23 Aufgabe 3 (6 点)}
+\ExamSubsection{問題内容}
+区間ベース旅行時間とmin-max regret。設問では、確率が不明な楽観/悲観旅行時間で最大後悔を最小化するロジックを説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、stochasticは確率分布があり期待値・分散・分位点・サンプリングを扱える場合、quasi-stochasticは確率は不明だがシナリオや区間が分かる場合として区別する。ロバスト解は平均ケースで最短とは限らないが、複数シナリオで大きく崩れにくい解である。regretは、シナリオが分かった後に選べた最適解との差である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS23/24 Aufgabe 6 (4 点)}
+\ExamSubsection{問題内容}
+時間帯に依存しない旅行時間ばらつきの確率分布化。設問では、観測値から分布を推定し、確率的遷移に使う手順を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS23/24 Aufgabe 7 (7 点)}
+\ExamSubsection{問題内容}
+確率分布を近似できない条件と代替モデル。設問では、データ不足・確率不明時に準確率/ロバスト/区間/シナリオなどで対応すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS24 Aufgabe 2a (3 点)}
+\ExamSubsection{問題内容}
+Same-Day配送の不確実性カテゴリ。設問では、需要・リソース・環境の不確実性を具体例で挙げること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS24 Aufgabe 2b (3 点)}
+\ExamSubsection{問題内容}
+サービス時間分布の典型的性質。設問では、非負・右裾・分散/期待値など、サービス時間PDFの直感を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS24/25 Aufgabe 1 (10 点)}
+\ExamSubsection{問題内容}
+2値の楽観/悲観旅行時間、複数値、regret。設問では、区間・複数シナリオ・後悔最小化をツアープランニングに適用すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、stochasticは確率分布があり期待値・分散・分位点・サンプリングを扱える場合、quasi-stochasticは確率は不明だがシナリオや区間が分かる場合として区別する。ロバスト解は平均ケースで最短とは限らないが、複数シナリオで大きく崩れにくい解である。regretは、シナリオが分かった後に選べた最適解との差である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS24/25 Aufgabe 3 (12 点)}
+\ExamSubsection{問題内容}
+stochasticとquasi-stochasticの違いと各手法。設問では、分布がある場合/ない場合の適用手法を2つずつ説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS25 Exercise 4 (4 点)}
+\ExamSubsection{問題内容}
+指数分布から確率的遷移をサンプリングする手順。設問では、分布・パラメータ・乱数サンプル・外生情報の生成を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS25 Exercise 8 (4 点)}
+\ExamSubsection{問題内容}
+Hurwicz基準の機能と適用条件。設問では、楽観係数で最良/最悪ケースを重み付けする準確率的判断基準を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、stochasticは確率分布があり期待値・分散・分位点・サンプリングを扱える場合、quasi-stochasticは確率は不明だがシナリオや区間が分かる場合として区別する。ロバスト解は平均ケースで最短とは限らないが、複数シナリオで大きく崩れにくい解である。regretは、シナリオが分かった後に選べた最適解との差である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}

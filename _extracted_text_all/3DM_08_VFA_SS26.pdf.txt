@@ -1,0 +1,999 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 8 – Value Function Approximation
+       Agenda
+       • Recap
+
+       • Motivational Experiment
+                                                                                                                 Handelsblatt.de
+
+       • Value Function Approximation
+
+       • Case Study: Customer Acceptances + Approximation Architectures (if time is left)
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Value Function
+
+       • Expected future reward is called the value 𝑉(𝑆𝑘𝑥 ) of post-decision state 𝑆𝑘𝑥
+       • The value function maps a (post-decision) state to the expected future
+         reward
+
+
+
+                                                                                                          𝑅𝑘 (𝑆𝑘 , 𝑥)
+                                                                                                                        𝑉(𝑆𝑘𝑥 )
+
+                                                                                   S0                                             SK
+                                                                                                                           SK
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policy Classes (Compare Powell 2011)
+
+
+       • Policy Function Approximation
+                                                                                                                    Rule-Based
+       •      Rolling Horizon Re-Optimization
+       •      Cost Function Approximation
+       •      Look-ahead Models
+       •      Value Function Approximation                                                                       Optimization-Based
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policy Classes I
+       • Policy function approximation:
+         Transfer a rule-of-thumb into a policy
+       • Rolling-Horizon Re-Optimization:
+         Determine decision based on current
+         information (myopic)
+       • Cost-Function Approximation:
+         Manipulate reward function or constraints to
+         incentivize (/avoid) (in)flexible decisions
+
+       • None of the classes anticipates the future
+         (information & decision model) explicitly
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policy Classes II: Lookahead
+       • Methods consider future changes via sampling of realizations
+       • Rollout algorithm:
+         • Simulate paths of sampled realizations and decisions made by a base policy
+         • Use simulated values with Bellman Equation
+       • Multiple Scenario Approach:
+         • Sample sets of realizations (scenarios)
+         • Solve scenarios individually
+         • Determine most similar solution → decision
+
+       • Disadvantages: runtime, decision making in simulation
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Excursus: Evaluating Policies
+
+                                                                                                                 Calculations
+       • For each instance setting:
+                                                                                                                 Mean value
+         • Generate sufficiently large set of instance realizations
+                                                                                                                 Variance
+         • Different than training data in Lookaheads and VFAs
+                                                                                                                 Standard dev.
+                                                                                                                 Standard error
+       • Solve same realizations for each tested policy                       Significance
+       • Statistical significance: Are the differences just noise?
+            1. Calculate standard errors: standard deviation divided by square root of
+                 observations.
+            2. If better value minus its standard error larger than worse value plus its standard
+                 error, results are significant.
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+       • Recap
+
+       • Motivational Experiment
+                                                                                                                 Handelsblatt.de
+
+       • Value Function Approximation
+
+       • Case Study: Customer Acceptances + Approximation Architectures
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Motivational Experiment: Fair (dynamic knapsack problem)
+       •     Fair with an unknown number of rides
+       •     Time horizon (60 minutes)
+       •     Money (expires at end of horizon) (15€)
+       •     Random occurrences of rides
+       •     Every ride costs money and generates fun
+             (reward)                                                                                            www.ecfair.org
+
+       •     Question: buy ride or not (no way back)
+       •     Then, next (unknown) point of time with next
+             ride
+       •     Maximize the expected fun
+       •     Value function: expected future fun when
+             having a certain amount of money at a point
+             of time
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic knapsack problem
+       • Markov Decision Process:
+
+       •      Decision point: Next item
+       •      State: Point of time, remaining capacity (money), new item
+       •      Decision: Take item (or not)
+       •      Reward: Value of item (or 0)
+       •      Post-decision state: Point of time, remaining capacity
+       •      Stochastic information: realization of new item
+       •      Transition: next point of time and item
+       •      Final state: End of horizon
+       •      Objective: Maximize expected reward
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Experiment
+
+
+                     Ride                  Time                 Reward (in            Cost (in €)           Decision   Money   Total Fun
+                                                                fun)
+                     -                     0                    -                     -                     -          15      0
+                     1.                    3                    10                    5
+                     2.                    16                   11                    5
+                     3.                    18                   8                     3
+                     4.                    21                   7                     4
+                     5.                    23                   10                    7
+                     6.                    50                   9                     3
+                     7.                    57                   8                     1
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Experiment
+
+
+                     Ride                  Time                 Reward (in            Cost (in €)           Decision   Money   Total Fun
+                                                                fun)
+                     -                     0                    -                     -                     -          15      0
+                     1.                    3                    10                    5
+                     2.                    16                   11                    5
+                     3.                    18                   8                     3
+                     4.                    21                   7                     4
+                     5.                    23                   10                    7
+                     6.                    50                   9                     3
+                     7.                    57                   8                     1
+
+
+                                                                                          that‘s it
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       What could we learn?
+
+       • Information Model:
+         • Expected number of rides per visit
+         • Relation between costs and rewards
+         • Changes over time
+
+       • Decision Making:
+         • Approximate value of money at a point of time
+         • Decision between buying (or not)                                                                       maxx∈𝑋 𝑆𝑘 𝑅 𝑆𝑘 , 𝑥 + 𝑉(𝑆𝑘𝑥 )
+         • Value depends on our decision making
+         • Repeated visits necessary (learning)
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       What do we need to learn?
+       • Exogeneous information: Sampling from distribution
+
+       • Experience of interactions with exogeneous information: Simulation
+
+       • Decisions to generate interactions: Bellman Equation
+
+       • Memory to store and update experience: Value function
+
+       • We repeatedly simulate sampled information, decide with the Bellman Equation based on
+         the value function and update the value function with the simulation's outcome
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+       • Recap
+
+       • Motivational Experiment
+                                                                                                                  Handelsblatt.de
+
+       • Value Function Approximation
+
+       • Case Study: Customer Acceptances + Approximation Architectures
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                                             ∗
+                                                                                                                           𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+                                                                                                                                           𝑥∈𝑋(𝑆𝑘 )
+       Value Function Approximation (Powell, 2011)
+       • Initial values 𝑉෠0                                                                                              Simulation
+       • Generate policy 𝝅𝑽𝑭𝑨
+                            𝟎 w.r.t. 𝑉෠0
+
+
+
+
+                                                                                                                                  Apply
+                                                                                                              State
+       • Large number of simulations 𝑁
+       • Apply anticipatory policies 𝝅𝑽𝑭𝑨
+                                       𝒊
+         within run 𝑖 + 1
+
+
+
+
+                                                                                                                                                      Update
+                                                                                                                  Bellman’s Equation
+       • Update 𝑉෡𝑖 after each simulation run
+
+
+
+
+                                                                                                                                 Provide
+       • Output: policy 𝝅𝑽𝑭𝑨
+
+
+
+
+                                                                                                              Access
+                         𝑵
+                 𝑽𝑭𝑨
+       • Apply 𝝅𝑵 in online execution
+
+       • Main challenge is storing the values                                                                              Values
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Storing the Approximate Value Function
+       • Curses of Dimensionality
+
+       • For example, dynamic routing for courier services
+
+       • Post-decision state:
+         • Point of time
+         • Set of customers
+         • Vehicle‘s position
+         • Planned tour
+
+       • We never observe the same post-decision state twice.
+       • We cannot learn anything…
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       VFA: State Space Representation
+
+       • Reduced representation of state space necessary
+       • Two steps:                                                                                                      State Space
+          • Aggregation summarizes post-decision state
+            to a vector of features                                                                                           A
+          • The value for each vector is stored using an
+            approximation architecture                                                                             (Feature) Vector Space
+                                     𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 1              …             𝑉𝑎𝑟𝑖𝑎𝑏𝑙𝑒             phase
+                    𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 1          𝑣𝑎𝑙𝑢𝑒11           𝑣𝑎𝑙𝑢𝑒1…            𝑣𝑎𝑙𝑢𝑒1             training                      S
+                           …            𝑣𝑎𝑙𝑢𝑒…1           𝑣𝑎𝑙𝑢𝑒……            𝑣𝑎𝑙𝑢𝑒…             training
+                    𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 𝑛          𝑣𝑎𝑙𝑢𝑒𝑛1           𝑣𝑎𝑙𝑢𝑒𝑛…            𝑣𝑎𝑙𝑢𝑒𝑛            test data
+                                                                                                                  Approximation Architecture
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Decision Making in Operations Research
+        •     Fulfilment of demand with resources within an environment
+        •     Demand: Products, service, delivery, transport, etc.…
+        •     Resources: Workforce, machines, delivery/service fleet, budget
+        •     Environment: Street network, weather conditions, energy prices, etc.
+        •     Objective: Maximize fulfilled demand vs. minimize used resources
+        •     Decisions: Assignment of resources to demand.
+        •     Environment often defines constraints and resource consumption.
+
+                                                                             Environment
+
+
+                                                               Demand                            Resources
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Aggregation: Feature selection
+
+       • Features can represent environment, resources, and demand
+       • “Feature selection is an art” (Warren Powell)
+       • Environment
+         • Point of time: later time in process, smaller value
+         • Traffic level: higher traffic, smaller value (less revenue)
+         • Energy prices (could be resource/demand):
+           • Higher prices, smaller value (if we need to buy energy)
+           • Higher prices, larger value (if we can sell energy)
+         • Weather: Bad weather, small value (obstacles in delivery)
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Feature selection: Resources
+
+       •      Remaining vehicle capacity: more capacity, higher value
+       •      Distribution of vehicles in the city: how to measure? Higher spread, higher value(?)
+       •      Inventory levels: higher levels, higher value(?)
+       •      Remaining advertising budget: higher budget, higher value(?)
+       •      Number of workers in the system: more workers, higher value
+       •      Percentage of skilled workers: higher percentage, higher value(?)
+       •      Free server/production lines: more capacity, higher value
+       •      Number of broken production lines: smaller number, higher value
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Feature selection: Demand
+
+       •      Number of customers/jobs: higher number, smaller value
+       •      Number of different job types in the system: higher number, smaller value
+       •      Average spread in customer locations: higher spread, smaller value
+       •      Customer satisfaction level: higher level, higher value
+       •      Urgency: how to measure? Higher urgency, smaller value
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Feature selection: Combination
+
+       • Average travel times between customers (Environment + Demand) high times,
+         smaller value
+       • Time a production line is empty again (Resource + Demand): nearer times, higher
+         value
+       • Average time between job deadlines and planned finish time (Resource + Demand):
+         larger times, higher value
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Aggregation: Bias vs. Reliability
+
+       • Bias: deviation from aggregated to real value
+       • Reliability: enough feature observations
+
+       • Not enough vs. too many features
+       • Too general vs. too detailed features
+       • E.g., number of customers/jobs vs. individual
+         customer locations / job specifications
+
+
+
+
+                                                                                                                  Compare Hastie et al., 2016
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Courier Service
+       • Value significantly depends on point of time 𝑡
+         and remaining time budget 𝑏 (time limit – current arrival time at depot)
+       • Aggregate 𝑆𝑘𝑥 to a 2-dimensional feature vector: A(𝑆𝑘𝑥 ) = 𝑣 = 𝑡, 𝑏
+
+
+
+                                       𝑡 = 60
+
+
+
+                                                                                 A       𝑣 = (60,120)             x
+
+
+
+
+       Ulmer, Mattfeld, Köster, Budgeting Time for Dynamic Vehicle Routing with Stochastic Requests, Transportation Science,
+       2018
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Value function for a fixed point of time (Assumption)
+       • Monotonic increase
+       • Saturation
+       • Compare with dynamic knapsack problem
+
+                                     𝑉
+
+
+
+
+                                                                                                                  𝑏
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Approximation Architectures
+       • Input: Vector
+       • Output: Value
+                                                                                                                      Approximation
+       • Can be trained                                                                                                Architecture
+
+       • Examples:
+         • Lookup tables
+         • Parametric architectures (linear functions, etc.)
+         • Neural nets
+         • Decision trees
+                                                                                                                  b
+         • Etc.
+
+       • Combinations possible (see case study)                                                                              t
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Courier Service: Lookup Table
+       • Aggregate 𝑆𝑘𝑥 to a vector: A(𝑆𝑘𝑥 ) = 𝑣 = 𝑡, 𝑏
+       • Store values is lookup table with intervals
+       • Update entry values with running average
+
+
+
+
+                  𝑡 = 60
+
+
+                                                                     𝑣 = (60,120)                                 b   x
+                                                              A
+
+
+                                                                                                                          t
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                                                  ∗
+                                                                                                                               𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+       Courier Service: Decision Making                                                                                                    𝑥∈𝑋(𝑆𝑘 )
+
+
+
+
+       • Use current value for decision making via Bellman Equation
+       • E.g., current value of vector is 3.2
+
+
+                                                                                                 3.2
+
+                                                                                                         b        x
+
+
+
+                                                                                                                          t
+                                                                                    𝑣 = (60,120)                      S       ෠
+                                                                                                                              𝑉(𝑣) = 3.2
+                                                                          A
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Courier Service: Learning Process
+       • Percentage of served customers
+
+       •      First 200,000 runs
+       •      Moving average over 10,000 runs
+       •      Fast increase
+       •      Saturation
+
+       •      First 5,000 runs
+       •      Average over 1,000 runs
+       •      Initial decrease
+       •      Exploration (“trial and error”)
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Value function for a fixed point of time
+       • Monotonic increase
+       • Saturation
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+       • Recap
+
+       • Motivational Experiment
+                                                                                                                  Handelsblatt.de
+
+       • Value Function Approximation
+
+       • Case Study: Customer Acceptances + Approximation Architectures (if time is left)
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Customer Acceptance Problem
+
+       •      Capacitated vehicle
+       •      Driver with working hours
+       •      Customers request next-day delivery over the day
+       •      Request comprises location, size, and revenue
+       •      Decisions: Acceptance or rejection of request and routing
+
+                                  Time              Space
+                                                                                                   1
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Customer Acceptance Problem
+
+       •      Capacitated vehicle
+       •      Driver with working hours
+       •      Customers request next-day delivery over the day
+       •      Request comprises location, size, and revenue
+       •      Decisions: Acceptance or rejection of request and routing
+                                  Time             Space
+                                                                                                   1
+
+
+
+
+                                                                                                              2
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Customer Acceptance Problem
+
+       •      Capacitated vehicle
+       •      Driver with working hours                                                                               3
+       •      Customers request next-day delivery over the day
+       •      Request comprises location, size, and revenue
+       •      Decisions: Acceptance or rejection of request and routing
+                                 Time             Space
+                                                                                                  1
+
+
+
+
+                                                                                                             2
+                                                                                                                  …
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Customer Acceptance Problem
+       •  Markov Decision Process
+       •  Decision point: New request
+       •  State:                                                                                                          3
+         • Point of time
+         • Accepted customers and tour
+         • New request
+       • Decision:
+         • Acceptance/Rejection
+                                                                                                                  1
+         • Integration in tour
+       • Reward: Revenue (if accepted)
+       • Stochastic information: New request
+       • Transition: New time and state with new request
+                                                                                                                      2
+       → Dynamic Knapsack Problem with Routing Component
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Challenges
+       • (Post-Decision) State space is too large
+         • Point of time
+         • Customer locations
+         • Planned route
+       → State space aggregation                                                                            1
+
+       • How to model the value function?
+         • Parametric (linear function)
+         • Non-parametric (lookup table)                                                                          2
+       → Meso-parametric combination
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 38
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       State Space Aggregation
+       • Representation of a state by a set of parameters:
+
+       • Point of time 𝑡
+       • Free capacities
+         • In Time 𝑏
+         • In Space 𝜅                                                                                                 Time   Space
+
+
+       • State is represented by vector (𝑡, 𝑏, 𝜅)
+       • Approximate 𝑉 𝑡, 𝑏, 𝜅
+                                                                                                                  𝑏                  𝜅
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 39
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       How to model the value-function?
+       Non-Parametric                                                                                        Parametric
+
+       • Approximate individual values                                                                       • Approximate parameters of a (linear)
+       • Partitioning of vector space                                                                          functional form
+       • Storage in a lookup table                                                                           • Determine parameters via regression
+
+
+
+
+                           b
+
+
+                                           t
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 40
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       How to model the value-function?
+       Non-Parametric                                                                                  Parametric
+       • Approximate individual values                                                                 • Approximate parameters of a functional
+       • Partitioning of vector space                                                                    form
+       • Storage in a lookup table                                                                     • E.g., linear approximation
+                                                                                                       • Determine parameters via regression
+
+
+       • Advantage: local detail (less bias)                                                           • Advantage: global reliability
+       • Disadvantage: less reliable                                                                   • Disadvantage: bias
+
+
+       • Works well for routing                                                                        • Works well for knapsack problems
+         (Ulmer et al. 2018)                                                                             (Bertsimas and Demir 2002)
+
+                                                              → Combination of advantages
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 41
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Meso-Parametric VFA
+       • Combination of Parametric (linear) and Non-Parametric (lookup table) VFA
+       • Approximated value function 𝑉 𝑚
+
+                                                       𝑉 𝑚 (𝑆𝑘𝑥 ) = 𝜆𝑉 𝑝 (𝑆𝑘𝑥 ) + (1 − 𝜆)𝑉 𝑛 (𝑆𝑘𝑥 )
+       • Procedure:
+         • Approximate both VFAs simultaneously: 𝑉 𝑝 , 𝑉 𝑛
+         • Determine value as weighted combination
+
+       • Tuning:
+         • Determination of 𝜆 by enumeration: 𝜆 = 0.0,0.1, … , 1.0
+         • Special case: Lookup-table entry 𝑉 𝑛 may be empty (no observation yet)
+         • In that case, only draw on 𝑉 𝑝
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 42
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Procedure
+
+                                                                                         Simulation
+
+
+
+
+                                                                                             Apply
+                                                       State
+
+
+
+
+                                                                                                                                    Update
+                                                                Approximate Bellman Equation
+                                                      Request
+                                                        Acces
+
+
+
+
+                                                                                             Value
+                                                          s
+
+
+
+
+                                                 Values M-VFA(P)                 Value
+                                                                                             ∑          Value     Values M-VFA(N)
+
+                                                                                     Value Repository
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 43
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Computational Evaluation
+       • Time: 480 minutes
+
+       • Spatial capacity:
+         • medium van
+         • large van
+         • small truck
+         • medium truck
+                                                                                                                  truebluexpress.com
+
+
+
+
+       • Shift in bottleneck resource:
+         • High capacity: routing problem (N-VFA beneficial)
+         • Low capacity: knapsack problem (P-VFA beneficial)
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 44
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Customer Data
+       • Number of requests: 50
+       • Customer locations: Iowa City
+
+
+
+       • Routing: Cheapest Insertion
+         (works well for Iowa City,
+         Ulmer and Thomas, 2019)
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 45
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policies
+       • VFAs:
+          • M-VFA: Simultaneous approximation of M-VFA(N) and M-VFA(P)-components
+
+                • N-VFA: Only Non-Parametric VFA
+                • P-VFA: Only Parametric VFA
+                • E-VFA: Ex post – combination (What is the value of simultaneous approximation?)
+
+       • Benchmark:
+          • Rollout Algorithm
+            • Simulate the rest-of-the-day from a current state online
+            • Within simulations, accept every feasible customer (myopic base policy)
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 46
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Results: Comparison to Rollout Algorithm
+
+       • All VFAs are substantially better
+       • Rollout algorithm with myopic base policy results in poor approximations.
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 47
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Knapsack vs. Routing Problem
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 48
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       • With larger vehicles capacity is no longer an issue: The knapsack component of the problem vanishes
+
+       • Instead, the routing component becomes more important and non-parametric VFA dominates
+
+
+
+
+                                                          Knapsack                                                Routing
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 49
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Approximated Value Function
+
+
+
+
+  Zero capacity leads to
+  value of zero (in theory)
+                                                                                              Monotonicity in value
+                                                                                              function
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 50
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Approximation Process                                                                  Improvement         𝜆
+
+
+
+       • Varying 𝜆                                                                                                    Learning runs
+
+
+
+       • Comparison to rollout
+
+       • 𝜆 = 0: non-parametric
+       • 𝜆 = 1: parametric
+
+       • We see differences in
+         approximation speed
+
+       • Individual approximations
+         inferior
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 51
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary of the Case Study
+       • Value function approximations can consider longer-term effects of decisions and
+         anticipatory decision making (in contrast to a rollout algorithm)
+
+       • The approximation architecture should be selected with respect to the (assumed) value
+          function shape/behavior:
+         • Generality vs. Detail
+         • Less reliability vs. Less bias
+
+
+
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 52
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary
+       • Value function approximations can shift calculation effort to a learning phase
+       • Steps:
+         • Aggregation to state features
+         • Storage of feature vectors in approximation architecture
+       • Advantages:
+         • Fast
+         • Consideration of information and decision space
+       • Disadvantage:
+         • Scalability
+         • Missing details
+         • Challenging to capture heterogeneous data
+
+       • To be done in lecture 10: combination of policy classes
+
+                               Data Driven Decision Making | Lecture 8 – Value Function Approximation | Page 53
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

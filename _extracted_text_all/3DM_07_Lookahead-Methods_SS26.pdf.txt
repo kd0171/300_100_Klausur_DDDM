@@ -1,0 +1,917 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 7 – Look-ahead Methods
+       Policy Classes (Compare Powell 2011)
+
+
+       • Policy Function Approximation
+                                                                                                          Rule-Based
+       •      Rolling Horizon Re-Optimization
+       •      Cost Function Approximation
+       •      Look-ahead Models
+       •      Value Function Approximation                                                             Optimization-Based
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policy Classes
+
+       • Policy function approximation:
+         Transfer a rule-of-thumb into a policy
+       • Rolling-Horizon Re-Optimization:
+         Determine decision based on current
+         information (myopic)
+       • Cost-Function Approximation:
+         Manipulate reward function or constraints to
+         incentivize (/avoid) (in)flexible decisions
+
+       • None of the classes anticipates the future
+         (information & decision model) explicitly
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+
+       •       Multiple Scenario Approach
+                                                                                                       Handelsblatt.de
+
+       •       Post-Decision State Rollout
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Sampling + Mixed Integer Programming
+       • Idea: Instead of state transitions, sample stream of stochastic information (for example,
+         customer requests, production orders, demand, etc.)
+
+       •      Extend state information with sampled information
+       •      Solve mixed-integer program (maximize reward)
+       •      Remove parts of solution that consider sampled information
+       •      Implement (partial) solution
+
+       • Advantage: Conventional MIP-solvers can be used
+       • Disadvantage: Only one sample used for decision making (overfitting)
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Production Planning
+       State
+
+
+       Sampling
+
+
+                                                       A
+       Solve
+                                                       B
+
+
+
+
+                                                       A
+
+       Implement                                       B
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Multiple Scenario Approach (MSA)
+       • Bent, Van Hentenryck 2004
+       • Two-stage stochastic programming “light”
+       • Sample set of scenarios, determine solution that fits all scenarios best
+
+       •      Sample several (streams of) information model realizations (e.g., sets of requests)
+       •      Solve deterministic MIPs individually
+       •      Clean solutions from augmented information (and repair, if necessary)
+       •      Compare solutions and select “most similar” solution
+
+       • Advantage: Conventional MIP-solver can be used
+       • Disadvantage: stochasticity only captured implicitly in solution selection, no dynamism
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MSA: Consensus Function
+       • The consensus function determines the “most similar” solution
+       • Nice idea, but highly problem dependent
+       • Consensus function for production planning:
+         • Solution: Sequence of jobs per production line
+         • Consider only next job each line produces
+         • Similarity measure between two solutions: number of identical jobs
+         • Select solution with maximum similarity
+       • Example: 3 lines, A, B, C, six jobs 1,2,3,4,5,6
+         • Solution 1:      A12, B34, C56
+         • Solution 2:      A13, B45, C26
+         • Solution 3:      A21, B35, C46
+       • Solution 1 is the most representative solution and (partially) implemented
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                       C Bierwirth, DC Mattfeld, H Kopfer: On permutation
+       Excursion: consensus for schedules                                                              representations for scheduling problems, International
+                                                                                                       conference on parallel problem solving from Nature, 1996
+
+       •       In a job shop, three jobs (1,2,3), (4,5,6) and (7,8,9) are to processed by three machines
+       •       The three machines are depicted in light grey, grey and dark grey.
+       •       We aim at measuring similarity among schedules. Therefore we consider precedence.
+
+       •       This schedule is represented
+               as binary vector, where oper-
+               ations to be processed on the
+               same machine are depicted in
+               terms of preference relations.
+       •       Operator prior (<) results in bitstring (2<4)(2<7)(4<7)(1<6)(1<8)(6<8)(3<5)(3<9)(5<9)
+       •       The schedule reads as follows:            0    0    1     1    1    1   0     1   1
+       •       The hamming distance 𝐷𝑥,𝑦 = σ𝑖 𝑥𝑜𝑟(𝑥𝑖 , 𝑦𝑖 ) measures similarity between two schedules
+       •       Consensus: Pick the schedule with smallest sum of distances to all other schedules
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+ Excursion: consensus for facility location / travelling salesman
+       •       The facility location problem picks a subset of locations from                                                    1
+                                                                                                                                             2
+               a potentially larger set of possible locatitons
+                                                                                                                                     7
+                                                                        1      2         3         4    5    6     7         8
+                                                                                                                                                     3
+       •       Representation of solution:                                                                                       6               8
+                                                                        0      1         1         0    1    0     1         0
+
+                                                                                                                                         5           4
+       •       The symmetric travelling salesman problem constructs a tour
+               among all locations by selecting arcs that connect nodes
+                                                                                                                                             2
+                                                                        2/3        2/7       2/5       3/5   3/7       5/7           7
+       •       Representation of solution:                                                                                                           3
+                                                                         1         1         0         1     0         1
+
+
+       •       Consensus reflects either precedence, position or adjacency
+                                                                                                                                     5
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case study: Autonomy of Crowdsourced Suppliers
+       •      In a gig-economy, suppliers work for multiple clients
+       •      Suppliers therefore can reject offered assignments
+       •      Reasons: travel duration, location, payment, etc.
+
+       •     Problems arise for the requesting client
+            • Less money for the platform
+            • Delays, customer cancelations
+            • Frustration among drivers who arrive late
+
+       •      Hedge against rejections with so called menus
+
+
+
+       Ausseil, Rosemonde, Jennifer A. Pazour, and Marlin W. Ulmer.
+       "Supplier menus for dynamic matching in peer-to-peer transportation
+       platforms." Transportation Science 56.5 (2022): 1304-1326.
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Menus
+       • For every supplier a menu of potential customers is offered
+       • Instead of asking suppliers about favorite deliveries,
+         a choice model depicts possible preferences               1
+                                                                                                                           2
+       • Every supplier selects her/his “best” choice
+         from the menu of suggested deliveries                                                          A              C             D
+                                                                                                                B
+       • Platform finally decides on assignment
+                                                                                                            4
+       • Multiple offers increase the probability of selection                                                             3
+       • Duplicate selection cause frustration of supplier
+
+       • How to find the right balance?
+                                                                                                            Supplier           Customer
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Decision sequence
+       •      At time t=5 two suppliers and three request are observed
+       •      Request A and B are offered to supplier 1, B and C are offered to supplier 2
+       •      Both suppliers opt for request B, and eventually B is assigned to supplier 1 → implement
+       •      At time t=6 A has disappeared, C remains, D is new and supplier 3 has come into play
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Multiple Scenario Approach
+       In each state
+       • Generate a set of scenarios
+
+       • Scenario is a known ranking of customers
+              for each supplier
+
+       • Solve individual scenarios with some IP-magic
+
+       • Derive “consensus” solution from scenario solutions
+
+       • Observe customer selection of supplier
+
+       • Perform final assignment of customers to supplier
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Step 1: Generating scenarios
+       •      Preferences of suppliers with regard to attributes of the current state are not known
+       •      Distance to the customer and travel time are identified as meaningful attributes
+       •      The weights of attributes are modified for each supplier at random
+       •      Solving the respective MIP leads to a ranking/rejection of requests for suppliers
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Step 2: Solving an bi-level Integer Program
+       •      First level: Assignment of customer requests to supplier in a scenario
+       •      Second level: Supplier (artificially) select requests in accordance to rank
+       •      Conversion of second level objective function in constraint → single-level IP
+       •      Solve the resulting assignment problem for 𝑥𝑖𝑗𝑡𝜎 supplier 𝑖, customer 𝑗, state 𝑡, scenario 𝜎
+       • The assignment problem is variant of the transportation problem → modi method
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Step 3: Consensus solution
+       • Reflects the structure discovered by the scenario solutions by means of a majority vote
+       • Compute frequency fijt = σ𝜎 𝑥𝑖𝑗𝑡𝜎 over scenarios 𝜎 and maximize σ𝑖 σ𝑗 𝑓𝑖𝑗𝑡 𝑥𝑖𝑗𝑡
+       • The consensus 𝑥𝑖𝑗𝑡 considers frequently observed requests in one feasible solution
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Step 4 and 5: Supplier selection and final assignment
+       • The consensus solution is transferred to all suppliers
+
+       • The suppliers individually select favorable requests
+
+       •     Finally, a non-overlapping assignment is derived that is
+             hopefully acknowledged by the suppliers
+
+       Results:
+       • MSA: Our Approach
+       • EAA: mean value approach
+       • CR: Offer n closest customers
+       • CP: Current practice
+       • UB: Upper Bound
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary
+
+       • Menus can reduce waiting times for customers and suppliers
+
+       • Menus are particularly important if supplier behavior is uncertain
+
+       • In practice, multiple attributes describing individual drivers are taken into account
+
+       • Drawback: requests unfavorable to all suppliers have to be assigned as well
+
+       • Frustration → ask for a request selection first and assign other requests later on?
+
+       • This matter is subject to investigation in lecture 11 → food delivery
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MSA Summary
+       • Multiple scenario approach considers the entire decision space.
+       • MSA does not capture dynamism explicitly.
+       • Decisions are derived at once and not subsequently.
+
+       • Controllable stochasticity:
+         • Time windows
+         • Start times, etc.
+         • Capture dynamism implicitly
+
+       • Static solutions → always on the edge of infeasibility
+       • Alleviated by the “right” consensus function
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+
+       •       Multiple Scenario Approach
+                                                                                                        Handelsblatt.de
+
+       •       Post-Decision State Rollout
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Look-ahead Methods
+
+       • Idea: Build and solve part of the MDP
+
+       • Components
+         • Information model: Sampling from information model distribution
+         • Decision model: None, Mixed Integer Program or given Base Policy
+         • Decision Points: Limited look-ahead Horizon
+
+       • Many different look-ahead methods
+         • Sampling
+         • Sampling + Rollout of policy
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Sampling
+       • State 𝑆𝑘 and set of decisions 𝑋(𝑆𝑘 )                                                                                              xb    xb
+                                                                                                                              Sk+1(ω1)          Sk+1(ω1)
+                                                                                                                         ω1
+
+                                                                                                                  Sxk1
+
+
+
+
+                                                                                                                                  ...
+
+
+
+
+                                                                                                                                                   ...
+                                              𝑥      𝑥      𝑥
+       •      Post-decision state candidates 𝑆𝑘 1 , 𝑆𝑘 2 , 𝑆𝑘 3 , …                                          x1          ωL   Sk+1ω(LωL)   xb   Sxk+1
+                                                                                                                                                   b
+                                                                                                                                                     (ωL)
+
+
+                                                                                                                                 …
+       • For every post-decision state 𝑆𝑘𝑥 :                                                                 x2
+                                                                                                                         ω1
+                                                                                                        Sk        Sxk2
+         • Sample set of information model realizations                                                                  ωL      …
+         • Use realizations to evaluate decisions
+
+
+
+
+                                                                                                                  ...
+           (for example, incurred costs, etc.)                                                               xn
+                                                                                                                         ω1      …
+                                                                                                                  Sxkn
+                                                                                                                         ωL      ...
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Inventory Problem                                                                          Samples
+
+
+
+
+                                                                Decisions
+                                                                                                           𝐿
+                                                                                                        1
+                                                                                                          ෍ 𝑅(𝑆 𝑥1 , 𝜔𝑙 )
+                                                                                                        𝐿
+                                                                                                         𝑙=1
+                                    State
+                                                                                                           𝐿
+                                                                                                        1
+                                                                                                          ෍ 𝑅(𝑆 𝑥2 , 𝜔𝑙 )
+                                                                                                        𝐿
+                                                                                                          𝑙=1
+
+
+
+
+                                                                                                           𝐿
+                                                                                                        1
+                                                                                                          ෍ 𝑅(𝑆 𝑥3 , 𝜔𝑙 )
+                                                                                                        𝐿
+                                                                                                          𝑙=1
+
+
+
+                   Samples may be generated independently of decision x and tested with hindsight
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Suitable Application for Sampling Transitions
+       • Approximation of reward function (demand, travel time, etc.)
+       • Short-term anticipation of stochastic information
+
+       • Very dynamic problems (short lookahead horizon)
+         • Emergency services
+         • Dial-a-ride
+
+       • To evaluate decisions that are not impacted much by future decisions
+         • Inventory routing in bike sharing systems
+         • A station is served usually only a few times within the day
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Post-Decision Rollout Algorithm (Bertsekas, 1995)
+       • State 𝑆𝑘 and set of decisions 𝑋(𝑆𝑘 )
+                                                                            𝑥       𝑥       𝑥
+       • Post-decision state candidates 𝑆𝑘 1 , 𝑆𝑘 2 , 𝑆𝑘 3 , …
+       •      For every post-decision state 𝑆𝑘𝑥 :
+       •      Simulate 𝐿 paths (information model realizations + decisions)
+       •      Decisions within simulation: (runtime-efficient) base policy 𝜋𝑏
+       •      Receive 𝐿 results
+       •             ෠ 𝑘𝑥 ) as average over simulated results
+              Define 𝑉(𝑆
+                                                                                𝐿        𝐾
+                                                                                                        𝜋
+                                                  𝑉෠ 𝑆𝑘𝑥 = 𝐿−1 ෍                        ෍ 𝑅(𝑆𝑖 , 𝑋𝑖 𝑏 (𝑆𝑖 ))|𝑆𝑘𝑥 , 𝜔𝑙
+                                                                             𝑙=1 𝑖=𝑘+1
+                                                 ෠ 𝑘𝑥 ) is maximized
+       • Select decision 𝑥, such that 𝑅 𝑆𝑘 , 𝑥 + 𝑉(𝑆
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Post-Decision Rollout Algorithm: Visualization
+
+                                                                                     xb     xb           ω1              xb         ω1
+                                                                       Sk+1(ω1)            Sk+1(ω1)           Sk+2(ω1)        ...        SK(ω1)
+                                                             ω1
+
+                                                     Sxk1
+
+
+
+
+                                                                           ...
+
+
+
+
+                                                                                              ...
+
+
+
+
+                                                                                                                 ...
+
+
+
+
+                                                                                                                              ...
+
+
+
+
+                                                                                                                                           ...
+                                          x1                  ωL       Sk+1ω(LωL)     xb   Sxk+1
+                                                                                              b
+                                                                                                (ωL)     ωL
+                                                                                                              Sk+2(ωL)   xb
+                                                                                                                              ...   ωL
+                                                                                                                                         SK(ωL)
+
+
+                                                             ω1            …
+                                          x2
+                               Sk                    Sxk2
+                                                              ωL           …
+                                                    ...
+
+
+
+                                          xn
+                                                             ω1            …
+                                                     Sxkn
+                                                              ωL           ...
+
+
+                        Current Decision                                                                 Simulation
+
+                                Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                              ∗
+                                                                                                            𝑋𝑘𝜋 (𝑆𝑘 ) = arg min 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+                                                                                                                        𝑥∈𝑋(𝑆𝑘 )
+       Example: Inventory Problem
+                                                                                               “Refill up                               “Refill up
+                                                                                               to 50%”                                  to 50%”
+
+                                                                       𝑅=0                          𝑅1               𝑅=0                    𝑅4
+                                  Decisions
+
+
+      State
+
+                                                                                                    𝑅2                                      𝑅5
+                                                                       𝑅=0                                           𝑅=0                              …
+
+
+
+                                                                      𝑅>0                           𝑅3               𝑅=0                   𝑅5
+
+
+
+
+                                       Current Decision                                                           Simulation
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary
+       • Can capture dynamic development of information and decisions
+       • Advantageous, for example, to capture state developments over time (vehicle
+         movements, job arrivals, etc.)
+
+       • Only a few decisions can be evaluated
+       • Decisions significantly impacted by base policy
+       • The longer the horizon, the further away from realistic developments
+
+       • Can be combined with runtime efficient PFAs or CFAs as base policies (and value
+         function approximation, as we see in Lecture 10)
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Look-ahead Methods
+
+       • Case Study I: Post-Decision State Rollout                                                      Handelsblatt.de
+
+
+
+       • Case Study II: Multiple Scenario Approach
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Study: Courier Service
+       •  Single vehicle
+       •  Depot (start and finish)
+       •  Limited travel time (shift)
+       •  Customer request pickup of parcels
+       •  Part of the customers is known in advance
+       •  Part of the customer request dynamically
+          throughout the day
+       • Decisions:
+         • Acceptance
+         • Routing
+
+       Goal: Maximize the expected number of accepted dynamic requests
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Markov Decision Process
+
+                         𝑡 = 60                                         𝑡 = 60                          𝑡 = 70 ?
+
+
+
+
+                                                                                                          ?
+
+
+
+
+       •      Decision Point: New Request
+       •      State: time, vehicle position, customers to serve, new request, planned tour
+       •      Decisions: Acceptance/Rejection, Adaption of the tour
+       •      Reward: 1 (acceptance) or 0 (rejection)
+       •      Transition: Travel and new customer request
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Rollout Algorithm: Decision Space Reduction
+
+                         𝑡 = 60                                         𝑡 = 60                          𝑡 = 70 ?
+
+
+
+
+                                                                                                          ?
+
+
+
+
+       •     Rollout Algorithm can evaluate only a limited number of decisions
+       •     Acceptance: 2 decisions
+       •     Routing: n customers in the tour, 1 request: Up to (n+1)! Decisions
+       •     Reduction:
+            • Explicit decision on acceptance
+            • Routing heuristic: Keep the current tour and insert in the “cheapest” position
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Acceptance and the Value Function
+       • Acceptance of a request reduces the available resources to serve future requests. (value
+          decreases)
+       • Question: Is it worth accepting a request?
+         • Valuable
+         • If resource reduction is low,
+         • If, through resource investment, future
+           requests are more efficient to use (coverage)
+         • Bellman Equation:
+                                            ∗
+                                      𝑋𝑘𝜋        𝑆𝑘 = arg maxx∈𝑋 𝑆𝑘 𝑅 𝑆𝑘 , 𝑥 + 𝑉(𝑆𝑘𝑥 )
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                        ∗
+                                                                                                 𝑋𝑘𝜋        𝑆𝑘 = arg maxx∈𝑋 𝑆𝑘 𝑅 𝑆𝑘 , 𝑥 + 𝑉(𝑆𝑘𝑥 )
+       Acceptance Decisions
+       • 2 Policies
+
+       • Myopic:
+          • Value function is set to 0
+          • Maximize immediate reward
+          • Customers are always accepted
+            as long as they can be served
+
+       • Rollout Algorithm:
+          • For each of the two post-decision states
+          • Simulate the rest of the day
+          • Use myopic policy as a basic policy
+          • Number of simulation runs L=16
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                        ∗
+                                                                                                 𝑋𝑘𝜋        𝑆𝑘 = arg maxx∈𝑋 𝑆𝑘 𝑅 𝑆𝑘 , 𝑥 + 𝑉(𝑆𝑘𝑥 )
+       Example
+
+
+                                                             𝑡 = 60
+
+
+
+                𝑡 = 60                                                                                  Simulation        𝑉෠ = 3
+
+
+                                                             𝑡 = 60
+
+                                                                                                        Simulation       𝑉෠ = 3.5
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Results
+
+
+
+
+                                          Acceptances (in %)
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Tradeoff: Simulation runs vs. quality
+       • Runtime and solution quality increase with number of runs
+
+
+                                                                 Accept         Runtim
+                                                                                e
+
+
+
+
+                                                                                                        Runtime (in seconds)
+                                            Acceptances (in %)
+
+
+
+
+                                                                                      Simulation Runs
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 38
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Limiting the simulation horizon
+
+       •      Idea: limiting the simulation according to H decision points
+       •      Expected: tradeoff between anticipation and reliability
+       •      The longer the simulation horizon, the more anticipation
+       •      The shorter the simulation horizon, the more reliable the simulation
+
+                                                                                                        𝐻
+
+
+
+                                          sk
+                                               x0
+                                               x1
+                                                      skx0
+
+
+                                                      skx1
+                                                                                                            …
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 39
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Limited Horizon
+       • Adaption of Bellman Equation:
+                                                               𝐿    min(𝐾,𝑘+𝐻)
+                                                                                                𝜋
+                                         𝑉෠ 𝑆𝑘𝑥 = 𝐿−1 ෍                   ෍          𝑅(𝑆𝑖 , 𝑋𝑖 𝑏 𝑆𝑖 ) |𝑆𝑘𝑥 , 𝜔𝑙
+                                                              𝑙=1       𝑖=𝑘+1
+
+
+
+       • Simulation of maximally 𝐻 decision points
+       • 𝐻 = 0: myopic (fast), 𝐻 = ∞: full simulation to the final state (slow)
+
+       • Alternative (not considered here): Artificially discounting rewards by
+       •         1 − 𝛾 𝑖−(𝑘+1) with discount factor 𝛾, may require more runtime.
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 40
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Simulation Horizon
+       •      Results for 𝐿 = 2,16,128 and 𝐻 = 0,5,10 … , 80, ∞
+       •      Initial increase in solution quality                                                                          Simulation Runs
+       •      Slight decrease for longer horizons
+       •      Behavior depends on the number of simulation runs
+       •      (decrease in runtime for small H)
+
+
+
+
+                                                                                           Acceptances (in %)   Simulation Horizon
+                                                                                                                               41
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 41
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary
+       • MDP are often too complex to solve exactly
+       • Idea: Use of online simulation to estimate the value function
+                                   𝐾                                                                    𝐿     min(𝐾,𝑘+𝐻)
+                                                    𝜋∗                                                                             𝜋
+           𝑉 𝑆𝑘𝑥 = 𝔼              ෍ 𝑅(𝑆𝑖 , 𝑋𝑖 (𝑆𝑖 ))|𝑆𝑘𝑥                           𝑉෠ 𝑆𝑘𝑥 = 𝐿−1 ෍                ෍         𝑅(𝑆𝑖 , 𝑋𝑖 𝑏 𝑆𝑖 ) |𝑆𝑘𝑥 , 𝜔𝑙
+                                𝑖=𝑘+1                                                                   𝑙=1     𝑖=𝑘+1
+
+
+
+
+       • Simulation is based on realizations and a basic policy
+       • Disadvantages of Rollout Algorithm
+         • Runtime is limited
+         • Only a few decisions can be considered
+         • Base policy leads to suboptimal decisions in simulation
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 42
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Look-ahead: Advantages and Disadvantages
+       • Advantages:
+         • Full state information is considered
+         • Stochasticity is considered explicitly
+         • Full decision space XOR
+         • Dynamic developments can be considered
+
+       • Disadvantages:
+         • Runtime
+         • Information model: only a few realizations can be considered
+         • Decision model: only a few decisions can be considered in simulation
+         • Divergence from realistic developments with increasing horizon.
+         • Conventional solvers may not be suitable, e.g., for rollout algorithms
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 43
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Back to the Lecture: Outlook
+       • Can we store simulation results?
+       • Machine Learning
+
+       • Lecture 8: Reinforcement Learning
+       • Lecture 9: Analytics Issues in RL
+
+
+
+
+                               Data Driven Decision Making | Lecture 7 – Look-ahead Methods | Page 44
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

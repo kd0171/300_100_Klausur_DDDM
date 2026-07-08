@@ -1,0 +1,1798 @@
+\section*{Lecture 4 - Dynamism}
+\addcontentsline{toc}{section}{Lecture 4 - Dynamism}
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{001}{Data Driven Decision Making}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{1}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定
+\item 講義 4 – 動的性質
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S001: 「Data Driven Decision Making」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S001: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{002}{Recap and Motivation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{2}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 前回の復習と今回の位置づけ
+\item Uncertainty（この用語は講義スライド上の専門語として扱う）
+\item Information modeling（この用語は講義スライド上の専門語として扱う）
+\item 決定 modeling
+\item Today: Can we react to observed changes in（この用語は講義スライド上の専門語として扱う）
+\item the information model?（この用語は講義スライド上の専門語として扱う）
+\item web.stanford.edu（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Recap and Motivation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S002: 「Recap and Motivation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S002: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{003}{Goals Today}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{3}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 目標 Today
+\item 動的性質 in information and 決定 model
+\item Dynamic vs. Static 計画
+\item Dynamic 決定 process
+\item Stochastic and Dynamic Vehicle Routing（この用語は講義スライド上の専門語として扱う）
+\item First steps of modelling（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Goals Today」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S003: 「Goals Today」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S003: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{004}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{4}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 動的性質
+\item ケーススタディ: Urban Delivery and Traffic Management
+\item Preparation of Modelling（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Agenda」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S004: 「Agenda」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S004: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{005}{Dynamism}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{5}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 動的性質
+\item Dynamic problems require not only one but several subsequent 決定s.
+\item The 決定s impact the future and are therefore interconnected.
+\item There is new information revealed after each 決定 was made.
+\item The solution for a 動的 problem is a strategy (方策)
+\item It defines how to react to newly revealed information.（この用語は講義スライド上の専門語として扱う）
+\item 報酬 or cost accumulate over time and 決定s.
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamism」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S005: 「Dynamism」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S005: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{006}{Static and Dynamic Planning}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{6}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 静的計画と動的計画
+\item 例: uncertain travel times
+\item Static planning:（この用語は講義スライド上の専門語として扱う）
+\item Replanning not possible（この用語は講義スライド上の専門語として扱う）
+\item 実装 of a (reliable) a-priori plan www.braunschweiger-
+\item 例: Bus
+\item Dynamic planning:（この用語は講義スライド上の専門語として扱う）
+\item High impact of 不確実性 requires replanning
+\item Adaptations of plans（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Static and Dynamic Planning」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S006: 「Static and Dynamic Planning」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S006: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{007}{Examples for Dynamism}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{7}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例s for Dynamism
+\item Urban Delivery Line Production Asset Allocation（この用語は講義スライド上の専門語として扱う）
+\item https://www.venitec.de/de/leistungen-de/fertigungsplanung-（この用語は講義スライド上の専門語として扱う）
+\item https://www.handelsblatt.com/unternehmen/handel- https://www.forbes.com/sites/randywarren/2020/08/06/maxi（この用語は講義スライド上の専門語として扱う）
+\item fertigungsoptimierung/fliessfertigung（この用語は講義スライド上の専門語として扱う）
+\item konsumgueter/onlinehandel-verkehrskollaps-per- mizing-your-portfolio-benefits-via-asset-allocation/（この用語は講義スライド上の専門語として扱う）
+\item mausklick/20604804.html?ticket=ST-190133-（この用語は講義スライド上の専門語として扱う）
+\item fsLx4SuFxff4v6EHdGk0-ap5（この用語は講義スライド上の専門語として扱う）
+\item Courier Service Inventory Management Games（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Examples for Dynamism」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S007: 「Examples for Dynamism」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S007: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{008}{Urban Mobility and Transportation:}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{8}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Urban モビリティ and 交通・輸送:
+\item Savelsbergh, van Woensel (交通・輸送 Science, 2016):
+\item “Highly 動的 and volatile 決定 making environments with access to
+\item massive amounts of near real-time data, which will be seen more and more in（この用語は講義スライド上の専門語として扱う）
+\item the future, may necessitate new views, paradigms, and models for 決定
+\item support.”（この用語は講義スライド上の専門語として扱う）
+\item Speranza (European Journal of Operational Research, 2016):（この用語は講義スライド上の専門語として扱う）
+\item New challenge of “appropriately modeling 動的 events and simultaneously
+\item incorporating information about the 不確実性 of future events.”
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Urban Mobility and Transportation:」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S008: 「Urban Mobility and Transportation:」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S008: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{009}{Components of a Dynamic Decision Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{9}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Components of a Dynamic 決定 Problem
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Components of a Dynamic Decision Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S009: 「Components of a Dynamic Decision Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S009: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{010}{Ingredients of a Dynamic Decision System}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{10}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Ingredients of a Dynamic 決定 System
+\item Exogeneous: Development that cannot（この用語は講義スライド上の専門語として扱う）
+\item be controlled by 決定 maker
+\item (information model)（この用語は講義スライド上の専門語として扱う）
+\item 決定: Endogenous 決定-making
+\item process, provides 報酬 or costs
+\item (決定 model)
+\item Both exogeneous and endogenous（この用語は講義スライド上の専門語として扱う）
+\item processes interact via 決定 状態s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Ingredients of a Dynamic Decision System」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S010: 「Ingredients of a Dynamic Decision System」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S010: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{011}{Urban Delivery}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{11}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Urban Delivery（この用語は講義スライド上の専門語として扱う）
+\item Vehicle routing problem（この用語は講義スライド上の専門語として扱う）
+\item All customers must be served（この用語は講義スライド上の専門語として扱う）
+\item One depot, one vehicle（この用語は講義スライド上の専門語として扱う）
+\item Travel times vary over the day（この用語は講義スライド上の専門語として扱う）
+\item D
+\item Exogenous: Varying 旅行時間s
+\item 状態: Customers to serve, Position of vehicle 1 3
+\item 決定: Whom to visit next
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Urban Delivery」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S011: 「Urban Delivery」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S011: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{012}{Example: Urban Delivery}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{12}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Urban Delivery
+\item Route has been optimized prior to execution（この用語は講義スライド上の専門語として扱う）
+\item D
+\item Execution starts with proceeding to customer 1（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Urban Delivery」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S012: 「Example: Urban Delivery」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S012: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{013}{Example: Urban Delivery}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{13}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Urban Delivery
+\item Having arrived at customer 1, a congestion alert comes in（この用語は講義スライド上の専門語として扱う）
+\item D
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Urban Delivery」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S013: 「Example: Urban Delivery」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S013: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{014}{Example: Urban Delivery}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{14}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Urban Delivery
+\item One option on the way to customer 2 is a costly detour（この用語は講義スライド上の専門語として扱う）
+\item D
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Urban Delivery」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S014: 「Example: Urban Delivery」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S014: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{015}{Example: Urban Delivery}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{15}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Urban Delivery
+\item Another option is to switch the sequence of customer visits（この用語は講義スライド上の専門語として扱う）
+\item D
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Urban Delivery」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S015: 「Example: Urban Delivery」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S015: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{016}{Dynamic Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{16}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 動的意思決定プロセス
+\item 旅行時間 Realizations
+\item Instance（この用語は講義スライド上の専門語として扱う）
+\item Open Traveling Salesperson Problem（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S016: 「Dynamic Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S016: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{017}{Dynamic Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{17}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 動的意思決定プロセス
+\item Change in 旅行時間 matrix
+\item Position（この用語は講義スライド上の専門語として扱う）
+\item Customers left to serve（この用語は講義スライド上の専門語として扱う）
+\item Travel time matrix（この用語は講義スライド上の専門語として扱う）
+\item Next customer to visit（この用語は講義スライド上の専門語として扱う）
+\item (new tentative route)（この用語は講義スライド上の専門語として扱う）
+\item Travel time to next（この用語は講義スライド上の専門語として扱う）
+\item customer（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S017: 「Dynamic Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S017: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{018}{Dynamic Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{18}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 動的意思決定プロセス
+\item Position（この用語は講義スライド上の専門語として扱う）
+\item Customers left to serve（この用語は講義スライド上の専門語として扱う）
+\item Travel time matrix（この用語は講義スライド上の専門語として扱う）
+\item Next customer to visit（この用語は講義スライド上の専門語として扱う）
+\item (new tentative route)（この用語は講義スライド上の専門語として扱う）
+\item Travel time to next（この用語は講義スライド上の専門語として扱う）
+\item customer（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S018: 「Dynamic Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S018: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{019}{Courier Services}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{19}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Courier Services（この用語は講義スライド上の専門語として扱う）
+\item Pickup and delivery problem（この用語は講義スライド上の専門語として扱う）
+\item Customer request service（この用語は講義スライド上の専門語として扱う）
+\item Requests are accepted/rejected（この用語は講義スライド上の専門語として扱う）
+\item 報酬: Total no. of customer served
+\item Exogenous: Customer requests（この用語は講義スライド上の専門語として扱う）
+\item 状態: Customer accepted, position of vehicle
+\item 決定: Which request to accept, whom to visit next
+\item 報酬: Newly accepted customers
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Courier Services」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S019: 「Courier Services」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S019: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{020}{Line Production}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{20}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Line Production（この用語は講義スライド上の専門語として扱う）
+\item Scheduling problem（この用語は講義スライド上の専門語として扱う）
+\item Problem horizon（この用語は講義スライド上の専門語として扱う）
+\item Set of machines（この用語は講義スライド上の専門語として扱う）
+\item Arriving jobs: duration, deadline, type（この用語は講義スライド上の専門語として扱う）
+\item Sequence dependent set-up times（この用語は講義スライド上の専門語として扱う）
+\item Exogenous: Arriving jobs（この用語は講義スライド上の専門語として扱う）
+\item 状態: Current schedule, new jobs
+\item 決定: Sequence, machine
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Line Production」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S020: 「Line Production」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S020: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{021}{Inventory Management}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{21}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Inventory Management（この用語は講義スライド上の専門語として扱う）
+\item Inventory problem（この用語は講義スライド上の専門語として扱う）
+\item Horizon in terms of days（この用語は講義スライド上の専門語として扱う）
+\item Initial inventory and max capacity（この用語は講義スライド上の専門語として扱う）
+\item Uncertain demand per day（この用語は講義スライド上の専門語として扱う）
+\item Delivery cost（この用語は講義スライド上の専門語として扱う）
+\item Holding costs per unit and day（この用語は講義スライド上の専門語として扱う）
+\item If demand>inventory, difference is（この用語は講義スライド上の専門語として扱う）
+\item served by (expensive) third party（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Inventory Management」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S021: 「Inventory Management」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S021: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{022}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{22}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 動的性質
+\item ケーススタディ: Urban Delivery and Traffic Management
+\item Preparation of Modelling（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Agenda」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S022: 「Agenda」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S022: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{023}{Case Study}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{23}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Study（この用語は講義スライド上の専門語として扱う）
+\item Urban Delivery Felix Köster, Marlin W. Ulmer, Dirk C. Mattfeld, Geir Hasle,Anticipating emission-sensitive traffic（この用語は講義スライド上の専門語として扱う）
+\item management strategies for 動的 delivery routing, 交通・輸送 Research Part D: Transport and
+\item Environment, Volume 62, 2018, Pages 345-361（この用語は講義スライド上の専門語として扱う）
+\item Traffic Management（この用語は講義スライド上の専門語として扱う）
+\item Stochastic 旅行時間s
+\item Question: Can 動的 replanning save 旅行時間s?
+\item berlin-（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Study」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S023: 「Case Study」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S023: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{024}{Case Study}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{24}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Study（この用語は講義スライド上の専門語として扱う）
+\item Traffic Management（この用語は講義スライド上の専門語として扱う）
+\item Urban Delivery Problem（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Study」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S024: 「Case Study」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S024: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{025}{Motivation: Delivery service}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{25}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Motivation: Delivery service（この用語は講義スライド上の専門語として扱う）
+\item Parcel delivery（この用語は講義スライド上の専門語として扱う）
+\item Last-Mile Delivery（この用語は講義スライド上の専門語として扱う）
+\item 50\% of total transport costs（この用語は講義スライド上の専門語として扱う）
+\item Vehicle fleet（この用語は講義スライド上の専門語として扱う）
+\item Vehicles deliver parcels in urban districts（この用語は講義スライド上の専門語として扱う）
+\item Initial 分布 of parcels to vehicles
+\item Individual routing 決定
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Motivation: Delivery service」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S025: 「Motivation: Delivery service」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S025: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{026}{Motivation: Traffic Management}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{26}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Motivation: Traffic Management（この用語は講義スライド上の専門語として扱う）
+\item Controls traffic flows within the city（この用語は講義スライド上の専門語として扱う）
+\item 目標:
+\item Enable efficient mobility（この用語は講義スライド上の専門語として扱う）
+\item Social and political guidelines uvm-bs.de（この用語は講義スライド上の専門語として扱う）
+\item Emissions:（この用語は講義スライド上の専門語として扱う）
+\item Volume（この用語は講義スライド上の専門語として扱う）
+\item Air pollution（この用語は講義スライド上の専門語として扱う）
+\item EU regulation on nitrogen oxides（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Motivation: Traffic Management」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S026: 「Motivation: Traffic Management」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S026: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{027}{Dynamic Traffic Management}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{27}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic Traffic Management（この用語は講義スライド上の専門語として扱う）
+\item Constant measurement of air pollution（この用語は講義スライド上の専門語として扱う）
+\item If NO2 pollution reaches 60g/m3:（この用語は講義スライド上の専門語として扱う）
+\item Avoidance of further inflows（この用語は講義スライド上の専門語として扱う）
+\item Enabling fast outward flows（この用語は講義スライド上の専門語として扱う）
+\item Tools:（この用語は講義スライド上の専門語として扱う）
+\item Traffic lights wikipedia.de（この用語は講義スライド上の専門語として扱う）
+\item Changes in road capacity（この用語は講義スライド上の専門語として扱う）
+\item Change in speed limits（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Traffic Management」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S027: 「Dynamic Traffic Management」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S027: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{028}{Traffic Management Braunschweig}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{28}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Traffic Management Braunschweig（この用語は講義スライド上の専門語として扱う）
+\item Yearly average（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Traffic Management Braunschweig」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S028: 「Traffic Management Braunschweig」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S028: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{029}{Hot-Spot 1: Hildesheimer Str.}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{29}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Hot-Spot 1: Hildesheimer Str.（この用語は講義スライド上の専門語として扱う）
+\item Limit traffic from A391（この用語は講義スライド上の専門語として扱う）
+\item Suggest exits at Celler, Münchner, and（この用語は講義スライド上の専門語として扱う）
+\item Hamburger Straße.（この用語は講義スライド上の専門語として扱う）
+\item Reduction（この用語は講義スライド上の専門語として扱う）
+\item Increase（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Hot-Spot 1: Hildesheimer Str.」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S029: 「Hot-Spot 1: Hildesheimer Str.」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S029: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{030}{Hot-Spot: Downtown}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{30}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Hot-Spot: Downtown（この用語は講義スライド上の専門語として扱う）
+\item Closure Fallersleber Straße（この用語は講義スライド上の専門語として扱う）
+\item Reduction（この用語は講義スライド上の専門語として扱う）
+\item Increase（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Hot-Spot: Downtown」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S030: 「Hot-Spot: Downtown」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S030: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{031}{Hot-Spot 4: Altewiekring}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{31}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Hot-Spot 4: Altewiekring（この用語は講義スライド上の専門語として扱う）
+\item Reduction（この用語は講義スライド上の専門語として扱う）
+\item Limit left turn at Schillstraße Increase（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Hot-Spot 4: Altewiekring」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S031: 「Hot-Spot 4: Altewiekring」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S031: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{032}{Delivery Service}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{32}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Delivery Service（この用語は講義スライド上の専門語として扱う）
+\item Vehicle fleet（この用語は講義スライド上の専門語として扱う）
+\item Vehicles deliver packages in urban districts（この用語は講義スライド上の専門語として扱う）
+\item Initial 分布 to vehicles
+\item Individual routing 決定
+\item 情報モデル: Stochastic 旅行時間s due to
+\item traffic management 決定s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Delivery Service」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S032: 「Delivery Service」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S032: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{033}{Traffic Management and Travel Times}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{33}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Traffic Management and 旅行時間
+\item Traffic Management controls street capacities（この用語は講義スライド上の専門語として扱う）
+\item Capacities impact traffic flows（この用語は講義スライド上の専門語として扱う）
+\item Traffic flows define speed per street segment（この用語は講義スライド上の専門語として扱う）
+\item Shortest paths and 旅行時間 matrices
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Traffic Management and Travel Times」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S033: 「Traffic Management and Travel Times」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S033: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{034}{Delivery service}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{34}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Delivery service（この用語は講義スライド上の専門語として扱う）
+\item Vehicle fleet（この用語は講義スライド上の専門語として扱う）
+\item Vehicles deliver packages in urban districts（この用語は講義スライド上の専門語として扱う）
+\item Initial 分布 to vehicles
+\item Individual routing 決定
+\item 情報モデル: Stochastic 旅行時間s due to
+\item traffic management 決定s
+\item 意思決定モデル: Where to go next after serving a
+\item district (how to adapt the tentative route)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Delivery service」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S034: 「Delivery service」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S034: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{035}{Case Study Overview}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{35}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Study Overview（この用語は講義スライド上の専門語として扱う）
+\item Instance Generation（この用語は講義スライド上の専門語として扱う）
+\item Solution Method（この用語は講義スライド上の専門語として扱う）
+\item Results（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Study Overview」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S035: 「Case Study Overview」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S035: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{036}{Instances}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{36}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Instances（この用語は講義スライド上の専門語として扱う）
+\item 3 Hotspots in Braunschweig（この用語は講義スライド上の専門語として扱う）
+\item Change of hotspot transport strategy（この用語は講義スライド上の専門語として扱う）
+\item Min. 1 hour active（この用語は講義スライド上の専門語として扱う）
+\item Each hotspot is independent（この用語は講義スライド上の専門語として扱う）
+\item 8 Traffic strategies（この用語は講義スライド上の専門語として扱う）
+\item Vehicle speed:（この用語は講義スライド上の専門語として扱う）
+\item City roads: 25 km/h（この用語は講義スライド上の専門語として扱う）
+\item Reduced: 10 km/h（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Instances」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S036: 「Instances」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S036: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{037}{Emission Data}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{37}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Emission Data（この用語は講義スライド上の専門語として扱う）
+\item Data set of the 状態 of Lower Saxony:
+\item 3 months hourly values for NO2（この用語は講義スライド上の専門語として扱う）
+\item 92 days（この用語は講義スライド上の専門語として扱う）
+\item Standard deviation 3-11 micrograms/m3（この用語は講義スライド上の専門語として扱う）
+\item 24\% of time over 60 micrograms/m3（この用語は講義スライド上の専門語として扱う）
+\item Hotspots: Emissions data from Braunschweig, Hannover and（この用語は講義スライド上の専門語として扱う）
+\item Osnabrück（この用語は講義スライド上の専門語として扱う）
+\item If the pollution at a hotspot is greater than 60 micrograms/m3,（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Emission Data」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S037: 「Emission Data」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S037: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{038}{Case Study Overview}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{38}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Study Overview（この用語は講義スライド上の専門語として扱う）
+\item Instance Generation（この用語は講義スライド上の専門語として扱う）
+\item Solution Method（この用語は講義スライド上の専門語として扱う）
+\item Results（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Study Overview」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S038: 「Case Study Overview」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S038: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{039}{Method}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{39}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Method（この用語は講義スライド上の専門語として扱う）
+\item Initial 分布: 車両ルーティング問題 with
+\item time limit（この用語は講義スライド上の専門語として扱う）
+\item For every vehicle in every 決定 状態:
+\item Calculate 旅行時間s: Dijkstra-Algorithm
+\item Solve the open traveling salesperson problem（この用語は講義スライド上の専門語として扱う）
+\item Source: OSM（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Method」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S039: 「Method」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S039: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{040}{Results}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{40}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Results（この用語は講義スライド上の専門語として扱う）
+\item 1000 Days（この用語は講義スライド上の専門語として扱う）
+\item Average sum of 旅行時間s
+\item Reduction by 3.5\%（この用語は講義スライド上の専門語として扱う）
+\item Travel time Strategy（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Results」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S040: 「Results」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S040: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{041}{Street Usage}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{41}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Street Usage（この用語は講義スライド上の専門語として扱う）
+\item Static Dynamic（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Street Usage」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S041: 「Street Usage」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S041: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{042}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{42}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 動的性質
+\item ケーススタディ: Urban Delivery and Traffic Management
+\item Preparation of Modelling（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Agenda」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S042: 「Agenda」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S042: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{043}{Dynamic Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{43}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 動的意思決定プロセス
+\item Two processes:（この用語は講義スライド上の専門語として扱う）
+\item Exogeneous: Changing information (確率的ity)
+\item Endogenous: Adaption of plans (dynamism)（この用語は講義スライド上の専門語として扱う）
+\item Meisel (2011)（この用語は講義スライド上の専門語として扱う）
+\item → A model should capture 確率的ity and dynamism (over time)
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S043: 「Dynamic Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S043: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{044}{“Standard” Static Vehicle Routing Problem}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{44}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item “Standard” Static 車両ルーティング問題
+\item Depot, customers, vehicles（この用語は講義スライド上の専門語として扱う）
+\item Constraint: capacity（この用語は講義スライド上の専門語として扱う）
+\item 目的: 最小化する 旅行時間
+\item 決定s
+\item Assignment of customers to vehicles（この用語は講義スライド上の専門語として扱う）
+\item Sequence of customers per vehicle（この用語は講義スライド上の専門語として扱う）
+\item Modeling: mixed-integer programming（この用語は講義スライド上の専門語として扱う）
+\item Solution: set of routes（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「“Standard” Static Vehicle Routing Problem」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S044: 「“Standard” Static Vehicle Routing Problem」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S044: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{045}{Markov Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{45}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item マルコフ意思決定過程
+\item 𝑆𝑘 𝑥 𝑆𝑘𝑥 𝜔𝑘 𝑆𝑘+1
+\item 𝑅 𝑆𝑘 , 𝑥
+\item Components:（この用語は講義スライド上の専門語として扱う）
+\item 決定 point 𝑘 (either periodic or event triggered)
+\item 決定 状態 𝑆𝑘 ∈ 𝐒
+\item 決定s 𝑥 ∈ 𝑋 (e.g., with Mixed-Integer Programming)
+\item 報酬 𝑅 𝑆𝑘 , 𝑥 ∈ ℝ (or costs as negative 報酬)
+\item Post-決定 状態 𝑆𝑘𝑥 ∈ 𝐒 × 𝑋
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Markov Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S045: 「Markov Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S045: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{046}{Example: Parcel Service}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{46}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Parcel Service
+\item 𝑥 𝜔𝑘
+\item 𝑆𝑘 𝑆𝑘𝑥 𝑆𝑘+1
+\item 𝑅 𝑆𝑘 , 𝑥 = 30
+\item 𝑡 = 60 D 𝑡 = 60 D 𝑡 = 90 D
+\item 3 3 3
+\item 2 30 2 2
+\item 1 1
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Parcel Service」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S046: 「Example: Parcel Service」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S046: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{047}{Problem Modeling: Markov Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{47}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Problem Modeling: マルコフ意思決定過程
+\item 𝑥 𝜔𝑘
+\item 𝑆𝑘 𝑆𝑘𝑥 𝑆𝑘+1
+\item 𝑅 𝑆𝑘 , 𝑥
+\item S0 SK
+\item SK
+\item Initial 状態 𝑆0
+\item Final 状態 𝑆𝐾
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Problem Modeling: Markov Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S047: 「Problem Modeling: Markov Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S047: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{048}{Solution: Decision Policy}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{48}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Solution: 決定 方策
+\item A 決定 方策 assigns a 決定 to every 状態
+\item S0 SK
+\item SK
+\item 目的: find optimal 方策 𝜋 ∗ maximizing 期待される overall 報酬s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Solution: Decision Policy」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S048: 「Solution: Decision Policy」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S048: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{049}{Optimal Solution}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{49}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 最適解
+\item An optimal solution 𝜋 ∗ satisfies:（この用語は講義スライド上の専門語として扱う）
+\item 𝐾
+\item ∗
+\item 𝜋 ∗ = arg max𝜋∈Π 𝔼 ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ))|𝑆0
+\item 𝑖=0
+\item 方策 𝜋 ∗ represents the 方策 𝜋 ∈ Π, maximizing the 期待される 報酬
+\item Given initial 状態 𝑆0
+\item 𝑋𝑘𝜋 𝑆𝑘 indicates the 決定 made by 方策 𝜋 in 状態 𝑆𝑘
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Optimal Solution」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S049: 「Optimal Solution」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S049: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{050}{Summary}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{50}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item まとめ
+\item Motivation und Definition: 動的性質
+\item Case Study: Dynamic re-planning reduces cost（この用語は講義スライド上の専門語として扱う）
+\item Modelling: マルコフ意思決定過程
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Summary」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S050: 「Summary」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S050: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 4 - Dynamism}{051}{Outlook}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{51}{../Materials/2026/3DM_04_Dynamism_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Outlook（この用語は講義スライド上の専門語として扱う）
+\item Anticipation: Integration of future developments in 決定 making
+\item Next lecture:（この用語は講義スライド上の専門語として扱う）
+\item マルコフ意思決定過程
+\item Optimal solutions（この用語は講義スライド上の専門語として扱う）
+\item S0 SK
+\item SK
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。
+\item static planning, dynamic planning, a priori optimization, online reoptimizationを区別する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Outlook」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Dynamism は、意思決定問題が時間とともに進行し、状態が変化することを意味する。静的問題では、すべての入力を最初に与えられ、その情報に基づいて一度だけ計画を作る。動的問題では、新しい注文、交通状況、車両位置、キャンセル、故障などが途中で発生し、計画を更新する必要がある。\par
+重要なのは、dynamism は stochasticity と同じではないという点である。stochasticity は未来が不確実であること、dynamism は時間とともに決定と状態が進む構造を持つことである。例えば、すべての未来注文が既知でも、時点ごとに車両位置が変わり決定を繰り返すなら動的である。逆に、将来の需要が確率的でも、最初に一括で決めて変更しないなら静的な確率計画として扱える。\par
+a priori optimization は、実行前に全体計画を作り、実行中は大きく変更しない考え方である。計算しやすく、全体最適を考えやすいが、予期しない情報に弱い。online または dynamic planning は、各時点で現在状態を観測し、必要に応じて決定を変える。現実に適応しやすいが、計算時間や一貫性が問題になる。\par
+配送の例では、朝に全ルートを決めるのが静的計画である。昼に新規注文が入ったり、車両が遅れたりしたときに、現在の車両位置と残り注文を見て再計画するのが動的計画である。動的計画では、今の選択が将来の柔軟性を奪わないかも考える必要がある。\par
+試験答案では、静的/動的の違いを『計画を変更するか』だけでなく、状態、時点、決定、外生情報、遷移の連鎖として説明する。特に動的問題では、状態が更新され、次の決定の入力になるというループを明確に書くと満点答案に近づく。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L04-S051: 「Outlook」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、dynamismは、時間の進行により状態が変わり、意思決定を繰り返す性質である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L04-S051: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+\clearpage\ExamHeader{Lecture 4 - Dynamism}
+\ExamQuestion{WS22/23 Aufgabe 6 (4 点)}
+\ExamSubsection{問題内容}
+動的意思決定プロセスを記述する量。設問では、状態・決定・外生情報・遷移・報酬/費用・時点をセットで説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS23/24 Aufgabe 8 (7 点)}
+\ExamSubsection{問題内容}
+動的意思決定問題の構成要素と時点tの状態。設問では、状態が静的情報・動的情報・履歴/リソースなどから構成されることを説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS25 Exercise 1 (2 点)}
+\ExamSubsection{問題内容}
+a priori optimizationの動的意思決定に対する利点。設問では、静的最適化の単純性・計算容易性などを説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}

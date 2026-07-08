@@ -1,0 +1,1192 @@
+\section*{Lecture 11 - Platform-based Food Delivery}
+\addcontentsline{toc}{section}{Lecture 11 - Platform-based Food Delivery}
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{001}{Data Driven Decision Making}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{1}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定
+\item 講義 11 – Platform-based Food Delivery
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S001: 「Data Driven Decision Making」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S001: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{002}{Content}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{2}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 内容
+\item ▪ Platform-based Food Delivery（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Eater‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ Uber Eat’s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Delivery Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Restaurant‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{003}{Platform-based food delivery}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{3}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item プラットフォーム型フードデリバリー
+\item ▪ Platform-based business models act in a gig economy with volatile business partners（この用語は講義スライド上の専門語として扱う）
+\item ▪ Uber Eats introduces the three sided-market place（この用語は講義スライド上の専門語として扱う）
+\item ▪ Revenue mainly from restaurants (+user flat fee)（この用語は講義スライド上の専門語として扱う）
+\item ▪ Payments are made to delivery drivers（この用語は講義スライド上の専門語として扱う）
+\item ▪ Platform is not involved in physical transaction（この用語は講義スライド上の専門語として扱う）
+\item https://www.intelivita.com/blog/food-delivery-business-model/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Platform-based food delivery」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S003: 「Platform-based food delivery」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S003: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{004}{Properties}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{4}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 性質
+\item ▪ The platform business model is applicable in different regions and scales in any order（この用語は講義スライド上の専門語として扱う）
+\item ▪ 決定s needed for the transactional control are taken in a fully automated fashion
+\item ▪ Partners in the three-sided market place occur and vanish at random（この用語は講義スライド上の専門語として扱う）
+\item ▪ The credibility of partners is maintained by monitoring, data analysis and ranking（この用語は講義スライド上の専門語として扱う）
+\item ▪ Data driven 決定 making is the key feature for running such a platform
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Properties」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S004: 「Properties」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S004: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{005}{Interaction of partner}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{5}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 参加者間の相互作用
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Interaction of partner」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S005: 「Interaction of partner」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S005: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{006}{Content}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{6}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 内容
+\item ▪ Platform-based Food Delivery（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Eater‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ Uber Eat’s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Delivery Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Restaurant‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{007}{Stages in generation of food recommendation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{7}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Stages in generation of food 推薦
+\item 1. Non-personalized 推薦 focus on Content
+\item very few restaurants only based（この用語は講義スライド上の専門語として扱う）
+\item 2. Content-based 推薦s
+\item have led to a meal over-specialization（この用語は講義スライド上の専門語として扱う）
+\item Collaborative（この用語は講義スライド上の専門語として扱う）
+\item 3. Collaborative filtering is used for filtering（この用語は講義スライド上の専門語として扱う）
+\item personalized 推薦s
+\item ➢ 3. requires the clustering of eaters in（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Stages in generation of food recommendation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S007: 「Stages in generation of food recommendation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S007: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{008}{The eater‘s perspective (non-personalized recommendation)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{8}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item The eater‘s perspective (non-personalized 推薦)
+\item ▪ The eater has got a preferred cuisine（この用語は講義スライド上の専門語として扱う）
+\item ▪ She prefers food from high ranked restaurants（この用語は講義スライド上の専門語として扱う）
+\item ▪ Fast delivery is of utmost importance（この用語は講義スライド上の専門語として扱う）
+\item ▪ Reasonable pricing is desirable（この用語は講義スライド上の専門語として扱う）
+\item ▪ However, restaurant choices may be too similar（この用語は講義スライド上の専門語として扱う）
+\item ▪ There should be some range of food offered to the eater（この用語は講義スライド上の専門語として扱う）
+\item ▪ Diverse food offerings maintain eater‘s retention（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-DE/blog/uber-eats-trip-（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「The eater‘s perspective (non-personalized recommendation)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S008: 「The eater‘s perspective (non-personalized recommendation)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S008: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{009}{Food ontology graph (content based recommendation)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{9}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 食のオントロジーグラフ（内容ベース推薦）
+\item https://www.uber.com/en-DE/blog/uber-eats-query-understanding/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Food ontology graph (content based recommendation)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S009: 「Food ontology graph (content based recommendation)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S009: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{010}{Content based diversification of meal offerings}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{10}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Content based diversification of meal offerings（この用語は講義スライド上の専門語として扱う）
+\item ▪ Ontology subgraph links eater query with alternative cuisine（この用語は講義スライド上の専門語として扱う）
+\item ▪ Having searched for Soba, also Udon may be offered（この用語は講義スライド上の専門語として扱う）
+\item ▪ Broaden the scope may also offer Sushi, or Chinese dishes（この用語は講義スライド上の専門語として扱う）
+\item ▪ Ontologies are built offline by incorporating expert knowledge（この用語は講義スライド上の専門語として扱う）
+\item ▪ The online counterpart for diversification is learning from orders（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-DE/blog/uber-eats-query-understanding/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Content based diversification of meal offerings」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S010: 「Content based diversification of meal offerings」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S010: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{011}{Online diversification (collaborative filtering)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{11}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Online diversification (協調フィルタリング)
+\item ▪ Queries are tied to restaurants by historic orders（この用語は講義スライド上の専門語として扱う）
+\item ▪ Queries referring to the same restaurant define a context（この用語は講義スライド上の専門語として扱う）
+\item ▪ The context is used later on for query expansion（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-DE/blog/uber-eats-query-understanding/（この用語は講義スライド上の専門語として扱う）
+\item ▪ For Tan Tan Noodle request, restaurants are recommended that appear in related contexts（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Online diversification (collaborative filtering)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S011: 「Online diversification (collaborative filtering)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S011: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{012}{Content}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{12}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 内容
+\item ▪ Platform-based Food Delivery（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Eater‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ Uber Eat’s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Delivery Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Restaurant‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{013}{Controlling the marketplace}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{13}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Controlling the marketplace（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-DE/blog/uber-eats-trip-（この用語は講義スライド上の専門語として扱う）
+\item optimization/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Controlling the marketplace」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S013: 「Controlling the marketplace」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S013: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{014}{Ranking of recommendations}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{14}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Ranking of 推薦s
+\item ▪ Approximately 80\% of order are picked from recommended meals shown in app（この用語は講義スライド上の専門語として扱う）
+\item ▪ Recommendations should be generated in a way that aligns with partner‘s objectives（この用語は講義スライド上の専門語として扱う）
+\item Partner 目的
+\item Conversion（この用語は講義スライド上の専門語として扱う）
+\item Eater（この用語は講義スライド上の専門語として扱う）
+\item Retention（この用語は講義スライド上の専門語として扱う）
+\item Fairness（この用語は講義スライド上の専門語として扱う）
+\item Restaurant（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Ranking of recommendations」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S014: 「Ranking of recommendations」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S014: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{015}{Incorporate multiple (contradicting) objectives}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{15}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Incorporate multiple (contradicting) objectives（この用語は講義スライド上の専門語として扱う）
+\item ▪ Gross booking value is defined as the full amount of payments processed on the platform. It is（この用語は講義スライド上の専門語として扱う）
+\item achieved by placing pricy orders at popular restaurants and addresses restaurant earnings（この用語は講義スライド上の専門語として扱う）
+\item ▪ Marketplace fairness is in the interest of new or less popular restaurants. Earnings from such（この用語は講義スライド上の専門語として扱う）
+\item restaurants should be generated in order to prevent such restaurants from leaving the platform（この用語は講義スライド上の専門語として扱う）
+\item https://www.adjust.com/glossary/conversion-rate/（この用語は講義スライド上の専門語として扱う）
+\item ▪ A conversion rate records the percentage of users who have completed a desired action. Here,（この用語は講義スライド上の専門語として扱う）
+\item its defines a user interaction that results in a meal order. This strengthen eater retention（この用語は講義スライド上の専門語として扱う）
+\item ▪ Gross booking value conflicts with marketplace fairness（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Incorporate multiple (contradicting) objectives」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S015: 「Incorporate multiple (contradicting) objectives」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S015: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{016}{Modeling (1)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{16}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Modeling (1)（この用語は講義スライド上の専門語として扱う）
+\item Model decides about the priority of recommending (reasonable) restaurants to eater（この用語は講義スライド上の専門語として扱う）
+\item 𝑥𝑖𝑗 = 決定 variable that represents the probability of recommending restaurant 𝑗 to eater 𝑖
+\item 𝐼𝑖𝑗 = indicator of restaurant 𝑗 being recommended by eater 𝑖（この用語は講義スライド上の専門語として扱う）
+\item 𝑂𝑖𝑗 = indicator of eater 𝑖 ordering from restaurant 𝑗（この用語は講義スライド上の専門語として扱う）
+\item 𝐺𝑖𝑗 = dollar amount of the order between eater 𝑖 and restaurant 𝑗（この用語は講義スライド上の専門語として扱う）
+\item Conversion rate 𝑇 𝑋 = 𝐸[σ𝑖 σ𝑗 𝐼𝑖𝑗 𝑂𝑖𝑗 ] = σ𝑖 σ𝑗 𝑥𝑖𝑗 𝑝𝑖𝑗 with 𝑝𝑖𝑗 predicted conversion rate（この用語は講義スライド上の専門語として扱う）
+\item Gross booking 𝐺 𝑋 = 𝐸[σ𝑖 σ𝑗 𝐼𝑖𝑗 𝑂𝑖𝑗 𝐺𝑖𝑗 ] = σ𝑖 σ𝑗 𝑥𝑖𝑗 𝑝𝑖𝑗 𝑔𝑖𝑗 with 𝑔𝑖𝑗 期待される booking value
+\item Both, 𝑝𝑖𝑗 = 𝐸[𝑂𝑖𝑗 ] and 𝑔𝑖𝑗 = 𝐸[𝐺𝑖𝑗 ] are personalized machine learning models that use（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Modeling (1)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S016: 「Modeling (1)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S016: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{017}{Modeling (2)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{17}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Modeling (2)（この用語は講義スライド上の専門語として扱う）
+\item 𝑈 = (𝑢𝑖𝑗 ) equal probability for all restaurants 𝑗 to be recommended to eater 𝑖 with σ𝑗 𝑢𝑖𝑗 = 1, ∀𝑖（この用語は講義スライド上の専門語として扱う）
+\item 𝑋 ⋆ = probabilities of optimal solution that can achieve best possible conversion rate 𝑇(𝑋 ⋆ )（この用語は講義スライド上の専門語として扱う）
+\item Parameter (0 < 𝛼 < 1) for required conversion rate and 𝜆 for quadratic fairness penalty（この用語は講義スライド上の専門語として扱う）
+\item Maximize gross booking value max 𝐺 𝑋 − 𝜆 𝑋 − 𝑈 2（この用語は講義スライド上の専門語として扱う）
+\item 𝑋 2
+\item 𝑠. 𝑡. 𝑇 𝑋 ≥ 𝛼 𝑇(𝑋 ⋆ )
+\item 𝑥
+\item 𝑢 |𝑥 − 𝑢| ෍ 𝑥𝑖𝑗 = 1, ∀𝑖
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Modeling (2)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S017: 「Modeling (2)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S017: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{018}{Modeling (3)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{18}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Modeling (3)（この用語は講義スライド上の専門語として扱う）
+\item ▪ Parameter λ penalizes gross booking value that results from restaurant 推薦s
+\item ▪ A small λ favors recommended restaurants and drives out low performing restaurants（この用語は講義スライド上の専門語として扱う）
+\item ▪ A high λ enforces that gross booking value is generated from low performers only（この用語は講義スライド上の専門語として扱う）
+\item ▪ Parameter α enforces a high conversion rate.（この用語は講義スライド上の専門語として扱う）
+\item ▪ Setting α ≈ 1 discharges promising solutions（この用語は講義スライド上の専門語として扱う）
+\item ▪ Setting α ≈ 0 allows for a poor conversion rate（この用語は講義スライド上の専門語として扱う）
+\item ▪ Both parameters have to be tuned online（この用語は講義スライド上の専門語として扱う）
+\item ▪ A multi-armed bandit maintains different parameter sets in parallel（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Modeling (3)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S018: 「Modeling (3)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S018: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{019}{Modeling (4)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{19}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Modeling (4)（この用語は講義スライド上の専門語として扱う）
+\item ▪ Exploration by trying a new parameter set is costly in terms of time and profit (loss)（この用語は講義スライド上の専門語として扱う）
+\item ▪ The number of parameter sets to try is very limited → Bayesian optimization applies（この用語は講義スライド上の専門語として扱う）
+\item ▪ At t=3 three sets have been tested（この用語は講義スライド上の専門語として扱う）
+\item ▪ For these sets we‘ve got confidence（この用語は講義スライド上の専門語として扱う）
+\item ▪ An acquisition function suggests new trial（この用語は講義スライド上の専門語として扱う）
+\item ▪ At t=4 the confidence has improved（この用語は講義スライド上の専門語として扱う）
+\item because of the new observation（この用語は講義スライド上の専門語として扱う）
+\item ▪ A modified acquisition function suggests（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Modeling (4)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S019: 「Modeling (4)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S019: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{020}{Prediction and optimization pipeline}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{20}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Prediction and optimization pipeline（この用語は講義スライド上の専門語として扱う）
+\item ▪ Data analysis predicts demand (fulfilment) in the next period（この用語は講義スライド上の専門語として扱う）
+\item ▪ Multi-objective optimization identifies appropriate restaurants/meals（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/newsroom/arriving-now-the-new-uber-eats/（この用語は講義スライド上の専門語として扱う）
+\item ▪ Eater‘s eyeball triggers order that 最大化するs conversion rate
+\item https://www.uber.com/en-DE/blog/uber-eats-recommending-marketplace/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Prediction and optimization pipeline」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S020: 「Prediction and optimization pipeline」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S020: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{021}{Content}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{21}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 内容
+\item ▪ Platform-based Food Delivery（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Eater‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ Uber Eat’s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Delivery Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Restaurant‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{022}{Interaction of partners}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{22}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Interaction of partners（この用語は講義スライド上の専門語として扱う）
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Interaction of partners」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S022: 「Interaction of partners」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S022: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{023}{Dispatching a driver}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{23}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dispatching a driver（この用語は講義スライド上の専門語として扱う）
+\item ▪ Given a (30min) meal preparation time, dispatch of drivers starts 10min before ETA（この用語は講義スライド上の専門語として扱う）
+\item ▪ Several dispatch attempts until successful trip acceptance by one of the driver pool（この用語は講義スライド上の専門語として扱う）
+\item ▪ Drivers may be ranked and (pre-)selected prior to dispatch attempts（この用語は講義スライド上の専門語として扱う）
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dispatching a driver」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S023: 「Dispatching a driver」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S023: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{024}{Driver selection}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{24}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Driver selection（この用語は講義スライド上の専門語として扱う）
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\item ▪ Distance to the restaurant（この用語は講義スライド上の専門語として扱う）
+\item ▪ Second order in vicinity（この用語は講義スライド上の専門語として扱う）
+\item ▪ Reliability of the driver（この用語は講義スライド上の専門語として扱う）
+\item ▪ Working time restriction（この用語は講義スライド上の専門語として扱う）
+\item ▪ Number of recent deliveries（この用語は講義スライド上の専門語として扱う）
+\item ▪ Weekly payout so far（この用語は講義スライド上の専門語として扱う）
+\item ▪ Batched opportunities:（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Driver selection」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S024: 「Driver selection」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S024: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{025}{State of order is communicated to the eater}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{25}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 状態 of order is communicated to the eater
+\item ▪ The driver is monitored（この用語は講義スライド上の専門語として扱う）
+\item ▪ The position of the driver is（この用語は講義スライド上の専門語として扱う）
+\item communicated to the eater（この用語は講義スライド上の専門語として扱う）
+\item ▪ The predicted time of delivery is（この用語は講義スライド上の専門語として扱う）
+\item updated（この用語は講義スライド上の専門語として扱う）
+\item ▪ Drivers are ranked by the platform（この用語は講義スライド上の専門語として扱う）
+\item ▪ By the speed of delivery（この用語は講義スライド上の専門語として扱う）
+\item ▪ By the reliability of activities（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「State of order is communicated to the eater」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S025: 「State of order is communicated to the eater」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S025: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{026}{Content}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{26}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 内容
+\item ▪ Platform-based Food Delivery（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Eater‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ Uber Eat’s Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Delivery Perspective（この用語は講義スライド上の専門語として扱う）
+\item ▪ The Restaurant‘s Perspective（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{027}{Interaction of partner}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{27}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 参加者間の相互作用
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Interaction of partner」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S027: 「Interaction of partner」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S027: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{028}{Food preparation at the restaurant}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{28}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Food preparation at the restaurant（この用語は講義スライド上の専門語として扱う）
+\item ▪ After order, speedy meal preparation and delivery is of utmost importance（この用語は講義スライド上の専門語として扱う）
+\item ▪ A crucial point of time is the food handover to the driver that cannot be observed（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-DE/blog/uber-eats-recommending-（この用語は講義スライド上の専門語として扱う）
+\item marketplace/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Food preparation at the restaurant」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S028: 「Food preparation at the restaurant」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S028: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{029}{Online and offline prediction of food handover time}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{29}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Online and offline prediction of food handover time（この用語は講義スライド上の専門語として扱う）
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Online and offline prediction of food handover time」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S029: 「Online and offline prediction of food handover time」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S029: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{030}{Data acquisition, training, evaluation and deployment}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{30}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Data acquisition, training, evaluation and deployment（この用語は講義スライド上の専門語として扱う）
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data acquisition, training, evaluation and deployment」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S030: 「Data acquisition, training, evaluation and deployment」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S030: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{031}{Analysis of driver‘s activities for selected restaurants}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{31}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Analysis of driver‘s activities for selected restaurants（この用語は講義スライド上の専門語として扱う）
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\item Restaurants are ranked in accordance to duration and variation of food handover time（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Analysis of driver‘s activities for selected restaurants」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S031: 「Analysis of driver‘s activities for selected restaurants」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S031: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{032}{Prediction of food handover at restaurant}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{32}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Prediction of food handover at restaurant（この用語は講義スライド上の専門語として扱う）
+\item ▪ Predictive modeling task, 教師あり学習
+\item ▪ Inputs like restaurant, time of day, \#orders placed, size of order,（この用語は講義スライド上の専門語として扱う）
+\item driver, dispatch time（この用語は講義スライド上の専門語として扱う）
+\item ▪ Predicted output is the time span between driver arrival and（この用語は講義スライド上の専門語として扱う）
+\item handover of food（この用語は講義スライド上の専門語として扱う）
+\item ▪ Phases of the process depend on each other → Markov model（この用語は講義スライド上の専門語として扱う）
+\item ▪ Prediction e.g. by recurrent neural networks, that couple ANN（この用語は講義スライド上の専門語として扱う）
+\item https://de.wikipedia.org/wiki/Rekurrentes\_neuronales\_Netz\#/me（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Prediction of food handover at restaurant」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S032: 「Prediction of food handover at restaurant」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S032: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{033}{Adjusting prediction by real world observation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{33}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Adjusting prediction by real world observation（この用語は講義スライド上の専門語として扱う）
+\item Activity modes that are recognized by Android OS（この用語は講義スライド上の専門語として扱う）
+\item Sequence of activities to be carried out by driver（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-DE/blog/uber-eats-trip-（この用語は講義スライド上の専門語として扱う）
+\item optimization/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Adjusting prediction by real world observation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S033: 「Adjusting prediction by real world observation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S033: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{034}{From order creation to food drop-off}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{34}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item From order creation to food drop-off（この用語は講義スライド上の専門語として扱う）
+\item https://www.infoq.com/fr/articles/uber-eats-time-predictions/（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「From order creation to food drop-off」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S034: 「From order creation to food drop-off」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S034: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{035}{Summary}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{35}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item まとめ
+\item ▪ Platform business models require online automated 決定 making
+\item ▪ 決定 making incorporates prediction by means of data analytics
+\item ▪ Online optimization ensures seamless transaction of meal delivery（この用語は講義スライド上の専門語として扱う）
+\item ▪ Expected realization of individual objectives determine food 推薦
+\item ▪ Realized 推薦s determine conversion rate → to be 最大化するd
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。
+\item food recommendationとdelivery optimizationを分けつつ、相互作用を説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Summary」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Platform-based food delivery は、顧客、レストラン、配達員、プラットフォームが相互作用する多面的なサービスである。顧客は料理を選び、レストランは注文を調理し、配達員は複数注文を運び、プラットフォームは推薦、価格、割当、ルーティングを決める。\par
+この問題では、単に最短ルートを作るだけでは不十分である。推薦システムが特定店舗に需要を集中させると、調理待ちや配達遅延が増える可能性がある。逆に、配送能力を考慮した推薦を行えば、需要を空いている店舗や配送しやすい地域へ誘導できる。\par
+food recommendation では、content-based recommendation, collaborative filtering, ontology graph, diversificationなどが扱われる。顧客の好みだけでなく、料理の種類、価格、距離、調理時間、配達可能性などが推薦品質に影響する。\par
+配送最適化では、注文受諾、配達員割当、ピックアップ順、ドロップオフ順、複数注文のバッチングが問題になる。時間窓、料理の品質劣化、顧客待ち時間、配達員の公平性なども考慮する必要がある。\par
+試験では、食品配送をMDP/ADPとして設計する場合、状態に未処理注文、配達員位置、レストラン調理状態、需要予測を入れ、決定に推薦・注文受諾・割当・ルーティングを入れる。報酬には収益、遅延ペナルティ、顧客満足度、配達員稼働を含めるとよい。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L11-S035: 「Summary」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Platform-based food deliveryは、需要・供給・推薦・配送の複数意思決定が連鎖する問題である。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L11-S035: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 11 - Platform-based Food Delivery}{036}{Literature}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{36}{../Materials/2026/3DM_11_Food-Delivery_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 文献
+\item ▪ Arriving Now: The New Uber Eats (2020)（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/newsroom/arriving-now-the-new-uber-eats/（この用語は講義スライド上の専門語として扱う）
+\item ▪ Food Discovery with Uber Eats: Recommending for the Marketplace (2018)（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-DE/blog/uber-eats-recommending-marketplace/（この用語は講義スライド上の専門語として扱う）
+\item ▪ Food Discovery with Uber Eats: Building a Query Understanding Engine (2018)（この用語は講義スライド上の専門語として扱う）
+\item https://www.uber.com/en-BE/blog/uber-eats-query-understanding/（この用語は講義スライド上の専門語として扱う）
+\item ▪ How Does Uber Eats Assign Drivers? (2024)（この用語は講義スライド上の専門語として扱う）
+\item https://www.withpara.com/blog/how-does-uber-eats-assign-drivers（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+\clearpage\ExamHeader{Lecture 11 - Platform-based Food Delivery}
+\ExamQuestion{SS23 Aufgabe 5 (8 点)}
+\ExamSubsection{問題内容}
+レストラン配送のCFA/PFA。設問では、遅延リスクを費用近似または方策近似で扱い、注文統合の判断を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、Real Worldから観測データを集約してInformation Modelを作り、そこからDecision Modelを作り、解をImplementation/Disaggregationで現実の行動へ戻す流れを説明する。Information Modelは現実の圧縮表現であり、Decision Modelは決定変数、目的関数、制約により行動選択を評価する構造である。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}

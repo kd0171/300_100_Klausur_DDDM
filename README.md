@@ -185,3 +185,23 @@ The revised layout uses these sections per slide when relevant:
 5. 確認問題と解答
 
 For cover, agenda, and administrative pages, explanatory/exam sections are intentionally omitted unless they are useful.
+
+
+## PDF成果物の管理ルール（review v5以降）
+
+PDF成果物は `latex/` には置かず、次の成果物フォルダで管理します。
+
+```text
+output/
+├─ latest/   # 最新版PDFのみ。新しく生成するたびに中身を入れ替える
+└─ history/  # 過去版PDF。生成時刻ごとのフォルダに退避
+```
+
+全講義PDFを生成するには、プロジェクトルートで次を実行します。
+
+```bash
+conda activate exam_26so
+python scripts/generate_all_v5_notes.py
+```
+
+このスクリプトは、既存の `output/*.pdf`、`output/latest/*.pdf`、`latex/*.pdf` を `output/history/<timestamp>/` に退避してから、新しいPDFを `output/latest/` に出力します。

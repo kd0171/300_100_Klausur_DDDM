@@ -1,0 +1,855 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 6 – Approximate Dynamic Programming
+Problem Modeling: Markov Decision Process
+
+
+                                                                          𝑥                                         𝜔𝑘
+                                                 𝑆𝑘                                         𝑆𝑘𝑥                          𝑆𝑘+1
+                                                                     𝑅 𝑆𝑘 , 𝑥
+
+
+
+
+                                                          S0                                                             SK
+                                                                                                              SK
+
+
+
+
+• Initial state 𝑆0
+• Final state 𝑆𝐾
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Solution: Decision Policy
+• A decision policy assigns a decision to every state
+
+
+
+
+                                          S0                                                                        SK
+                                                                                                            SK
+
+
+
+
+• Objective: find optimal policy 𝜋 ∗ maximizing expected overall rewards
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Optimal Solution
+• An optimal solution 𝜋 ∗ satisfies:
+
+
+                                                                               𝐾
+                                                                                       𝜋∗
+                                    𝜋 ∗ = arg max              𝜋∈Π 𝔼         ෍ 𝑅(𝑆𝑖 , 𝑋𝑖 (𝑆𝑖 ))|𝑆0
+                                                                             𝑖=0
+
+
+
+•     Policy 𝜋 ∗ represents the policy 𝜋 ∈ Π, maximizing the expected reward
+•     Given initial state 𝑆0
+•     𝑋𝑘𝜋 𝑆𝑘 indicates the decision made by policy 𝜋 in state 𝑆𝑘
+•     For minimization, we search for arg min
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Bellman Equation
+
+• An optimal policy satisfies:
+                                                                                                          𝐾
+                                              ∗                                                                       ∗
+                                        𝑋𝑘𝜋       𝑆𝑘 = arg maxx∈𝑋 𝑆𝑘               𝑅 𝑆𝑘 , 𝑥 + 𝔼          ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ) |𝑆𝑘𝑥
+                                                                                                       𝑖=𝑘+1
+• Maximize immediate plus
+  expected future reward
+                                                                                             𝑅𝑘 (𝑆𝑘 , 𝑥)                    𝐾
+                                                                                                                                        ∗
+                                                                                                                      𝔼    ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ) |𝑆𝑘𝑥
+                                                                                                                          𝑖=𝑘+1
+
+
+
+                                                                        S0                                                                           SK
+                                                                                                                           SK
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Value Function
+
+• Expected future reward is called the value 𝑉(𝑆𝑘𝑥 ) of post-decision state 𝑆𝑘𝑥
+• The value function maps a (post-decision) state to the expected future
+  reward
+
+
+
+
+                                                                                             𝑅𝑘 (𝑆𝑘 , 𝑥)
+                                                                                                                    𝑉(𝑆𝑘𝑥 )
+
+
+                                                                        S0                                                    SK
+                                                                                                                       SK
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Curses of Dimensionality
+
+•     State Space
+•     Decision Space
+•     Information Space
+•     With increasing dimensionality, recursion becomes infeasible.
+•     For (nearly) all real-world problems, an optimal solution cannot be found
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Approximate Dynamic Programming
+
+• Powell 2011: ADP comprises any way
+  to come up with a (heuristic) policy
+
+• Problem specific assumptions are engaged in order to
+  generate a good, hopefully near optimal solution.
+
+• In the ADP context we select a “reasonable” decision
+  for every state
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Approximate Dynamic Programming
+
+• For example,
+  • Focus on high immediate reward or
+    low cost
+  • Maintain flexibility of the resources
+  • Anticipate potential future
+    developments
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Policy Classes (Compare Powell 2011)
+
+
+• Policy Function Approximation
+                                                                                                                        Rule-Based
+
+•     Rolling Horizon Re-Optimization
+•     Cost Function Approximation
+•     Look-ahead Models
+•     Value Function Approximation                                                                                   Optimization-Based
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Agenda
+
+
+• Policy Function Approximation
+• Rolling Horizon Re-Optimization
+• Cost Function Approximation                                                                                        Handelsblatt.de
+
+
+
+• Case Study: Restaurant Meal Delivery
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Policy Function Approximation
+• Idea: Transfer rule-of-thumb idea into a policy
+• Very problem specific
+• Prominent example: threshold-strategies
+  • Decisions are based on a measure and a threshold
+  • If measure is below threshold, select A, else, select B
+• No direct connection with reward- or
+   value-function
+• No explicit anticipation
+• In some cases: PFA is the result of analytical
+   considerations and proofs
+                                                                                                                     zeit.de
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Examples
+• Scheduling:                                                                                        • Inventory Management:
+  • FIFO                                                                                               • Always refill to level of 50%
+  • Shortest processing time                                                                           • Always refill the demand that was
+  • Longest processing time                                                                              observed the day before
+  • Earliest due date
+
+• Dynamic Vehicle Routing:                                                                           • Finance
+  • Waiting strategies                                                                                 • Buy low, sell high
+  • Postponement of assignments                                                                        • Set stop loss at 90%
+  • Serve customers if detour is less than 5
+    minutes
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Summary
+• Fast
+• Easy implementation, communication, and interpretation.
+• Ignores state and decision details.
+• Usually no fine tuning. For example, thresholds may depend on state parameters such as
+  time or workload
+• 80-20 rule: we get decent results but not high-quality solutions
+• Often works even if assumptions about information and decision model are not accurate
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Agenda
+
+
+• Policy Function Approximation
+• Rolling Horizon Re-Optimization
+• Cost Function Approximation                                                                                        Handelsblatt.de
+
+
+
+• Case Study: Restaurant Meal Delivery
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Rolling Horizon Re-Optimization
+
+
+• Decisions are based on the currently available information
+
+• Maximize immediate reward or minimize immediate costs:
+
+• 𝑥 = argmin𝑥∈𝑋 𝑆 𝑅 𝑆, 𝑥                                      (→Bellman Equation with 𝑉 = 0)
+
+• Direct application of static mixed-integer programming possible
+
+• Very popular in (early) dynamic decision making literature
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Rolling time horizon in scheduling
+•         Anticipation and flexibility in dynamic
+          scheduling, J Branke, DC Mattfeld -
+          International Journal of Production
+          Research, 2005
+
+•        At time 𝑡1 ,
+        • Remove the jobs already processed
+        • Block machines for jobs in processing
+        • Add newly released jobs
+        • Come up with a new schedule
+
+
+
+
+                                   Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 17
+
+
+    © Prof. Dr. Dirk C. Mattfeld
+Example: Production scheduling
+•     Minimize delay in production scheduling
+•     We consider three machines M1, M2, M3
+•     A machine can process one job at a time
+•     Two jobs are to be processed on M1 –> M2 → M3
+•     The processing time on the machines differ
+•     Both jobs come with a deadline of 9
+•     Two potential schedules are possible
+•     RHR is indifferent with regard to delay of schedules
+•     Second schedule gives more flexibility in the future
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Example: Dynamic Vehicle Routing
+•     Objective: Minimize response time
+•     Two vehicles, one in city center, another vehicle far out
+•     RHR-decision is to send vehicle 1 (12 min<15 min)
+•     No vehicles in central area with high probability of requests anymore
+                                       2                                                 ?
+                                                           15 min                                              City Center
+                                                                                                 12 min
+
+
+
+                                                                                             1
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Example: Inventory Management
+
+• Minimize ordering cost, inventory holding
+  cost, and emergency replenishment cost
+• Known immediate cost are for ordering and                                                                          Decisions
+  inventory holding
+• Emergency replenishment cost are not
+  known yet                                                                                                State
+
+
+• We would never order anything
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Summary
+•    No anticipation of future changes in information and decisions
+•    No flexibility of solution
+•    Suitable for problems with mild impact of stochasticity and dynamism
+•    Problems where feasible decisions are already hard to find (NP-hard decision space)
+•    Does not work if future reward is large compared to immediate reward
+•    Examples:
+    • Works acceptably well for scheduling with stochastic set-up times and many additional
+      constraints
+    • Works not at all for courier services (no flexibility for new requests, no coverage of
+      service area) or inventory management (no refilling)
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Agenda
+
+
+• Policy Function Approximation
+• Rolling Horizon Re-Optimization
+• Cost Function Approximation                                                                                        Handelsblatt.de
+
+
+
+• Case Study: Restaurant Meal Delivery
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Cost Function Approximation
+• Idea:
+  • Incentivize (penalize) selection of “good” (“bad”) decisions by modification of reward term
+  • Prohibit bad decisions by manipulating constraints
+• 𝑥 = argmin𝑥∈𝑋 𝑆 (𝑅 𝑆, 𝑥 + 𝐼(𝑆, 𝑥))
+• 𝐴+Θ 𝑥 ≤ 𝑏+𝜃
+
+• 𝐼 depends on state and decision (can be negative)
+• Some parallels to Bellman Equation (Powell 2011 denotes 𝐼 as 𝑉)
+
+• Θ, 𝜃 are usually globally set, but are also varied recently (e.g., time-dependent)
+• Feasibility has to be ensured when selecting Θ, 𝜃
+• No explicit anticipation of stochasticity and future decision making.
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Example: Dynamic Vehicle Routing I
+
+•     Objective: Minimize response time
+•     𝑥 = argmin𝑥∈𝑋 𝑆 (𝑅 𝑆, 𝑥 + 𝐼(𝑆, 𝑥))
+•     Manipulate reward function to incentivize using far-out vehicles
+•     𝐼 𝑆, 𝑥 = −5, if far-out vehicle is sent → tendency to utilize vehicle no. 2
+                                       2                                                 ?
+                                                           15 min
+
+                                                                                              12 min
+
+
+
+                                                                                             11
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Example: Production Planning
+• Minimize delay (deadline given as white numbers at jobs)
+• 𝑥 = argmin𝑥∈𝑋 𝑆 (𝑅 𝑆, 𝑥 − 𝐼(𝑆, 𝑥))
+• Two potential decisions 𝑥1 and 𝑥2 :
+• 𝑥1 :
+                                               15                     10
+
+                                    0                      5                      10
+
+                                               10                     15
+• 𝑥2 :
+                                    0                      5                      10
+• Safety buffer of 2 days: 𝐼 𝑆, 𝑥 = max(0, −(deadline − planned finish−2))
+  • 𝐼 𝑆, 𝑥1 = 2
+  • 𝐼 𝑆, 𝑥2 = 0
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Example: Inventory Management
+• Safety buffer in constraints
+• 𝐴+Θ 𝑥 ≤𝑏+𝜃
+                                                                                                                     Decisions
+• Change in constraint:
+   •
+     “Inventory ≥ 0” → “Inventory ≥ 𝜃”                                                                     State
+
+
+• Third decision becomes infeasible                                                                     Buffer
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Summary
+•     Fast
+•     Easy implementation, communication, and interpretation
+•     Conventional MIP-solver can be used
+•     Very difficult to find a good tuning, especially state-dependent
+•     Difficult to capture long term effects of the process
+
+From: Warren Powell <…>
+I have several meta-topics that I think a young person could center an entire career
+around:
+o       Parametric CFAs - I view this as comparable to bringing parametric statistics
+        into optimization.
+o       …
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Agenda
+
+
+• Policy Function Approximation
+• Rolling Horizon Re-Optimization
+• Cost Function Approximation                                                                                        Handelsblatt.de
+
+
+
+• Case Study: Restaurant Meal Delivery
+
+• Ulmer et al. (2021): The Restaurant Meal Delivery Problem: Dynamic Pickup and Delivery with Deadlines
+  and Random Ready Times, Transportation Science
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Business Model
+                                                                                                Online Platform
+• Stakeholders:
+                                                                                                                     Restaurants
+
+
+
+                                                                                                       Drivers                     Customers
+
+
+• Objectives:
+  • Restaurants: Sell food, grow market through good reviews
+  • Customers: Delivery in time, fresh food
+  • Drivers: Earn money by making many deliveries
+  • Platform:
+    • Generate revenue
+    • Ensure service quality
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Control of food delivery
+
+• Observation: driver arrives late at customer
+• Unreliable food preparation time at restaurant
+
+• 1:1 assignments of orders to drivers lowers
+  complexity → increase of costs
+
+• Bundling multiple orders to driver → delay
+
+• Idea: still bundle orders but include buffer in
+  delivery time calculation (CFA)
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Operational control of food delivery
+•    Stochastically arriving orders for restaurants
+•    Fleet of available driver, currently located at different positions
+•    Stochastic food preparation times at restaurant, expected: 10 minutes
+•    Guaranteed delivery deadline for orders: 40 minutes
+•    Decisions: assignment of drivers (and routing)
+•    Example:
+    • Customer C1 has ordered from restaurant R1 at time 55: deadline 55 + 40 = 95
+    • Current time is 60, driver V1 leaves towards R1 and will deliver to C1 at time 80
+    • Also at time 60, customer C2 orders from restaurant R2: deadline 60 + 40 = 100
+    • How to proceed with respect to timely delivery? Send V1 to R2 or engage V2?
+                                                                                                                              15
+                                                                         5              R1                                                        C1
+                                                                V1
+                                                                                                 10
+                                                                                                           V2                      10
+                                                                                                                     5
+                                                                                                                                        20
+                                                                                                                         R2                  C2
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                                                                   Planned
+                                                                                                                  Deadline
+   Two potential decisions                                                                                                                        arrival time
+
+
+                                                                  65                                                          𝑑1 = 95
+                                                                                                                                              85
+“Bundling”                                        5              R1                                                                      C1
+                                         V1
+                                                                                        V2                               10
+                                                                                                  75                                          10
+                                                                            10               R2                                    C2
+                                                                                                                                              95
+                                                                                                                                𝑑2 = 100
+
+“Fastest”
+                                                                 65                                                           𝑑1 = 95
+                                                                                                         15                                  80
+                                                 5              R1                                                                      C1
+                                        V1
+                                                                                     V2
+                                                                                              65
+                                                                                                                    20
+                                                                                    5        R2                                   C2
+                                                                                                                                             90
+                                   Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 32         𝑑2 = 100
+    © Prof. Dr. Dirk C. Mattfeld
+                                                                                                                  Deadline                      Arrival time
+   10 min. delay occur at R1
+
+                                                                 65                                                            𝑑1 = 95
+                                                                                                                                                95
+“Bundling”                                        5              R1                                                                    C1
+                                         V1
+                                                                                        V2                               10
+                                                                                             85                                        10
+                                                                            10               R2                                  C2                       Deadline
+                                                                                                                                            105
+                                                                                                                                                          violation
+                                                                                                                              𝑑2 = 100
+
+“Fastest”                                                                                                                      𝑑1 = 95
+                                                                 65
+                                                                                                         15                                90
+                                                 5              R1                                                                    C1
+                                        V1
+                                                                                     V2
+                                                                                              65                              𝑑2 = 100
+                                                                                                                    20
+                                                                                    5        R2                                  C2
+                                                                                                                                           90
+                                   Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 33
+
+
+    © Prof. Dr. Dirk C. Mattfeld
+Markov Decision Process
+• Decision time: Every minute
+• State:
+  • Point of time
+  • Set of customers (Order time, restaurant, location)
+  • Planned routes P: Sequence of visits and expected arrival times
+• Decisions 𝑥:
+  • Assignment of driver to order
+  • Update of routes P to routes P x
+• Transition 𝜔𝑘 : occurring food preparation delay while executing plan
+• Costs:
+  • Delay-function 𝐷 P → ℝ+
+  • Deterministic change in delay 𝐶 1 𝑆𝑘 , P, P 𝑥 = 𝐷 P 𝑥 − 𝐷(P) → ℝ
+  • Stochastic difference between expected and realized delay 𝐶 2 (𝑆𝑘 , P 𝑥 , 𝜔𝑘 ) → ℝ
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Delay-Function and Costs
+
+•     Updated V1 route: (R1,65), (R2,75), (C1,85), (C2,95)
+•     Delay-function: expected arrival times vs. deadlines
+•     Delay of V1 route: 85 − 95 + + 95 − 100 + = 0
+•     Deterministic costs 𝐶 1 𝑆𝑘 , P, P 𝑥 = 0
+•     Realized stochastic costs 𝐶 2 𝑆𝑘 , P 𝑥 , 𝜔𝑘 = 5
+
+                                                           65                                                             𝑑1 = 95         95
+                                                                                                                                     85
+                                             5              R1                                                                      C1
+                                     V1                                                       85
+                                                                                V2                                   10
+                                                                                        75                                          10
+                                     10 MINUTES DELAY!
+                                                                        10               R2                                   C2
+                                                                                                                                          105
+
+                                                                                                                           𝑑2 = 100 95
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Solutions
+                                                                          𝜋∗
+• Bellman Equation:                                                      𝑋𝑘 𝑆𝑘            = arg min 𝐶 1 (𝑆𝑘 , P, P 𝑥 ) + 𝑉(𝑆𝑘𝑥 )
+                                                                                               Px ∈P(𝑆𝑘 )
+
+
+
+• Cost Function Approximation:
+  • Deterministic costs: Routing heuristic, delay first, distance second
+  • Stochastic costs: Time buffers (→Cost Function Approximation)
+
+    • Time buffer possible between extremes
+      • 0 (deterministic food preparation) → bundle whenever possible
+      • 40 (entire delivery time window) → always opt for fastest delivery
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Stochastic Costs: Time Buffer (CFA)
+• Motivation: Reduce “risky” arrivals close to the deadline
+• Procedure: Artificially extend the arrival times at customers by a buffer value 𝒃
+• Example: a buffer of 10 minutes → affects delivery > 30 minutes after order time
+
+
+
+                                                  65                                                                 𝑑1 = 95
+                                                                                                                                    85 +𝟏𝟎
+                                  5              R1                                                                            C1
+                    V1
+                                                                       V2                             10
+                                                                               75                                              10
+                                                            10              R2                                           C2                    Assume deadline
+                                                                                                                                    95 +𝟏𝟎
+                                                                                                                                             violation due to CFA
+                                                                                                                      𝑑2 = 100
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+   Impact of the buffer time on delivery decision
+                                                                  65                                                           𝑑1 = 95
+                                                                                                                                              85
+“Bundling”                                        5              R1                                                                      C1
+                                         V1
+                                                                                        V2                               10
+                                                                                               75                                             10
+                                                                            10               R2                                    C2
+                                                 𝒃≤𝟓                                                                                          95
+                                                                                                                                𝑑2 = 100
+
+
+“Fastest”                                                                                                                     𝑑1 = 95
+                                                                 65
+                                                                                                         15                                  80
+                                                 5              R1                                                                      C1
+                                        V1
+                                                                                     V2
+                                                                                              65
+                                                                                                                    20
+                                                                                    5
+                                                 𝒃>𝟓                                         R2                                   C2
+                                                                                                                                             90
+                                                                                                                               𝑑2 = 100
+                                   Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 38
+
+
+    © Prof. Dr. Dirk C. Mattfeld
+Instances and Results
+• 110 restaurants
+
+• 32000 potential customer locations
+
+• 15 vehicles
+
+• Orders: 180, 240, 300 per day
+
+• Ready time follows gamma distribution with
+  coefficient of variation (CoV): 0.0, 0.1,…, 0.6
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 39
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Determine buffer times
+• Depict buffer time vs. observed delay
+
+• Vary # orders and CoV of ready times
+
+• 180 orders
+   • Delay increases with increasing CoV
+   • A larger buffer counteracts delay
+• 300 orders
+   • Buffer times actually increases delay
+   • Consolidation of orders due to bundling is
+      required to cope with #orders
+• 240 orders
+   • There is an „optimal“ buffer time for CoV
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 40
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Parametrizable CFA: State-Dependent Buffers
+• Different states might require different buffers (current and expected orders, restaurant
+  workload, vehicle positions, etc.)
+
+• First step: Time-dependent buffers, one buffer per hour
+• Interdependencies between buffers over time: Reinforcement learning
+• Additional delay reductions of about 6% possible
+
+• Open research question: include more state detail
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 41
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Summary
+• PFA: Derive a policy based on a rule-of-
+  thumb (or analytically)
+• CFA: Manipulate reward function or
+  constraints
+• Both usually improve simple
+  Rolling Horizon Re-Optimization
+• None of them considers future
+  information model realizations and
+  decision model instances explicitly
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 42
+
+
+© Prof. Dr. Dirk C. Mattfeld
+Outlook Policy Classes (Compare Powell 2011)
+
+
+• Policy Function Approximation
+                                                                                                                        Rule-Based
+
+•     Rolling Horizon Re-Optimization
+•     Cost Function Approximation
+•     Look-ahead Models
+                                                                                                                     Optimization-Based
+•     Value Function Approximation
+
+
+
+
+                               Data Driven Decision Making | Lecture 6 – Approximate Dynamic Programming | Page 43
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

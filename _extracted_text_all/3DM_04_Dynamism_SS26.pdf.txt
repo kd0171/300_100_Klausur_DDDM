@@ -1,0 +1,1005 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 4 – Dynamism
+       Recap and Motivation
+
+
+       • Uncertainty
+
+       • Information modeling
+                                                                                              dekra-solutions.de
+
+       • Decision modeling
+
+       • Today: Can we react to observed changes in
+         the information model?
+                                                                                             web.stanford.edu
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Goals Today
+       • Dynamism in information and decision model
+
+            • Dynamic vs. Static Planning
+            • Dynamic decision process
+
+       • Stochastic and Dynamic Vehicle Routing
+
+
+
+       • First steps of modelling
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+
+       • Dynamism
+
+
+       • Case study: Urban Delivery and Traffic Management
+
+
+       • Preparation of Modelling
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamism
+       • Dynamic problems require not only one but several subsequent decisions.
+       • The decisions impact the future and are therefore interconnected.
+       • There is new information revealed after each decision was made.
+
+       • The solution for a dynamic problem is a strategy (policy)
+       • It defines how to react to newly revealed information.
+       • Reward or cost accumulate over time and decisions.
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Static and Dynamic Planning
+       • Example: uncertain travel times
+
+       • Static planning:
+         • Replanning not possible
+         • Implementation of a (reliable) a-priori plan                                      www.braunschweiger-
+                                                                                             zeitung.de
+
+
+         • Example: Bus
+
+       • Dynamic planning:
+         • High impact of uncertainty requires replanning
+         • Adaptations of plans
+         • Example: Parcel delivery service
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Examples for Dynamism
+                 Urban Delivery                                                         Line Production                                                Asset Allocation
+
+
+
+
+                                                                                        https://www.venitec.de/de/leistungen-de/fertigungsplanung-
+                 https://www.handelsblatt.com/unternehmen/handel-                                                                                    https://www.forbes.com/sites/randywarren/2020/08/06/maxi
+                                                                                        fertigungsoptimierung/fliessfertigung
+                 konsumgueter/onlinehandel-verkehrskollaps-per-                                                                                      mizing-your-portfolio-benefits-via-asset-allocation/
+                 mausklick/20604804.html?ticket=ST-190133-
+                 fsLx4SuFxff4v6EHdGk0-ap5
+
+
+
+                Courier Service                                                         Inventory Management                                           Games
+
+
+
+
+                                                                                        https://www.lagertechnik-                                    https://www.forgerecycling.co.uk/blog/how-to-reuse-and-
+                https://www.qiez.de/top-5-kurierdienste-und-fahrradkuriere-in-berlin/
+                                                                                        direkt.de/magazin/chaotische-lagerhaltung/                   recycle-board-games/
+
+
+
+
+                                   Data Driven Decision Making | Lecture 4 – Dynamism | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Urban Mobility and Transportation:
+
+
+                 Savelsbergh, van Woensel (Transportation Science, 2016):
+                 “Highly dynamic and volatile decision making environments with access to
+                 massive amounts of near real-time data, which will be seen more and more in
+                 the future, may necessitate new views, paradigms, and models for decision
+                 support.”
+
+                 Speranza (European Journal of Operational Research, 2016):
+                 New challenge of “appropriately modeling dynamic events and simultaneously
+                 incorporating information about the uncertainty of future events.”
+
+                 → Stochastic and Dynamic Vehicle Routing
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Components of a Dynamic Decision Problem
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Ingredients of a Dynamic Decision System
+       • Exogeneous: Development that cannot
+         be controlled by decision maker
+         (information model)
+
+       • Decision: Endogenous decision-making
+         process, provides reward or costs
+         (decision model)
+
+       • Both exogeneous and endogenous
+         processes interact via decision states
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Urban Delivery
+
+                                                                                              •   Vehicle routing problem
+                                                                                              •   All customers must be served
+                                                                                              •   One depot, one vehicle
+                                                                                              •   Travel times vary over the day
+
+
+
+                                                                                                                                   D
+                          • Exogenous: Varying travel times
+                          • State: Customers to serve, Position of vehicle                               1         3
+                          • Decision: Whom to visit next
+                            or how to update the tour
+                          • Reward: Total travel time
+
+
+                                                                                                                       2
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Urban Delivery
+
+         • Route has been optimized prior to execution
+                                                                                                      D
+         • Execution starts with proceeding to customer 1
+                                                                                              3
+
+
+
+                                                1
+
+                                                                                                  2
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Urban Delivery
+
+         • Having arrived at customer 1, a congestion alert comes in
+                                                                                                                           D
+
+                                                                                                                   3
+
+
+
+                                                1
+
+                                                                                                                       2
+                                                                                              dekra-solutions.de
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Urban Delivery
+
+         • One option on the way to customer 2 is a costly detour
+                                                                                                      D
+
+                                                                                              3
+
+
+
+                                                1
+
+                                                                                                  2
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Urban Delivery
+
+         • Another option is to switch the sequence of customer visits
+                                                                                                      D
+
+                                                                                              2
+
+
+
+                                                1
+
+                                                                                                  3
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Decision Process
+                                                                         Travel Times         Realizations
+
+
+
+
+                                                                            Instance
+                                                        Open Traveling Salesperson Problem
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Decision Process
+                                                                                              Change in travel time matrix
+
+
+
+ •    Position
+ •    Customers left to serve
+ •    Travel time matrix
+
+
+ •    Next customer to visit
+      (new tentative route)
+
+
+
+
+•    Travel time to next
+     customer
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Decision Process
+
+
+ •    Position
+ •    Customers left to serve
+ •    Travel time matrix
+
+
+ •    Next customer to visit
+      (new tentative route)
+
+
+
+
+•    Travel time to next
+     customer
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Courier Services
+
+                                                                               •   Pickup and delivery problem
+                                                                               •   Customer request service
+                                                                               •   Requests are accepted/rejected
+                                                                               •   Reward: Total no. of customer served
+
+
+
+
+                   •    Exogenous: Customer requests
+                   •    State: Customer accepted, position of vehicle
+                   •    Decision: Which request to accept, whom to visit next
+                   •    Reward: Newly accepted customers
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Line Production
+
+                                                                                              •   Scheduling problem
+                                                                                              •   Problem horizon
+                                                                                              •   Set of machines
+                                                                                              •   Arriving jobs: duration, deadline, type
+                                                                                              •   Sequence dependent set-up times
+
+
+
+
+                  •    Exogenous: Arriving jobs
+                  •    State: Current schedule, new jobs
+                  •    Decision: Sequence, machine
+                  •    Reward: Min. total delay
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Inventory Management
+                                                                                               •   Inventory problem
+                                                                                               •   Horizon in terms of days
+                                                                                               •   Initial inventory and max capacity
+                                                                                               •   Uncertain demand per day
+                                                                                               •   Delivery cost
+                                                                                               •   Holding costs per unit and day
+                                                                                               •   If demand>inventory, difference is
+                                                                                                   served by (expensive) third party
+
+
+                         •     Exogenous: uncertain demand
+                         •     State: current inventory
+                         •     Decision: order quantity
+                         •     Reward: min. total costs
+
+
+
+                                Data Driven Decision Making | Lecture 4 – Dynamism | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+
+       • Dynamism
+
+
+       • Case study: Urban Delivery and Traffic Management
+
+
+       • Preparation of Modelling
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Study
+       • Urban Delivery                                         Felix Köster, Marlin W. Ulmer, Dirk C. Mattfeld, Geir Hasle,Anticipating emission-sensitive traffic
+                                                                management strategies for dynamic delivery routing, Transportation Research Part D: Transport and
+                                                                Environment, Volume 62, 2018, Pages 345-361
+
+
+
+       • Traffic Management
+
+
+
+       • Stochastic travel times
+
+
+
+       • Question: Can dynamic replanning save travel times?
+                                                                                                                                                      berlin-
+                                                                                                                                                      klimaschutz.de
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Study
+
+
+                                                                                              Traffic Management
+
+
+
+
+                                   Urban Delivery Problem
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Motivation: Delivery service
+
+       • Parcel delivery
+
+       • Last-Mile Delivery
+
+       • 50% of total transport costs
+
+       • Vehicle fleet
+
+       • Vehicles deliver parcels in urban districts
+
+       • Initial distribution of parcels to vehicles
+
+       • Individual routing decision
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Motivation: Traffic Management
+       • Controls traffic flows within the city
+       • Goals:
+         • Enable efficient mobility
+         • Social and political guidelines                                                    uvm-bs.de
+
+
+
+       • Emissions:
+         • Volume
+         • Air pollution
+       • EU regulation on nitrogen oxides
+       • Stations:
+         • at hotspots
+         • measure nitrogen oxides
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Traffic Management
+
+       • Constant measurement of air pollution
+
+       • If NO2 pollution reaches 60g/m3:
+
+            • Avoidance of further inflows
+
+            • Enabling fast outward flows
+
+       • Tools:
+
+            • Traffic lights                                                                  wikipedia.de
+
+
+
+
+            • Changes in road capacity
+
+            • Change in speed limits
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Traffic Management Braunschweig
+
+
+
+
+    Yearly average
+
+
+
+                                                                                              uvm-bs.de
+
+
+
+                                                                                                          uvm-bs.de
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Hot-Spot 1: Hildesheimer Str.
+
+
+            • Limit traffic from A391
+            • Suggest exits at Celler, Münchner, and
+              Hamburger Straße.
+
+
+
+
+                                                                                                          Reduction
+                                                                                                          Increase
+
+
+                                                                                                                 uvm-bs.de
+                                                                                              uvm-bs.de
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Hot-Spot: Downtown
+       • Closure Fallersleber Straße
+
+
+
+
+                                                                                                          Reduction
+                                                                                                          Increase
+
+
+
+
+                                                                                              uvm-bs.de
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Hot-Spot 4: Altewiekring
+                                                                                                          Reduction
+       • Limit left turn at Schillstraße                                                                  Increase
+
+
+
+
+                                                                                              uvm-bs.de
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Delivery Service
+
+
+            •      Vehicle fleet
+            •      Vehicles deliver packages in urban districts
+            •      Initial distribution to vehicles
+            •      Individual routing decision
+            •      Information Model: Stochastic travel times due to
+                   traffic management decisions
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Traffic Management and Travel Times
+
+                                                           Traffic Management controls street capacities
+
+
+
+
+                                                                        Capacities impact traffic flows
+
+
+
+
+                                                           Traffic flows define speed per street segment
+
+
+
+
+                                                               Shortest paths and travel time matrices
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Delivery service
+
+       • Vehicle fleet
+       • Vehicles deliver packages in urban districts
+       • Initial distribution to vehicles
+       • Individual routing decision
+       • Information Model: Stochastic travel times due to
+         traffic management decisions
+       • Decision Model: Where to go next after serving a
+         district (how to adapt the tentative route)
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Study Overview
+
+
+
+       • Instance Generation
+
+       • Solution Method
+
+       • Results
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Instances
+       • 3 Hotspots in Braunschweig
+       • Change of hotspot transport strategy
+         • Min. 1 hour active
+         • Each hotspot is independent
+         • 8 Traffic strategies
+       • Vehicle speed:
+         • City roads: 25 km/h
+         • Reduced: 10 km/h
+         • Increased: 30 km/h
+         • Autobahn: 80 km/h
+       • Depot:                                                                               Source: OSM
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Emission Data
+
+       • Data set of the State of Lower Saxony:
+         • 3 months hourly values for NO2
+         • 92 days
+         • Standard deviation 3-11 micrograms/m3
+         • 24% of time over 60 micrograms/m3
+       • Hotspots: Emissions data from Braunschweig, Hannover and
+          Osnabrück
+       • If the pollution at a hotspot is greater than 60 micrograms/m3,
+          the respective measures are taken
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Study Overview
+
+
+
+       • Instance Generation
+
+       • Solution Method
+
+       • Results
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 38
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Method
+       • Initial distribution: Vehicle Routing Problem with
+         time limit
+
+       • For every vehicle in every decision state:
+         • Calculate travel times: Dijkstra-Algorithm
+         • Solve the open traveling salesperson problem
+
+
+
+
+                                                                                              Source: OSM
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 39
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Results
+       • 1000 Days
+       • Average sum of travel times
+       • Reduction by 3.5%
+
+
+
+
+                                                                                         Travel time   Strategy
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 40
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Street Usage
+
+
+
+
+                                                                                        Static   Dynamic
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 41
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+
+       • Dynamism
+
+
+       • Case study: Urban Delivery and Traffic Management
+
+
+       • Preparation of Modelling
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 42
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Decision Process
+       •     Two processes:
+            • Exogeneous: Changing information                                        (stochasticity)
+            • Endogenous: Adaption of plans                                           (dynamism)
+
+
+
+
+                                                                                                    Meisel (2011)
+
+
+
+
+           → A model should capture stochasticity and dynamism (over time)
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 43
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       “Standard” Static Vehicle Routing Problem
+       • Depot, customers, vehicles
+       • Constraint: capacity
+       • Objective: minimize travel time
+
+       • Decisions
+       • Assignment of customers to vehicles
+       • Sequence of customers per vehicle
+
+       • Modeling: mixed-integer programming
+       • Solution: set of routes
+
+       • No consideration of temporal developments
+       • No consideration of stochasticity
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 44
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Markov Decision Process
+
+
+                                                 𝑆𝑘                    𝑥                      𝑆𝑘𝑥   𝜔𝑘   𝑆𝑘+1
+                                                                    𝑅 𝑆𝑘 , 𝑥
+
+       Components:
+       • Decision point 𝑘 (either periodic or event triggered)
+       • Decision state 𝑆𝑘 ∈ 𝐒
+       • Decisions 𝑥 ∈ 𝑋 (e.g., with Mixed-Integer Programming)
+       • Reward 𝑅 𝑆𝑘 , 𝑥 ∈ ℝ (or costs as negative reward)
+       • Post-decision state 𝑆𝑘𝑥 ∈ 𝐒 × 𝑋
+       • Stochastic transition 𝜔𝑘 ∈ 𝐒 × 𝑋 × 𝐒 (e.g., with probabilities ℙ: 𝐒 × 𝑋 × 𝐒 → 𝟎, 𝟏 )
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 45
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Parcel Service
+
+
+                                                                           𝑥                                𝜔𝑘
+                                                  𝑆𝑘                                          𝑆𝑘𝑥                     𝑆𝑘+1
+                                                                   𝑅 𝑆𝑘 , 𝑥 = 30
+
+
+
+
+                               𝑡 = 60                   D                   𝑡 = 60                      D        𝑡 = 90           D
+
+
+                                             3                                                3                           3
+
+
+
+
+                                                    2                                         30    2                         2
+                                   1                                              1
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 46
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Problem Modeling: Markov Decision Process
+
+
+                                                                           𝑥                             𝜔𝑘
+                                                  𝑆𝑘                                          𝑆𝑘𝑥              𝑆𝑘+1
+                                                                      𝑅 𝑆𝑘 , 𝑥
+
+
+
+
+                                                          S0                                                  SK
+                                                                                                    SK
+
+
+
+
+       • Initial state 𝑆0
+       • Final state 𝑆𝐾
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 47
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Solution: Decision Policy
+       • A decision policy assigns a decision to every state
+
+
+
+
+                                          S0                                                       SK
+                                                                                              SK
+
+
+
+
+       • Objective: find optimal policy 𝜋 ∗ maximizing expected overall rewards
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 48
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Optimal Solution
+       • An optimal solution 𝜋 ∗ satisfies:
+
+
+                                                                                𝐾
+                                                                                              ∗
+                                    𝜋 ∗ = arg max𝜋∈Π 𝔼 ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ))|𝑆0
+                                                                              𝑖=0
+
+
+
+       •      Policy 𝜋 ∗ represents the policy 𝜋 ∈ Π, maximizing the expected reward
+       •      Given initial state 𝑆0
+       •      𝑋𝑘𝜋 𝑆𝑘 indicates the decision made by policy 𝜋 in state 𝑆𝑘
+       •      For minimization, we search for arg min
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 49
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary
+
+
+       • Motivation und Definition: Dynamism
+
+       • Case Study: Dynamic re-planning reduces cost
+
+       • Modelling: Markov Decision Process
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 50
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Outlook
+       • Anticipation: Integration of future developments in decision making
+
+       • Next lecture:
+         • Markov Decision Process
+         • Optimal solutions
+
+
+
+                                                                                      S0           SK
+                                                                                              SK
+
+
+
+
+                               Data Driven Decision Making | Lecture 4 – Dynamism | Page 51
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

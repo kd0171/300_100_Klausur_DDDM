@@ -1,0 +1,49 @@
+       DDDM Lecture – Schedule SoSe 2026
+
+                     Lecture       Topic                                                 Date                   Time             Room
+                          1        Overview                                              Tue., 07. April 2026   1:15 - 2:45 pm   PK 11.2
+
+                          2        Information Modeling and Decision Making              Tue., 14. April 2026   1:15 - 2:45 pm   PK 11.2
+
+                          3        Stochasticity                                         Tue., 21. April 2026   1:15 - 2:45 pm   PK 11.2
+
+                          4        Dynamism                                              Tue., 28. April 2026   1:15 - 2:45 pm   PK 11.2
+
+                          5        Markov Decision Process                               Tue., 05. May 2026     1:15 - 2:45 pm   PK 11.2
+
+                          6        Approximate Dynamic Programming                       Tue., 12. May 2026     1:15 - 2:45 pm   PK 11.2
+
+                          7        Look-ahead Methods                                    Tue., 19. May 2026     1:15 - 2:45 pm   PK 11.2
+
+                          8        Value Function Approximation                          Tue., 02. June 2026    1:15 - 2:45 pm   PK 11.2
+
+                          9        Analytics Issues in Approximate Dynamic Programming   Tue., 09. June 2026    1:15 - 2:45 pm   PK 11.2
+
+                         10        Combined Methods                                      Tue., 16. June 2026    1:15 - 2:45 pm   PK 11.2
+
+                         11        Platform-based Food Delivery                          Tue., 23. June 2026    1:15 - 2:45 pm   PK 11.2
+
+
+
+
+                               Data Driven Decision Making | Schedule SoSe 2026
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       DDDM Exercise – Schedule SoSe 2026
+
+                     Lecture       Topic                                          Date                  Time             Room
+                          1       Problem Description                             Wed., 06. May 2026    3:00 – 4:30 pm   online
+                          2       Sequential Decision Process                     Wed., 13. May 2026    3:00 – 4:30 pm   online
+                          3       Policies                                        Wed., 06. June 2026   3:00 – 4:30 pm   online
+                          4       Anticipation                                    Wed., 10. June 2026   3:00 – 4:30 pm   online
+                          5       Results and Discussion                          Wed., 17. June 2026   3:00 – 4:30 pm   online
+
+
+
+
+                               Data Driven Decision Making | Schedule SoSe 2026
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

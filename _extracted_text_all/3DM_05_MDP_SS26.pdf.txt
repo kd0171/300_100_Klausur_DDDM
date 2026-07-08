@@ -1,0 +1,1189 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 5 – Markov Decision Process
+       Agenda
+       • Markov decision process
+
+       • Optimal solutions
+
+       • Curses of dimensionality
+
+       • Modeling discussion
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Operations Research
+
+
+       • Business Problems
+                                                                                                                   𝑚      𝑛
+
+                                                                                                            min   ෍ ෍ 𝑐𝑖𝑗 𝑥𝑖𝑗
+                                                                                                                   𝑖=1 𝑖=1
+
+                                                                                                                    𝑛
+
+                                                                                                            u.d.N. ෍ 𝑥𝑖𝑗 = 𝑎𝑖 (𝑖 = 1, … , 𝑚)
+       • Mathematical Modeling                                                                                     𝑗=1
+                                                                                                                    𝑚
+
+                                                                                                                  ෍ 𝑥𝑖𝑗 = 𝑏𝑗 (𝑗 = 1, … , 𝑛)
+                                                                                                                  𝑖=1
+                                                                                                                         𝑥𝑖𝑗 ≥ 0 (𝑖 = 1, … , 𝑚; 𝑗 = 1, … , 𝑛)
+
+
+
+
+       • Solution Methods (Heuristics)
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Modeling
+
+       • Model connects real-world application with solution methodology
+
+       • Modeling translates verbal descriptions into mathematical notation
+
+       • A model provides an unambiguous definition of the problem
+
+       • Different problems may have the same model
+
+       • Different models can define the same problem
+
+       • A specific modeling can support solution methodology
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Decision Process
+       • Two processes:
+         • Exogeneous: Changing information (stochasticity)
+         • Endogenous: Adaption of plans    (dynamism)
+
+
+
+
+                                                                                                            Meisel (2011)
+
+
+
+
+         → A model should capture stochasticity and dynamism (over time)
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       “Standard” Static Vehicle Routing Problem
+       • Depot, customers, vehicles
+       • Constraint: capacity
+       • Objective: minimize travel time
+
+       • Decisions
+         • Assignment of customers to vehicles
+         • Sequence of customers per vehicle
+
+       • Modeling: mixed-integer programming
+       • Solution: set of routes
+
+       • No consideration of temporal developments
+       • No consideration of stochasticity
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Markov Decision Process
+
+
+                                                                            𝑥                               𝜔𝑘
+                                                  𝑆𝑘                                           𝑆𝑘𝑥               𝑆𝑘+1
+                                                                      𝑅 𝑆𝑘 , 𝑥
+
+       Components:
+       • Decision point 𝑘 (either periodic or event triggered)
+       • Decision state 𝑆𝑘 ∈ 𝐒
+       • Decisions 𝑥 ∈ 𝑋 (e.g., with Mixed-Integer Programming)
+       • Reward 𝑅 𝑆𝑘 , 𝑥 ∈ ℝ (or costs as negative reward)
+       • Post-decision state 𝑆𝑘𝑥 ∈ 𝐒 × 𝑋
+       • Stochastic transition 𝜔𝑘 ∈ 𝐒 × 𝑋 × 𝐒 (e.g., with probabilities ℙ: 𝐒 × 𝑋 × 𝐒 → 𝟎, 𝟏 )
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Parcel Service
+
+
+                                                                            𝑥                                   𝜔𝑘
+                                                   𝑆𝑘                                            𝑆𝑘𝑥                        𝑆𝑘+1
+                                                                   𝑅 𝑆𝑘 , 𝑥 = 30
+
+
+
+
+                               𝑡                        D                       𝑡                           D        𝑡                 D
+
+                               = 60                                             = 60                                 = 90
+                                             3                                               3                                 3
+
+
+
+
+                                                    2                                          30      2                           2
+                                   1                                               1
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Problem Modeling: Markov Decision Process
+
+
+                                                                            𝑥                                    𝜔𝑘
+                                                  𝑆𝑘                                           𝑆𝑘𝑥                     𝑆𝑘+1
+                                                                      𝑅 𝑆𝑘 , 𝑥
+
+
+
+
+                                                           S0                                                         SK
+                                                                                                            SK
+
+
+
+
+       • Initial state 𝑆0
+       • Final state 𝑆𝐾
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Solution: Decision Policy
+       • A decision policy assigns a decision to every state
+
+
+
+
+                                          S0                                                                      SK
+                                                                                                             SK
+
+
+
+
+       • Objective: find optimal policy 𝜋 ∗ maximizing expected overall rewards
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Optimal Solution
+       • An optimal solution 𝜋 ∗ satisfies:
+
+
+                                                                                𝐾
+                                                                                                      ∗
+                                    𝜋 ∗ = arg max𝜋∈Π 𝔼 ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ))|𝑆0
+                                                                               𝑖=0
+
+
+
+       •      Policy 𝜋 ∗ represents the policy 𝜋 ∈ Π, maximizing the expected reward
+       •      Given initial state 𝑆0
+       •      𝑋𝑘𝜋 𝑆𝑘 indicates the decision made by policy 𝜋 in state 𝑆𝑘
+       •      For minimization, we search for arg min
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Bellman Equation
+       • An optimal policy satisfies:
+                                                                                                              𝐾
+                                           ∗                                                                                      ∗
+                                     𝑋𝑘𝜋       𝑆𝑘 = arg maxx∈𝑋 𝑆𝑘                        𝑅 𝑆𝑘 , 𝑥 + 𝔼         ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ) |𝑆𝑘𝑥
+                                                                                                             𝑖=𝑘+1
+
+       • Maximize immediate plus
+         expected future reward
+                                                                                                𝑅𝑘 (𝑆𝑘 , 𝑥)          𝔼
+                                                                                                                          𝐾
+                                                                                                                                      ∗
+                                                                                                                         ෍ 𝑅(𝑆𝑖 , 𝑋𝑖𝜋 (𝑆𝑖 ) |𝑆𝑘𝑥
+                                                                                                                         𝑖=𝑘+1
+
+
+
+                                                                         S0                                                                        SK
+                                                                                                                          SK
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Value Function
+       • Expected future reward is called the value 𝑉(𝑆𝑘𝑥 ) of post-decision state 𝑆𝑘𝑥
+       • The value function maps a (post-decision) state to the expected future reward
+
+
+
+
+                                                                                                𝑅𝑘 (𝑆𝑘 , 𝑥)
+                                                                                                              𝑉(𝑆𝑘𝑥 )
+
+                                                                         S0                                             SK
+                                                                                                                 SK
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Value Function
+       •     The value function for the optimal policy satisfies:
+            • 𝑉(𝑆𝑘 ) = max 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )                                                               (deterministic decision)
+            • 𝑉 𝑆𝑘𝑥 = σ𝑆𝑘+1 ℙ 𝑆𝑘+1 = 𝑆𝑘𝑥 , 𝜔𝑘 𝑉(𝑆𝑘+1 )                                                       (stochastic transition)
+
+       •     Values can be calculated recursively for a finite horizon
+            • 𝑉(𝑆𝐾 ) = 0                                                                                     (value of final state is 0)
+                  𝑥                     𝑥
+            • 𝑉 𝑆𝐾−1   = σ𝑆𝐾 ℙ 𝑆𝐾 = 𝑆𝐾−1   , 𝜔𝐾−1 𝑉(𝑆𝐾 )                                                     (last but one post-decision state)
+                                               𝑥
+            • 𝑉(𝑆𝐾−1 ) = max 𝑅(𝑆𝐾−1 , 𝑥) + 𝑉(𝑆𝐾−1 )                                                          (last but one state)
+
+                      𝑥                          𝑥
+            •      𝑉 𝑆𝐾−2   = σ𝑆𝐾−1 ℙ 𝑆𝐾−1 = 𝑆𝐾−2   , 𝜔𝐾−2                                  𝑉(𝑆𝐾−1 )         (last but two post-decision state)
+                                                   𝑥
+            •      𝑉(𝑆𝐾−2 ) = max 𝑅(𝑆𝐾−2 , 𝑥) + 𝑉(𝑆𝐾−2 )                                                     (last but two state)
+
+            • ….
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Values can be calculated recursively
+            ▪ 𝑉(𝑆𝐾 ) = 0
+            ▪ 𝑉(𝑆𝑘 ) = max 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+            ▪ 𝑉 𝑆𝑘𝑥 = σ𝑆𝑘+1 ℙ 𝑆𝑘+1 = 𝑆𝑘𝑥 , 𝜔𝑘                                    𝑉(𝑆𝑘+1 )
+
+
+
+
+                                                    S0                                                            SK
+                                                                                                             SK
+
+
+
+
+                                                                                           Recursion
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+       • Markov Decision Process
+
+       • Optimal Solutions
+
+       • Curses of Dimensionality
+
+       • Modeling discussion
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example
+       • Illustrate Markov Decision Process
+
+       • Show recursive dynamic programming solution
+
+       • Indicate Curses of Dimensionality
+
+
+
+
+                                                                                                             alle-lkw.de
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example
+                                                                                                                  ?
+       • Serve 3 customers in predefined sequence (1-2-3)                                                             12    ?
+                                                                                                                  2
+       • Stochastic demand                                                                                                  3
+                                                                     15
+         • Either 2 or 1 unit(s)                                                                             10
+                                                                                                                       15
+         • Same probability (50%)                                 ?
+       • Vehicle with capacity 4                                  1
+                                                                     10                                           0
+       • Replenishment at the depot
+       • If demand is larger than fill level:
+          serve partial demand → replenishment → serve remaining demand
+
+       → When should we return to the depot for replenishment to minimize expected travel time?
+       → What are the expected costs?
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Markov Decision Process
+
+
+                                                                            𝑥                                𝜔𝑘
+                                                  𝑆𝑘                                           𝑆𝑘𝑥                𝑆𝑘+1
+                                                                       𝑅 𝑆𝑘 , 𝑥
+
+
+       Components:
+       • Decision point 𝑘: Arrival at customer
+       • State 𝑆𝑘 : Position & Fill level vehicle
+       • Decision 𝑥: Replenish at depot (A) or next customer (N)
+       • Cost (Negative Reward) 𝑅 𝑆𝑘 , 𝑥 : Travel time
+       • Post-Decision State 𝑆𝑘𝑥 : Position & Fill level vehicle
+       • Stochastic Transition 𝜔𝑘 : Demand Realization
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+
+                                        Travel Time
+
+                                                     Next
+                                Current
+                                                     Position
+                                Position
+
+
+
+                                                10
+                                     0, 4             1, 4
+                                                N                                          ?                 4
+                                                                                           1        N
+                                                                                                   10            0
+
+                                   Fill Level
+                                            Decision
+
+
+
+                                            Phase 1
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+                                                                                                              1, 2
+                                                                                                                                  ?
+                                                                                                                                  2
+                               Stochastic
+                                                                              15                                     15
+                               Transition                          1, 2               2, 2
+                                                                               N                                          N           10
+                                                                                                              2
+                                                                                                              1               A
+                                                             0.5            20 A                                     10           0
+                                                                                                              2
+
+                                            10
+                                 0, 4              1, 4                               2, 4
+                                            N
+                                                                                                              1, 3
+                                                                                                                                  ?
+                                                             0.5            20 A                                                  2
+
+                                                                                                                     15
+                                                                               15                                         N           10
+                                                                   1, 3              2, 3                     1
+                                                                               N                                              A
+                                                                                                              1
+                                                                                                                     10           0
+                                                                                                              3
+                                        Phase 1                            Phase 2
+
+                                Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+
+                                                                                               2, 0     0         2                    2, 1   1        1
+                                                                                                                                   ?                           12       ?
+                                                                                                                  2                                    2
+                                                                                                                                   3                                    3
+                                                                                                                                                               N
+                                                                                                             10                                   10
+                                                                                                                      A       15                           A       15
+                                                                                                                  0                                    0
+
+
+
+
+                                                                                               2, 2     2         2                    2, 3   3        1
+                                                                                                                          12       ?                           12       ?
+                                                                                                                  2                                    2
+                                                                                                                                   3                                    3
+                                                                                                                          N                                    N
+                                                                                                             10                                   10
+                                                                                                                      A       15                           A       15
+                                                                                                                  0                                    0
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+                                                                                                       2, 0                  3, 1   3, -1
+                                                                                                                    N
+                                                                                                              25        12                         45
+                                                                                                                                              A
+                                                                              15
+                                                                   1, 2               2, 2
+                                                                               N                                                              15
+                                                                                                                        A           3, 3                0, 3
+                                                                                                                                              N
+                                                                            20 A                                   25
+                                                                                                       2, 1                  3, 4
+                                                                                                                   A
+                                            10                                                                                                15
+                                 0, 4             1, 4                                2, 4                                          3, 2                0, 2
+                                            N                                                                                                 N
+                                                                                                              25 A
+
+
+                                                                           20 A                                12            3, 2
+                                                                                                       2, 2
+                                                                                                               N                              15
+                                                                                                                                    3, 0                0, 0
+                                                                                                                                              N
+                                                                              15
+                                                                  1, 3               2, 3                     25 A
+                                                                              N
+
+                                                                                                                   12                         15
+                                                                                                       2, 3                  3, 3   3, 1                0, 1
+                                                                                                                   N                          N
+
+
+                                        Phase 1                             Phase 2                            Phase 3                     Phase 4
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Values can be calculated recursively
+            • 𝑉(𝑆𝐾 ) = 0
+            • 𝑉 𝑆𝑘 = 𝑚𝑎𝑥 𝑅 𝑆𝑘 , 𝑥 + 𝑉 𝑆𝑘𝑥
+            • 𝑉 𝑆𝑘𝑥 = σ𝑆𝑘+1 ℙ 𝑆𝑘+1 = 𝑆𝑘𝑥 , 𝜔𝑘                                    𝑉(𝑆𝑘+1 )
+
+
+
+
+                                                    S0                                                            SK
+                                                                                                             SK
+
+
+
+
+                                                                                         Recursion
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Calculating Optimal Policy
+
+
+          Phase                State             Decision                                                 Value of Decision
+                                                                       Next State                                               Optimal Value   Optimal Decision
+                                                                         𝑺𝒌+𝟏                                                       𝑽∗ (𝑺𝒌 )           𝒙∗
+             𝒌                  𝑺𝒌                   𝑥                                                    𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 )
+
+                               3, -1                 A                      -                                  45 + 0                45                A
+                               3, 0                 N                       -                                  15 + 0                15                N
+
+             4                 3, 1                 N                       -                                  15 + 0                15                N
+                               3, 2                 N                       -                                  15 + 0                15                N
+                               3, 3                 N                       -                                  15 + 0                15                N
+
+
+
+
+                                 Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+                                                                                                              3, -1
+
+                                                                                                             45              45
+                                                                                                                       15          0
+                                                                                                                            15
+                                                                                                              3, 3                0, 3
+
+
+                                                                                                                  15               0
+                                                                                                                            15
+                                                                                                              3, 2                0, 2
+
+
+
+                                                                                                                  15               0
+                                                                                                                            15
+                                                                                                              3, 0                0, 0
+
+
+
+                                                                                                                  15               0
+                                                                                                                            15
+                                                                                                              3, 1                0, 1
+
+
+                                                                                                                   Phase 4
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Values can be calculated recursively
+            • 𝑉(𝑆𝐾 ) = 0
+            • 𝑉(𝑆𝑘 ) = 𝑚𝑎𝑥 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+            • 𝑽 𝑺𝒙𝒌 = σ𝑺𝒌+𝟏 ℙ 𝑺𝒌+𝟏 = 𝑺𝒙𝒌 , 𝝎𝒌                                     𝑽(𝑺𝒌+𝟏 )
+
+
+
+
+                                                    S0                                                            SK
+                                                                                                             SK
+
+
+
+
+                                                                                         Recursion
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+         Calculating Optimal Policy
+                               Phase      State         Decision                                     Value of Decision          Optimal     Optimal
+                                                                         Next State
+                                                                                                                                 Value      Decision
+                                                                           𝑺𝒌+𝟏
+                                 𝒌          𝑺𝒌              𝑥                                          𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 )       𝑽∗ (𝑺𝒌 )      𝒙∗
+
+                                          2, 0             A           [3,2] , [3,3]         25 + (15*0.5 + 15*0.5) = 40          40           A
+                                                           N           [3,-1], [3,0]         12 + (45*0.5 + 15*0.5) = 42
+                                          2, 1                                                                                    40           A
+                                                           A            [3,2], [3,3]         25 + (15*0.5 + 15*0.5) = 40
+                                 3                         N            [3,0], [3,1]         12 + (15*0.5 + 15*0.5) = 27
+                                          2, 2                                                                                    27           N
+                                                           A            [3,2], [3,3]         25 + (15*0.5 + 15*0.5) = 40
+                                                           N            [3,2], [3,1]         12 + (15*0.5 + 15*0.5) = 27
+                                          2, 3                                                                                    27           N
+                                                           A            [3,2], [3,3]         25 + (15*0.5 + 15*0.5) = 40
+
+
+                                                                                                3, 0         𝑉 ∗ [3,0] = 15
+                                                                                       0.5
+                                                                       12
+                                                            2, 2
+                                                                        N
+                                                                                3, 2
+                                                                                                                              𝑉 ∗ 2, 2
+                                                                                       0.5
+                                                                                                3, 1           𝑉 ∗ [3,1]      = 27
+                                                                                                               = 15
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+                                                                                                       2, 0               3, 1    3, -1
+
+                                                                                                        40    25        12 30    45              45
+                                                                                                                                           15          0
+                                                                                                                                                15
+                                                                                                                                  3, 3                0, 3
+                                                                                                        40                 15
+                                                                                                                   25
+                                                                                                       2, 1               3, 4
+                                                                                                                                      15               0
+                                                                                                                                                15
+                                                                                                                                  3, 2                0, 2
+                                                                                                              25
+                                                                                                        27                 15
+
+                                                                                                       2, 2    12         3, 2        15               0
+                                                                                                                                                15
+                                                                                                                                  3, 0                0, 0
+
+                                                                                                              25
+                                                                                                        27                15          15               0
+                                                                                                                   12                           15
+                                                                                                       2, 3               3, 3    3, 1                0, 1
+
+
+                                                                                                              Phase 3                  Phase 4
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Calculating Optimal Policy
+
+                               Phase      State         Decision                                     Value of Decision            Optimal     Optimal
+                                                                         Next State
+                                                                                                                                   Value      Decision
+                                                                           𝑺𝒌+𝟏
+                                 𝒌          𝑺𝒌              𝑥                                        𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 )           𝑽∗ (𝑺𝒌 )      𝒙∗
+
+                                                           N            [2,0], [2,1]        15 + (40*0.5 + 40*0.5) = 55
+                                          1, 2                                                                                      47           A
+                                                           A            [2,2], [2,3]        20 + (27*0.5 + 27*0.5) = 47
+                                 2
+                                                           N            [2,1], [2,2]      15 + (40*0.5 + 27*0.5) = 48.5
+                                          1, 3                                                                                      47           A
+                                                           A            [2,2], [2,3]        20 + (27*0.5 + 27*0.5) = 47
+
+
+
+                                                                               0.5                               𝑉 ∗ [2,3] = 27
+                                                                20
+                                                    1, 2
+                                                                A
+                                                                        2, 4
+                                                                                                                                  𝑉 ∗ 1, 2
+                                                                               0.5
+                                                                                                                 𝑉 ∗ [2,2] =      = 47
+                                                                                                                 27
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+                                                                                                       2, 0               3, 1    3, -1
+                                                                   47                40                 40                       45              45
+                                                                                                              25        12 30
+                                                                             15                                                            15          0
+                                                                  1, 2               2, 2
+                                                                                                                                                15
+                                                                                                                                  3, 3                0, 3
+                                                                                                        40                 15
+                                                                           20                                      25
+                                                                                                       2, 1               3, 4
+                                                                                     27                                               15               0
+                                                                                                                                                15
+                                                                                     2, 4                                         3, 2                0, 2
+                                                                                                              25
+                                                                                                        27                 15
+
+                                                                           20                          2, 2    12         3, 2        15               0
+                                                                                                                                                15
+                                                                   47               33.5                                          3, 0                0, 0
+                                                                              15
+                                                                  1, 3              2, 3                      25
+                                                                                                        27                15          15               0
+                                                                                                                   12                           15
+                                                                                                       2, 3               3, 3    3, 1                0, 1
+
+
+                                                                          Phase 2                             Phase 3                  Phase 4
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+         Calculating Optimal Policy
+                               Phase      State         Decision                                     Value of Decision             Optimal     Optimal
+                                                                           Next State
+                                                                                                                                    Value      Decision
+                                                                             𝑺𝒌+𝟏
+                                 𝒌          𝑺𝒌              𝑥                                        𝑹𝒌 𝑺𝒌 , 𝒙 + 𝑽(𝑺𝒙𝒌 )            𝑽∗ (𝑺𝒌 )      𝒙∗
+
+                                 1        0, 4             N              [1,2] , [1,3]     10 + (47*0.5 + 47*0.5) = 57              57           N
+
+
+
+
+                                                                           0.5                                    𝑉 ∗ [1,2] = 47
+                                                          10
+                                                 0, 4
+                                                          N
+                                                                   1, 4
+                                                                                                                                   𝑉 ∗ 0, 4
+                                                                           0.5                                    𝑉 ∗ [1,3] = 47   = 57
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       MDP-Decision Tree
+                                                                                                       2, 0               3, 1    3, -1
+                                                                   47                40                 40                       45              45
+                                                                                                              25        12 30
+                                                                             15                                                            15          0
+                                                                  1, 2               2, 2
+                                                                                                                                                15
+                                                                                                                                  3, 3                0, 3
+                                                                                                        40                 15
+                                                                           20                                      25
+                                                                                                       2, 1               3, 4
+                                 57               47                                 27                                               15               0
+                                          10                                                                                                    15
+                                0, 4              1, 4                               2, 4                                         3, 2                0, 2
+                                                                                                              25
+                                                                                                        27                 15
+
+                                                                           20                          2, 2    12         3, 2        15               0
+                                                                                                                                                15
+                                                                   47               33.5                                          3, 0                0, 0
+                                                                              15
+                                                                  1, 3              2, 3                      25
+                                                                                                        27                15          15               0
+                                                                                                                   12                           15
+                                                                                                       2, 3               3, 3    3, 1                0, 1
+
+                                       Phase 1                            Phase 2                             Phase 3                  Phase 4
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Conclusion I: Management
+       • Expected travel time is 57 minutes
+
+       • Vehicle always returns after serving first customer
+
+
+
+
+                                                                                                             alle-lkw.de
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Conclusion II: Calculation
+       • Calculation possible
+
+       • Problem with
+         • 4 Decision points
+         • 12 States
+         • 17 Decisions
+         • 12 Post-decisions states
+         • 16 Transitions
+         • 16 Calculations
+
+
+       • What if we increase the dimensions? Curses of Dimensionality
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+       • Markov Decision Process
+
+       • Optimal Solutions
+
+       • Curses of Dimensionality
+
+       • Modeling discussion
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 38
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Transition/Information Space
+       • Stepwise increase of potential demand options
+       • 2,3,…,20,
+       • Up to 900 states with 20 options
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 39
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Number of Customers
+       • Stepwise increase in number of customer
+       • 1,…,9 customers
+       • Up to 200,000 states for
+         problem with 9 customers
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 40
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Increase Customer Number and Integrate Routing Decisions
+       • Stepwise increase in number of customer
+       • 1,…,9 customers
+       • Up to 6 billion states for
+         problem with 9 customers
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 41
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Curses of Dimensionality
+       • State Space
+       • Decision Space
+       • Information Space
+       • With increasing dimensionality, recursion
+         becomes infeasible.
+       • For (nearly) all real-world problems, an optimal solution cannot be found
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 42
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+       • Markov Decision Process
+
+       • Optimal Solutions
+
+       • Curses of Dimensionality
+
+       • Modeling discussion
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 43
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Decision Point
+       • Decision points define when a decision is made.
+       • Notation: 𝑘 = 0, … , 𝐾
+       • Not necessarily equidistant and known
+
+       • Examples:
+         • Every day, every hour, etc.
+         • Whenever a vehicle served a customer/ a job is produced
+         • Whenever a new customer requests/ new job comes in
+         • Self-Induced (“I will wait 5 minutes and then decide”)
+
+       • The time a decision is made depends on its “importance” to the stakeholders
+       • Tradeoff between fast reaction and information gain.
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 44
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       State
+       • A state contains all information available to make a decision
+       • Notation: 𝑆𝑘 in decision point 𝑘
+
+       • Information comprises
+         • Environment: time, traffic, weather, etc.
+         • Resources: vehicle locations, machine availability times, etc.
+         • Demand: customers and locations, set of production jobs, etc.
+
+       • Resources and demand may have additional attributes such as capacity, deadlines, etc.
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 45
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example 1: Delivery Routing
+       • Environment: 𝑡 = 60, travel time matrix                                                             𝑡 = 60           D
+
+
+       • Resources: vehicle location                                                                                  3
+
+
+
+       • Demand: Set of customers still to serve                                                                          2
+                                                                                                                1
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 46
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example 2: Line Production
+       • Environment: 𝑡 = 4
+       • Resources: availability times of the machines plus previous job: (A, 5, blue), (B, 4, red)
+       • Demand: Set of jobs with information (Type, Duration, Deadline):
+         • (blue,3,11), (blue,4,9), (red, 3, 15)
+
+                           11                           9                       15
+
+
+                      A                         7
+                                           9
+                      B
+                               0      1     2       3    4     5     6      7     8     9      10 11 …
+
+
+
+                                   Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 47
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example 3: Inventory Management
+
+
+       • Environment: 𝑡 = 2
+
+                                                                                                             𝑡=2
+       • Resources: Current fill level
+
+       • Demand: Not realized yet
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 48
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Decisions and Rewards
+       • Decisions are made about the use/spending of resources to serve demand
+       • Notation: 𝑥𝑘 ∈ 𝑋(𝑆𝑘 ) in state 𝑆𝑘
+
+       • Feasibility depend on
+         • Constraints in resource use (travel/set-up times, capacities, etc.)
+         • Constraints in service of demand (deadlines, amount, etc.)
+
+       • Each decisions causes costs and/or rewards 𝑅 𝑆𝑘 , 𝑥𝑘 :
+         • Costs in use of resources
+         • Rewards in service of demand
+
+       • Often, either costs or rewards are moved to the constraints.
+       • Reward can be a random variable
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 49
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Examples 1: Dynamic Vehicle Routing
+                                                                                                             Action:
+       • Decisions and rewards can be modeled
+         either as immediate action or as plan updates.
+       • Immediate action is the least commitment
+         necessary (next customer to serve, next job
+         to produce)
+       • Plan updates consider a sequence of tentative
+         actions where only the first is implemented
+       • Each model type requires different reward                                                           Plan:
+         functions (reward of action vs. marginal change)
+       • Opinion: Plan updates are more intuitive and
+         connect better to methodology
+
+        Ulmer et al. 2020: On Modeling Stochastic and Dynamic Vehicle Routing Problems
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 50
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example 2: Connecting Decisions to Methods
+       •      Without plan, we just decide about the next job on line B
+       •      With plan, we tentatively plan all jobs and only implement the next job on line B
+       •      A solution method aims on minimizing delay
+       •      Operating on a set of plans indicates impact on delay for all jobs
+       •      Only operating on current action seems unintuitive
+       •      Difference in reward/delay: current action: 0, plan: 1
+
+
+
+                               A                   7                 S               9
+                                               9              S           15               S                 11
+                               B
+                                   0 1             2         3        4        5         6        7          8    9   10 11 …
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 51
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example 3: Uncertain Reward
+       • Inventory management problem has two types of costs:
+
+       • Inventory holding costs (known at time of decision)
+       • Emergency replenishment costs:
+         • Stochastic
+         • Unknown at time of decision
+
+       • Also very common when
+         • Customers can choose products
+         • Travel times are stochastic
+         • Drivers can reject offers
+         • Etc.
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 52
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Post-Decision State
+       • Combination of state 𝑆𝑘 and decision 𝑥𝑘 leads to post-decision state 𝑆𝑘𝑥
+       • Deterministic part of the overall transition from state to state.
+       • Often contains similar information as the state with changes (e.g., no open requests/jobs)
+
+       • Can be seen as the “current plan.”
+
+       • Explicit modeling supports
+         • Communication (We see the implementation of the decision)
+         • Methodology (compare Bellman Equation, max 𝑅(𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 ))
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 53
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Decision Time of Post-Decision State
+       • Post-decision state may have the same                                                         Example state and     𝑡 = 60
+                                                                                                                                      2
+         or a later decision time as the                                                               possible decisions:
+         corresponding state
+                                                                                                                                1     3
+
+       • Example 1
+         • Deterministic travel times, but                                                             Post-decision state   𝑡 = 90
+           stochastic demand at new location                                                           for example 1:                 2
+
+           → later decision time
+                                                                                                                                1     3
+
+       • Example 2
+                                                                                                       Post-decision state
+         • Deterministic demand at new location,                                                                             𝑡 = 60
+           but stochastic travel times                                                                 for example 2:                 2
+
+           → same decision time
+                                                                                                                                1     3
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 54
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Stochastic Information and Transitions
+       • Observation of stochastic information 𝜔𝑘 given post-decision state 𝑆𝑘𝑥 leads
+         to new state 𝑆𝑘+1 .
+       • Stochastic part of the overall transition from state to state.
+       • Each stochastic information has a probability (in theory).
+       • If transition is not self-evident, sometimes transition function is explicitly modeled
+         (compare Powell 2011)
+
+       • Transitions comprise:
+         • Observation of new customers/jobs/demand
+         • Customer selecting products
+         • Etc.
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 55
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Coding MDPs
+       For coding MDPs, five components are required:
+
+       1. Exogeneous information, for example, lists of jobs/customers with all relevant details
+          (duration, location, potentially choice model details, etc.)
+       2. Simulation loop, for example, over time or the job/customer list
+       3. State information as combination of previous post-decision state and new information
+       4. Decision policy, assigning a decision to a state (see next week) and creating reward and
+          post-decision state
+       5. Variable to track observed rewards
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 56
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Outlook
+       • Approximate Dynamic Programming
+
+       • Rolling Horizon Optimization
+
+       • Policy and Cost Function Approximation
+
+       • Simulation methods
+
+
+
+
+                               Data Driven Decision Making | Lecture 5 – Markov Decision Process | Page 57
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

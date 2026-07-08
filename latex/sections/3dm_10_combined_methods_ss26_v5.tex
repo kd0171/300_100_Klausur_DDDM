@@ -1,0 +1,1289 @@
+\section*{Lecture 10 - Combined Methods}
+\addcontentsline{toc}{section}{Lecture 10 - Combined Methods}
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{001}{Data Driven Decision Making}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{1}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定
+\item 講義 10 – Combined Methods
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S001: 「Data Driven Decision Making」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S001: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{002}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{2}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Combinations Handelsblatt.de（この用語は講義スライド上の専門語として扱う）
+\item Case Study: Dynamic Relocations in Bike-Sharing Systems（この用語は講義スライド上の専門語として扱う）
+\item Achievements（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{003}{Policy Classes (Compare Powell 2011)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{3}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 方策 Classes (Compare Powell 2011)
+\item 方策関数近似
+\item Rule-Based（この用語は講義スライド上の専門語として扱う）
+\item ローリングホライズン再最適化
+\item 費用関数近似
+\item 先読み Models
+\item 価値関数近似 Optimization-Based
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Policy Classes (Compare Powell 2011)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S003: 「Policy Classes (Compare Powell 2011)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S003: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{004}{Policy Classes I}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{4}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 方策 Classes I
+\item 方策 function approximation:
+\item Transfer a rule-of-thumb into a 方策
+\item Rolling-Horizon Re-Optimization:（この用語は講義スライド上の専門語として扱う）
+\item Determine 決定 based on current
+\item information (myopic)（この用語は講義スライド上の専門語として扱う）
+\item Cost-Function Approximation:（この用語は講義スライド上の専門語として扱う）
+\item Manipulate 報酬 function or constraints to
+\item incentivize (/avoid) (in)flexible 決定s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Policy Classes I」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S004: 「Policy Classes I」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S004: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{005}{Policy Classes II: Lookahead}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{5}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 方策 Classes II: Lookahead
+\item Methods consider future changes via sampling of realizations（この用語は講義スライド上の専門語として扱う）
+\item ロールアウト algorithm:
+\item Simulate paths of sampled realizations and 決定s made by a base 方策
+\item Use simulated values with ベルマン Equation
+\item 複数シナリオアプローチ:
+\item Sample sets of realizations (scenarios)（この用語は講義スライド上の専門語として扱う）
+\item Solve scenarios individually（この用語は講義スライド上の専門語として扱う）
+\item Determine most similar solution → 決定
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Policy Classes II: Lookahead」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S005: 「Policy Classes II: Lookahead」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S005: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{006}{Value Function Approximation (VFA)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{6}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 価値関数近似（VFA）
+\item シミュレーション
+\item Apply（この用語は講義スライド上の専門語として扱う）
+\item 状態
+\item Update（この用語は講義スライド上の専門語として扱う）
+\item Optimization: ベルマン’s Equation
+\item Request（この用語は講義スライド上の専門語として扱う）
+\item Provide（この用語は講義スライド上の専門語として扱う）
+\item Acces（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Value Function Approximation (VFA)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S006: 「Value Function Approximation (VFA)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S006: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{007}{Disadvantages of ADP-Methods}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{7}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 欠点 of ADP-Methods
+\item Rolling horizon does not anticipate future developments（この用語は講義スライド上の専門語として扱う）
+\item 方策 function approximations do not exploit full detail of 状態 and 確率的 information
+\item Cost function approximations are difficult to tune and ignore specifics in 状態 and
+\item 確率的 information
+\item Lookahead methods usually require significant runtime and can only capture a few（この用語は講義スライド上の専門語として扱う）
+\item samples and 決定s
+\item Value function approximations require aggregation and storage of results, scalability（この用語は講義スライド上の専門語として扱う）
+\item issues（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Disadvantages of ADP-Methods」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S007: 「Disadvantages of ADP-Methods」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S007: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{008}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{8}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Combinations Handelsblatt.de（この用語は講義スライド上の専門語として扱う）
+\item Case Study: Dynamic Relocations in Bike-Sharing Systems（この用語は講義スライド上の専門語として扱う）
+\item Achievements（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{009}{We can combine ADP-methods}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{9}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ADP手法は組み合わせることができる
+\item Combinations of ADP-methods can exploit their strengths and alleviate their shortcomings（この用語は講義スライド上の専門語として扱う）
+\item For example, integrate PFA, CFA, or VFA into a rollout algorithm（この用語は講義スライド上の専門語として扱う）
+\item PFA or CFA can replace myopic base 方策 in rollout algorithm
+\item Even VFA can evolve an improved base 方策 for rollout
+\item The シミュレーション horizon may be split into an 1. rollout and 2. VFA part
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「We can combine ADP-methods」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S009: 「We can combine ADP-methods」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S009: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{010}{𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{10}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item ∗
+\item 𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+\item 例: Dynamic Routing 𝑥∈𝑋(𝑆𝑘 )
+\item Detailed online シミュレーションs with rollout
+\item Anticipatory base 方策 induced by offline VFA-values
+\item b
+\item t
+\item シミュレーション
+\item …
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S010: 「𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S010: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{011}{Results (Benchmark: Anticipatory Insertion (Ghiani et al. 2012))}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{11}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Results (Benchmark: Anticipatory Insertion (Ghiani et al. 2012))（この用語は講義スライド上の専門語として扱う）
+\item ロールアウト VFA Combination
+\item Ulmer, Goodson, Mattfeld, Hennig: Offline-Online ADP for Dynamic Vehicle Routing with Stochastic（この用語は講義スライド上の専門語として扱う）
+\item Requests, 交通・輸送 Science, 2019
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Results (Benchmark: Anticipatory Insertion (Ghiani et al. 2012))」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S011: 「Results (Benchmark: Anticipatory Insertion (Ghiani et al. 2012))」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S011: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{012}{Limited Lookahead Horizons + VFA}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{12}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Limited Lookahead Horizons + VFA（この用語は講義スライド上の専門語として扱う）
+\item Apply rollout for ℎ 決定 points
+\item Add VFA-value of last simulated 後決定状態
+\item Avoid discrepancy of rollout and reality, save runtime（この用語は講義スライド上の専門語として扱う）
+\item Ulmer, Horizontal combinations of online and offline approximate 動的 programming for
+\item 確率的 動的 vehicle routing, Central European Journal of オペレーションズ・リサーチ, 2019
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Limited Lookahead Horizons + VFA」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S012: 「Limited Lookahead Horizons + VFA」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S012: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{013}{Example: Dynamic Vehicle Routing}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{13}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 例: Dynamic Vehicle Routing
+\item Comparison against myopic 方策
+\item Improvement for rollout algorithm with 16 and 128 samples and different horizons ℎ（この用語は講義スライド上の専門語として扱う）
+\item With 16 samples, limiting horizon to 30 points provides best solutions（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Example: Dynamic Vehicle Routing」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S013: 「Example: Dynamic Vehicle Routing」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S013: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{014}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{14}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Combinations Handelsblatt.de（この用語は講義スライド上の専門語として扱う）
+\item Case Study: Dynamic Relocations in Bike-Sharing Systems（この用語は講義スライド上の専門語として扱う）
+\item Achievements（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{015}{Ad-hoc control of bike relocation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{15}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Ad-hoc control of bike relocation（この用語は講義スライド上の専門語として扱う）
+\item Rentals（この用語は講義スライド上の専門語として扱う）
+\item 6 Aug, 31th (Mon)
+\item 2 Sep, 1st (Tue)
+\item 0 Sep, 2nd (Wed)
+\item 16 17 18 19 20
+\item p.m. p.m. p.m. p.m. p.m.
+\item Time（この用語は講義スライド上の専門語として扱う）
+\item Returns（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Ad-hoc control of bike relocation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S015: 「Ad-hoc control of bike relocation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S015: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{016}{Ad-hoc control of bike relocation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{16}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Ad-hoc control of bike relocation（この用語は講義スライド上の専門語として扱う）
+\item Control of the 決定s of a bike relocation truck
+\item Alternating 決定s
+\item At a station, decide on the number of bike to (un-)load（この用語は講義スライド上の専門語として扱う）
+\item Once done (un-)loading, identify station with urgent need to go（この用語は講義スライド上の専門語として扱う）
+\item Urgent need is defined by missing bikes or missing bike racks（この用語は講義スライド上の専門語として扱う）
+\item Missing rack or missing bike define so called service fail（この用語は講義スライド上の専門語として扱う）
+\item One aims at the overall minimization of service fails over time（この用語は講義スライド上の専門語として扱う）
+\item In order to take 決定s, a measure for the 期待される future fail of service is needed
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Ad-hoc control of bike relocation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S016: 「Ad-hoc control of bike relocation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S016: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{017}{Problem Definition}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{17}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Problem Definition（この用語は講義スライド上の専門語として扱う）
+\item Station-based bike sharing system（この用語は講義スライド上の専門語として扱う）
+\item Time horizon（この用語は講義スライド上の専門語として扱う）
+\item Stations with capacity and initial fill levels（この用語は講義スライド上の専門語として扱う）
+\item Fleet of vehicles (1 in the simplest case)（この用語は講義スライド上の専門語として扱う）
+\item Stochastic customer trips (known probability)（この用語は講義スライド上の専門語として扱う）
+\item Dynamic routing and loading（この用語は講義スライド上の専門語として扱う）
+\item 目的: Minimize 期待される failed demands (pick up and drop off)
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Problem Definition」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S017: 「Problem Definition」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S017: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{018}{Markov Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{18}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item マルコフ意思決定過程
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Markov Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S018: 「Markov Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S018: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{019}{Markov Decision Process}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{19}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item マルコフ意思決定過程
+\item 決定 Point: Vehicle arrives at station
+\item 状態s:
+\item Vehicles (next stations and arrival times)（この用語は講義スライド上の専門語として扱う）
+\item Stations (current fill levels)（この用語は講義スライド上の専門語として扱う）
+\item 決定s:
+\item Loading at current station（この用語は講義スライド上の専門語として扱う）
+\item Next station to visit（この用語は講義スライド上の専門語として扱う）
+\item Post-決定 状態: as 状態 but with updated vehicle info and station fill level
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Markov Decision Process」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S019: 「Markov Decision Process」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S019: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{020}{Dynamic Lookahead Policy}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{20}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic Lookahead 方策
+\item Loading:（この用語は講義スライド上の専門語として扱う）
+\item Generate candidate solutions for current station (via（この用語は講義スライド上の専門語として扱う）
+\item PFA, 25\%, 50\%,75\%)
+\item Simulate future trips (customer demand) to evaluate（この用語は講義スライド上の専門語として扱う）
+\item candidate solutions（この用語は講義スライド上の専門語として扱う）
+\item Select fill level with max prevented failed demand（この用語は講義スライド上の専門語として扱う）
+\item Routing:（この用語は講義スライド上の専門語として扱う）
+\item Use same シミュレーション to determine next station based on
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Lookahead Policy」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S020: 「Dynamic Lookahead Policy」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S020: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{021}{Determine expected failed demand}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{21}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Determine 期待される failed demand
+\item Consider to fill a station to 25\% or 75\%（この用語は講義スライド上の専門語として扱う）
+\item シミュレーション of future demand leads to
+\item failed requests for the 25\% fill level（この用語は講義スライド上の専門語として扱う）
+\item Fill levels do not differ for the next 2½ hours（この用語は講義スライド上の専門語として扱う）
+\item Compare development of failed requests（この用語は講義スライド上の専門語として扱う）
+\item for three independent stations (n1, n2, n3)（この用語は講義スライド上の専門語として扱う）
+\item n3 receives one failed request early（この用語は講義スライド上の専門語として扱う）
+\item n2 receives increasing \# of failed requests（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Determine expected failed demand」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S021: 「Determine expected failed demand」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S021: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{022}{Dynamic Lookahead Horizon}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{22}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Dynamic Lookahead Horizon（この用語は講義スライド上の専門語として扱う）
+\item Subdivide horizon 𝑇 into periods 0, … , 23 = Ρ（この用語は講義スライド上の専門語として扱う）
+\item Consider lookahead horizons Δ𝑝 0,1, … , 6 = Δ（この用語は講義スライド上の専門語として扱う）
+\item Period + シミュレーション Horizon
+\item 0 3 6 9 12 15 18 21
+\item A 方策 can be represented by a 24- 0
+\item dimensional vector, e.g. (3,3,3…,3,2,1) 2（この用語は講義スライド上の専門語として扱う）
+\item How to determine an appropriate 方策?
+\item Period（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Dynamic Lookahead Horizon」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S022: 「Dynamic Lookahead Horizon」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S022: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{023}{Value Function Approximation}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{23}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item 価値関数近似
+\item Lookup-table with values（この用語は講義スライド上の専門語として扱う）
+\item 24 (hours) x 7 (horizons) entries（この用語は講義スライド上の専門語として扱う）
+\item Value → the 期待される failed demand
+\item if applying a horizon in certain hour（この用語は講義スライド上の専門語として扱う）
+\item Start with initial values（この用語は講義スライド上の専門語として扱う）
+\item Simulate MDP（この用語は講義スライド上の専門語として扱う）
+\item In 状態, determine horizon from
+\item lookup-table (+ Bolzmann exploration)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Value Function Approximation」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S023: 「Value Function Approximation」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S023: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{024}{Case Studies: Instances}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{24}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Studies: Instances（この用語は講義スライド上の専門語として扱う）
+\item Minneapolis‘ BSS „Nice Ride MN“（この用語は講義スライド上の専門語として扱う）
+\item \#trips show peaks at 8am, 12am, 5pm（この用語は講義スライド上の専門語として扱う）
+\item Failed trips will occur during peak hours（この用語は講義スライド上の専門語として扱う）
+\item Guess: incorporate next peak in horizon 200（この用語は講義スライド上の専門語として扱う）
+\item Trips（この用語は講義スライド上の専門語として扱う）
+\item Benchmark algorithms: 50（この用語は講義スライド上の専門語として扱う）
+\item PFA (safety buffer approach)（この用語は講義スライド上の専門語として扱う）
+\item Static fixed horizon of n hours: SLA(n) 0 2 4 6 8 10 12 14 16 18 20 22（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Studies: Instances」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S024: 「Case Studies: Instances」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S024: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{025}{Case Studies: Results}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{25}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Studies: Results（この用語は講義スライド上の専門語として扱う）
+\item Reduction of failed demand against PFA（この用語は講義スライド上の専門語として扱う）
+\item 40\%
+\item 30\%
+\item Improvement（この用語は講義スライド上の専門語として扱う）
+\item 20\%
+\item 10\%
+\item 0\%
+\item SLA(1) SLA(2) SLA(3) SLA(4) SLA(5) SLA(6) DLA
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Studies: Results」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S025: 「Case Studies: Results」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S025: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{026}{Case Studies: Dynamic Simulation Horizons}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{26}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Studies: Dynamic シミュレーション Horizons
+\item 0 2 4 6 8 10 12 14 16 18 20 22
+\item 2 DLA
+\item Period（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Studies: Dynamic Simulation Horizons」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S026: 「Case Studies: Dynamic Simulation Horizons」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S026: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{027}{Case Studies: Dynamic Simulation Horizons}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{27}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Studies: Dynamic シミュレーション Horizons
+\item Period + シミュレーション Horizon
+\item 0 2 4 6 8 10 12 14 16 18 20 22
+\item 2 Manual DLA（この用語は講義スライド上の専門語として扱う）
+\item Period（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Studies: Dynamic Simulation Horizons」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S027: 「Case Studies: Dynamic Simulation Horizons」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S027: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{028}{Case Studies: Results}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{28}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Case Studies: Results（この用語は講義スライド上の専門語として扱う）
+\item Reduction of failed demand against PFA（この用語は講義スライド上の専門語として扱う）
+\item 40\%
+\item 30\%
+\item Improvement（この用語は講義スライド上の専門語として扱う）
+\item 20\%
+\item 10\%
+\item 0\%
+\item SLA Manual DLA DLA（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Case Studies: Results」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S028: 「Case Studies: Results」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S028: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{029}{General Procedure}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{29}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item General Procedure（この用語は講義スライド上の専門語として扱う）
+\item Assume a 方策 𝜋𝛿 with 𝛿 a tuning parameter
+\item For example, 𝛿 defines a threshold (safety buffer,（この用語は講義スライド上の専門語として扱う）
+\item maximal detour, lookahead horizon)（この用語は講義スライド上の専門語として扱う）
+\item 𝛿
+\item We have a set of possible values for 𝛿 ∈ Δ（この用語は講義スライド上の専門語として扱う）
+\item We can define a 方策 class Π 𝑐 = \{𝜋𝛿𝑐 : 𝛿 ∈ Δ\}
+\item 𝑡
+\item A different 方策 (𝛿) could be beneficial for different 状態s
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「General Procedure」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S029: 「General Procedure」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S029: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{030}{General Procedure}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{30}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item General Procedure（この用語は講義スライド上の専門語として扱う）
+\item Nearly infinite number of combinations（この用語は講義スライド上の専門語として扱う）
+\item Divide time horizon into a set of periods（この用語は講義スライド上の専門語として扱う）
+\item Learn value 𝑉(𝑝, 𝛿) for every period 𝑝 and（この用語は講義スライド上の専門語として扱う）
+\item parameter 𝛿 with VFA.（この用語は講義スライド上の専門語として扱う）
+\item 方策 𝜋𝛿
+\item Store values in lookup table.（この用語は講義スライド上の専門語として扱う）
+\item Instead of ベルマン Equation, apply
+\item Boltzman Exploration to force exploration of 𝛿（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「General Procedure」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S030: 「General Procedure」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S030: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{031}{Generalization (still open)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{31}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Generalization (still open)（この用語は講義スライド上の専門語として扱う）
+\item Learning 状態-dependent parametrizations of PFA, CFA, Lookaheads, etc.
+\item Parameters may vary not only over time, but also based on other observations:（この用語は講義スライド上の専門語として扱う）
+\item Workload（この用語は講義スライド上の専門語として扱う）
+\item Urgency（この用語は講義スライド上の専門語として扱う）
+\item Etc. (compare features in lecture 9)（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Generalization (still open)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S031: 「Generalization (still open)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S031: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{032}{Summary and Outlook}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{32}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Summary and Outlook（この用語は講義スライド上の専門語として扱う）
+\item Anticipation is beneficial in controlling bike sharing systems（この用語は講義スライド上の専門語として扱う）
+\item Lookahead horizons should be “data-dependent”（この用語は講義スライド上の専門語として扱う）
+\item General method for large scale 動的 決定 problems:
+\item Parametrizable 方策 / Set of different policies
+\item Learning 状態-dependent parameters (still open)
+\item In combination with PFAs, the procedure can maintain the intuition and interpretability（この用語は講義スライド上の専門語として扱う）
+\item of the method（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Summary and Outlook」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S032: 「Summary and Outlook」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S032: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{033}{Agenda}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{33}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item アジェンダ
+\item 前回の復習と今回の位置づけ
+\item Combinations Handelsblatt.de（この用語は講義スライド上の専門語として扱う）
+\item Case Study: Dynamic Relocations in Bike-Sharing Systems（この用語は講義スライド上の専門語として扱う）
+\item Achievements（この用語は講義スライド上の専門語として扱う）
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{注記}このページは表紙・目次・事務情報・導入画像が中心であるため、無理に確認問題や過去問を付けない。
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{034}{Data Driven Decision Making (agenda)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{34}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定 (agenda)
+\item No. Topic（この用語は講義スライド上の専門語として扱う）
+\item 1 Different 状態s come with different data
+\item 2 Per 状態 data can vary 確率的ally
+\item 3 Too much variation requires dynamism（この用語は講義スライド上の専門語として扱う）
+\item 4 Depiction by markov 決定 process
+\item 5 Optimal derivation of 期待される future value
+\item 6 方策/cost function approximation depict value externally
+\item 7 先読み methods cope with value internally
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making (agenda)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S034: 「Data Driven Decision Making (agenda)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S034: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{035}{Data Driven Decision Making (theory)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{35}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定 (theory)
+\item Data becomes important if（この用語は講義スライド上の専門語として扱う）
+\item it changes over time and requires a temporal consideration（この用語は講義スライド上の専門語として扱う）
+\item changes are 確率的 or even 分布s are unknown
+\item variations are so large that information gain becomes important（この用語は講義スライド上の専門語として扱う）
+\item Dynamic 決定 making comes into play
+\item an external 確率的 process has to be modeled
+\item an internal 決定 process has to be modeled
+\item Both are tied by succeeding 状態 representations
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making (theory)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S035: 「Data Driven Decision Making (theory)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S035: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{036}{Data Driven Decision Making (application)}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{36}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item データ駆動型意思決定 (application)
+\item A priori 決定 making has its advantages
+\item Optimality may be warranted（この用語は講義スライド上の専門語として扱う）
+\item Setup time for implementation（この用語は講義スライド上の専門語として扱う）
+\item Communication of solution to stakeholders（この用語は講義スライド上の専門語として扱う）
+\item Dynamic 決定 making in the face of significant information gain
+\item Assignment of internal resources to external demand（この用語は講義スライド上の専門語として扱う）
+\item Current 決定s impact future flexibility
+\item Anticipation incorporates 期待される future 報酬
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。
+\item 計算量、将来考慮、解釈可能性、学習可能性の観点で組み合わせを説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Data Driven Decision Making (application)」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Combined Methods は、PFA, CFA, Look-ahead, VFAなどを単独で使うのではなく、複数組み合わせる考え方である。実問題では、一つの手法だけで高速性、将来考慮、解釈可能性、精度のすべてを満たすことは難しい。\par
+PFA + VFA の組み合わせでは、基本方策をルールで高速に作り、その選択を価値関数で補正する。例えば配送で『最も近い注文を選ぶ』というPFAを使いつつ、将来需要が多い地域に残る価値をVFAで加味する。これにより、単純ルールの速さと将来考慮を両立できる。\par
+CFA + Look-ahead では、目的関数に将来柔軟性のペナルティを入れたうえで、短い将来シナリオを解く。これにより、look-aheadの近視眼性を補い、計算可能な範囲で将来リスクを考慮できる。\par
+Rollout + VFA では、遠い未来をすべてシミュレーションする代わりに、途中からVFAで終端価値を近似する。これは長いホライズンの計算負荷を下げる典型的な組み合わせである。チェスや在庫制御のように、探索の末端を価値関数で評価する考え方に近い。\par
+試験では、組み合わせを列挙するだけでは不十分である。各組み合わせについて、どの弱点を補うのか、どの問題で有効か、期待される利点と残る欠点を説明する。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S036: 「Data Driven Decision Making (application)」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、ADP手法の組み合わせは、片方の弱点をもう片方で補うために行う。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S036: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+
+\clearpage
+\SlideHeader{Lecture 10 - Combined Methods}{037}{Outlook to next and final lecture}
+\begin{minipage}[t]{0.405\textwidth}
+\SlideImage{37}{../Materials/2026/3DM_10_Combined-Methods_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.43\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{日本語訳}\begin{itemize}
+\item Outlook to next and final lecture（この用語は講義スライド上の専門語として扱う）
+\item The 11th lecture is devoted to practical フードデリバリー
+\item It is based on white papers published by Uber eats（この用語は講義スライド上の専門語として扱う）
+\item The lecture focuses on data analytics and 決定 making
+\item Achivements of IDA, PMT and 3DM are summarized（この用語は講義スライド上の専門語として扱う）
+\end{itemize}\NoteSection{試験対策ポイント}\begin{itemize}
+\item Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。
+\item 各手法の強みと弱みを1セットで説明する。
+\end{itemize}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.58\textwidth}
+\begin{adjustbox}{max totalsize={\textwidth}{0.89\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\NoteSection{解説}このページでは「Outlook to next and final lecture」を理解する。スライド上の表現は短いが、試験では定義、具体例、モデル上の意味、手法の限界まで説明できる必要がある。\par
+Policy Function Approximation は、経験則やルールを直接方策として使う方法である。例えば『在庫が閾値を下回ったら注文する』『最も近いドライバーへ割り当てる』などである。計算は速く解釈しやすいが、複雑な将来影響を十分に扱えない可能性がある。\par
+Rolling Horizon Re-Optimization は、現在時点で見えている情報を使って一定期間の最適化問題を解き、最初の一部だけ実行し、次時点でまた解き直す方法である。現実変化へ適応できるが、見えている範囲だけを最適化するため近視眼的になることがある。\par
+Cost Function Approximation は、現在の目的関数や制約に補正項を加えて、将来に良い影響を持つ決定を誘導する方法である。例えば、将来需要が多い地域から車両を離さないようにペナルティを入れる。設計は問題依存で、補正項が適切でないと逆効果になる。\par
+Look-ahead Methods は、将来シナリオを明示的に考え、現在決定の良し悪しを未来までシミュレーションまたは最適化して評価する方法である。将来を直接見るため直感的だが、計算負荷が大きく、サンプリングやホライズンの選び方に依存する。\par
+Value Function Approximation は、状態または後決定状態の将来価値を特徴量とモデルで近似する方法である。学習した価値を使えば、各決定について遠い未来まで毎回シミュレーションしなくても将来影響を考慮できる。しかし良い特徴量と学習データが必要である。\par\NoteSection{確認問題と解答}\begin{enumerate}\item \textbf{L10-S037: 「Outlook to next and final lecture」の概念を、定義・具体例・モデル上の意味の順に説明せよ。}\\定義としては、Policy Function Approximation, Rolling Horizon, CFA, Look-ahead, VFAを何を近似するかで区別する。。具体例では、配送・在庫・フードデリバリーのような現実問題を用い、状態、決定、外生情報、報酬、または情報モデル/意思決定モデルのどこに対応するかを明示する。モデル上の意味として、この概念が目的関数、制約、状態表現、将来価値、または方策選択にどのような影響を与えるかを書く。試験では、用語だけを列挙せず、入力データから意思決定、さらに現実の実装へつながる流れを文章で示すことが重要である。\item \textbf{L10-S037: このスライドの考え方を、講義全体のDDDMプロセスの中に位置づけよ。}\\DDDMプロセスでは、現実世界のデータを集約して情報モデルを作り、意思決定モデルまたは方策で行動を選び、実装後に結果を観測して次の状態へ進む。このスライドの概念は、そのどこか一部だけではなく、データ表現、意思決定、将来不確実性、計算可能性のいずれかに関わる。答案では、まずこの概念がどの段階に属するかを述べ、次に他の段階へどう影響するかを書く。例えば価値関数なら将来価値を現在決定へ戻す役割、FIFOなら旅行時間情報モデルの整合性を保証する役割、CFAなら目的関数を調整して将来に良い行動を誘導する役割である。\end{enumerate}
+\end{minipage}
+\end{adjustbox}
+\end{minipage}
+
+\clearpage\ExamHeader{Lecture 10 - Combined Methods}
+\ExamQuestion{SS25 Exercise 10 (12 点)}
+\ExamSubsection{問題内容}
+ADP手法の2つ組み合わせを3例提案。設問では、組み合わせの狙い、補完関係、期待利点を説明すること。 ことが求められる。\par
+\ExamSubsection{満点答案}
+満点答案では、PFA、Rolling Horizon、CFA、Look-ahead、VFAを列挙し、それぞれが何を近似するかを説明する。PFAは方策そのもの、CFAは目的関数や制約、Look-aheadは将来シナリオ評価、VFAは将来価値を近似する。各手法の強みと弱みも必ず書く。\par
+\ExamSubsection{具体例による解説}
+具体例として、配送問題なら、顧客注文・車両位置・旅行時間を情報モデルにし、訪問順や割当を意思決定モデルで決める。在庫問題なら、在庫水準を状態、注文量を決定、需要を外生情報、在庫更新式を遷移、欠品費・保管費を費用として整理する。問題文の文脈に合わせて、抽象用語を必ず具体的な変数や行動に置き換える。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 設問が求める概念の定義を最初に明確に書く。
+\item 講義の専門語を列挙するだけでなく、現実例とモデル要素へ対応付ける。
+\item 利点だけでなく限界・注意点も最低一つ述べる。
+\item 式が出る問題では、記号の意味を文章で説明する。
+\item 新しい事例問題では、状態・決定・外生情報・遷移・報酬/費用の順に整理する。
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}

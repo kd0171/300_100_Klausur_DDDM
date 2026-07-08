@@ -1,0 +1,676 @@
+      Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 9 – Analytics Issues in Approximate Dynamic Programming
+       Data Analytics Issues for ADP Methods
+
+
+         Exogenous Information
+
+
+
+
+            Feature Engineering
+
+
+
+
+        Endogenous Information
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+         Unsupervised vs. Supervised Learning
+     ▪ Machine Learning differentiates concepts in (un-)supervised learning approaches
+
+     ▪ Unsupervised learning looks at data objects consisting of attributes only
+     ▪ It then builds a model that describes all data objects in the best possible way
+     ▪ It stands proxy for descriptive modeling, an illustrative concept is clustering
+
+     ▪      Supervised learning looks at data objects consisting of attributes and (one) variable
+     ▪      It aims at a mapping of attribute values to one distinct value of the variable
+     ▪      It learns a suitable mapping from training data, later on it discriminates test data
+     ▪      It stands proxy for predictive modeling, an illustrative concept is classification
+
+     ▪ Attribute/variable types determine e.g. regression (numerical) vs. classification (categorial)
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data Objects
+       We often assume that the data set is provided in form of a simple table
+
+                                 unsupervised learning                                                              supervised learning
+                               𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 1            …         𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 𝑚                                   𝐴𝑡𝑡𝑟𝑖𝑏𝑢𝑡𝑒 1     …       𝑉𝑎𝑟𝑖𝑎𝑏𝑙𝑒    phase
+         𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 1              𝑣𝑎𝑙𝑢𝑒11         𝑣𝑎𝑙𝑢𝑒1…           𝑣𝑎𝑙𝑢𝑒1𝑚                𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 1            𝑣𝑎𝑙𝑢𝑒11     𝑣𝑎𝑙𝑢𝑒1…    𝑣𝑎𝑙𝑢𝑒1    training
+                …               𝑣𝑎𝑙𝑢𝑒…1          𝑣𝑎𝑙𝑢𝑒……          𝑣𝑎𝑙𝑢𝑒…𝑚                       …              𝑣𝑎𝑙𝑢𝑒…1      𝑣𝑎𝑙𝑢𝑒……   𝑣𝑎𝑙𝑢𝑒…     training
+         𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 𝑛              𝑣𝑎𝑙𝑢𝑒𝑛1         𝑣𝑎𝑙𝑢𝑒𝑛…           𝑣𝑎𝑙𝑢𝑒𝑛𝑚                𝐼𝑛𝑠𝑡𝑎𝑛𝑐𝑒 𝑛            𝑣𝑎𝑙𝑢𝑒𝑛1     𝑣𝑎𝑙𝑢𝑒𝑛…   𝑣𝑎𝑙𝑢𝑒𝑛     test data
+                                                 Berthold et al. (2010), Ch. 4.1
+
+
+
+       The rows of the table are called instances, records, samples or data objects
+       The columns of the table are called attributes, features or variables
+
+
+
+
+                                 Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Attribute Scales
+       ▪ Every attribute has exactly one level of measurement/scale
+       ▪ Scale defines the types of operations and computations that are allowed for the attribute values
+
+                                                                                               Mathematical
+                                          Scale              Measure property                                               Example
+                                                                                                operators
+                                                               Classification,
+                                         Nominal                                                      =, ≠       Color: red, green, blue, orange
+                                                               membership
+                 Categorical                                                                                               Likert Scale:
+                                         Ordinal            Comparison, level                         >, <    Like, Like Somewhat, Neutral, Dislike
+                                                                                                                        Somewhat, Dislike
+                                                                                                                         Date & Time:
+                                         Interval           Difference, affinity                      +, −
+                 Numerical /                                                                                          05:00, 08:00, 11:00
+                  Cardinal                                                                                                  Salary:
+                                           Ratio           Magnitude, amount                          ×, ÷
+                                                                                                                  25.000€, 50.000€, 150.000€
+                                                                                                                            Berthold et al. (2010), Ch. 4.1
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Exogenous Information
+
+
+         Exogenous Information
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Exogeneous Information
+       ▪      Little information suggests the use of policy function approx. or cost function approx.
+
+       ▪      Anticipation may be achieved by explorative data analysis → derive future costs
+
+       ▪      The more you know about exogeneous information, the more useful anticipation becomes
+
+       ▪      Detailed exogeneous information suggests look-ahead methods or value function approx.
+
+       ▪      Stochastic transitions denoted in the MDP are to be implemented in the simulation
+
+       ▪      Transitions may be derived from distributions or they may be sampled from observations
+
+       ▪      In the following, there are examples provided for both approaches
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Generating stochastic transition from distribution
+       ▪ Consider a stochastic transition depicting the
+         elapse of time before the next customer                                                                                                    Θ
+                                                                                                                                                    Θ
+         arrives                                                                                                                                    Θ
+
+
+
+
+       ▪ Inter-arrival times (between customers) are
+         often depicted by an exponential distribution
+
+       ▪ Consider random variable
+         with 𝜃 being the scale parameter
+
+       ▪ Cumulative distribution function
+                                                                                                                                                    Θ
+                                                                                                                                                    Θ
+                                                                                                                                                    Θ
+
+
+
+
+                                                                                                            https://en.wikipedia.org/wiki/Exponential_distribution
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Generating stochastic transition for distribution
+
+
+
+
+                                                                                                            https://medium.com/@m.pierini/generation-of-a-random-variable-with-the-inversion-method-4ea99e12569a
+         ▪ Apply inversion method if random variable comes
+           with an invertible cumulative form 𝐹 −1
+
+         ▪ Inversion of 𝐹 𝑥 for exponential distribution
+
+
+
+
+         ▪ Generate random variable
+
+         ▪ A sample from uniform distribution 𝑈 0,1 is transposed into an exponentially dist. sample
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Generating stochastic transition from observations
+       ▪      A logistics problem is considered, which is to be solved with the help of sequential
+              decision making. The problem extends over many decision points at which new
+              commodities appear
+
+       ▪      Commodities are to be delivered to their destination on time in a complex network.
+
+       ▪      For this purpose, a simulation introduces commodities over time. A commodity has a
+              start location, a destination, a delivery time and a weight.
+
+       ▪      All these features cannot simply be drawn from distributions.
+
+       ▪      Since there is access to historic logistics data, new data can be generated for our
+              problem by drawing samples from the historic pool of commodities at random
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Choosing the number of commodities                                                                    θ = 1
+                                                                                                             θ = 5
+                                                                                                             θ = 9
+         ▪      The first step is to decide how many new commodities will appear
+                within each stochastic transition.
+
+         ▪      In the literature, this number is usually determined using a discrete
+                Poisson distribution (suggesting # of independent events occurring)
+                                                     θ𝑘 −θ
+                                           𝑃θ 𝑘 =       𝑒
+                                                     𝑘!
+
+         ▪      Parameter θ determines the expected #, 𝑘 denotes realizations.
+
+         ▪      The CDF is built by summing up 𝑛 probabilities 𝐹𝜃 𝑛 = σ𝑛𝑘=0 𝑃𝜃 (𝑘)
+
+                                                                                                             θ = 1
+         ▪      Since the CDF is not invertible, draw 𝑥: 𝐹𝜃 𝑥 ≤ 𝑈 0,1 ≤ 𝐹𝜃 (𝑥 + 1)                           θ = 5
+                                                                                                             θ = 9
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Choosing the commodities
+       ▪ The second step is to select the commodities that appear in the respective transitions.
+
+       ▪ As many commodities (as previously specified by the Poisson distribution) are drawn from the
+         pool of all available commodities at each decision time.
+
+       ▪ Since the (unknown) underlying distribution are already in the data, the selection can be made
+         using a discrete uniform distribution.
+
+       ▪ With this, each commodity 𝑥 has the same probability of being selected from an array of 𝑛
+         commodities ranging from 0 to 𝑛 − 1: 𝑥 = ⌊𝑈 0,1 ∗ 𝑛⌋
+
+       ▪ In this way, a data set can be compiled for a sequential decision process.
+
+                                                                                                             https://www.flaticon.com/de/kostenloses-
+                                                                                                             icon/paket_7274757
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Two issues with generating stochastic transitions
+       ▪ Correlation
+         ▪ Random variables are not independent but follow some correlation
+         ▪ Correlation (due to causation) can appear time and/or space relation
+         ▪ For instance, a congestion on a road will cause a congestion on a parallel road
+            ▪      Zhaoxia Guo, Stein W. Wallace, Michal Kaut (2019) Vehicle Routing with Space- and Time-Correlated Stochastic
+                   Travel Times: Evaluating the Objective Function. INFORMS Journal on Computing 31(4):654-670
+
+
+       ▪ Outlier
+         ▪ A distribution approximated from observations include historic pecularities
+         ▪ In terms of a predictive model (what will happen?), overfitting is a topic
+         ▪ A predictive model comes with two objectives (accuracy and reduction of variance)
+            ▪      See Shmueli, G., & Koppius, O.R. (2011) Predictive Analytics in Information Systems Research. MIS Quarterly, 35(3),
+                   553–572
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Feature Engineering
+
+
+
+
+            Feature Engineering
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Decision Process
+       ▪ Stochastic and dynamic decision modelling aims at generating an (near) optimal policy
+
+       ▪ A policy provides a suitable decision to every state of the state space
+
+       ▪ A small state- and decision space helps keeping anticipation computationally tractable
+
+       ▪ Space reduction drives out dimensions from consideration (e.g. spatial or time)
+
+       ▪ Next to problem specific dimension reduction generic analytics techniques can be applied
+
+       ▪ Either important features are selected or the dimensionality of the state space is reduced
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Feature selection techniques
+       ▪ Unsupervised: do not incorporate variable
+
+       ▪ Supervised: Determine features with strong
+         relations to target variable by statistics
+
+                ▪ Intrinsic: For instance decision trees
+
+                ▪ Wrapper: Start with many features and
+                  successively eliminate features
+
+                ▪ Filter: Score features in accordance to
+                  relationship between feature and variable
+
+
+                                                                                                 https://machinelearningmastery.com/feature-selection-with-real-and-categorical-data/
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Filter based feature selection techniques
+
+
+       ▪ Choice by
+         ▪ Feature type (input)
+         ▪ Variable type (output)
+         ▪ Normal distribution (ANOVA)
+         ▪ Rank based (Kendall)
+
+
+
+
+                                                         https://machinelearningmastery.com/feature-selection-with-real-and-categorical-data/
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Taxonomy of methods for dimensionality reduction
+                                                                                                             Important properties
+
+                                                                                                                 Parametrization
+                                                                                                                 Parametric
+                                                                                                                 transformations allow the
+                                                                                                                 mapping of further data
+                                                                                                                 points into the lower-
+                                                                                                                 dimensional space
+
+                                                                                                                 Linearity
+                                                                                                                 A linear transformation
+                                                                                                                 preserves linear properties
+                                                                                                                 of the data in the mapping
+
+                                                                                                                 Convexity
+                                                                                                                 Convex objective functions
+                                                                                                                 guarantee the finding of
+                                                                                                                 the optimal low-
+                                                                                                                 dimensional space with
+                                                                                                                 respect to the information
+                                                                                                                 metric
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Possible Candidates for Reduction of Dimensionality
+
+                               Van der Maaten         Method    Description                  Graphik
+                               et al. (2009)
+                                                                 ▪ Lower-dimensional
+                                                                   representation                          Accelerated learning
+                                                                   maximizing the variance                 With lowered
+                                                       PCA                                                 dimensionality the
+                                                                   of the data sample
+                                                                                                       +   combinatoric of states
+                                                                 ▪ Linear transformation                   decreases which allows
+                                                                 ▪ Parametric mapping                      for more visits per state
+
+                                                                                                           Reduced performance
+                                                                 ▪ Lower-dimensional                       As dimensionality
+                                                                   representation
+                                                                   minimizing the minimal              -   reduction is related to
+                                                                                                           loss of information the
+                                                       Auto-       squared error of the                    performance in
+                                Review paper           encode      reconstructed input                     convergence is reduced
+                                testing dimension-     r
+                                ality reduction me-              ▪ Non-linear
+                                thods on artificial                transformation
+                                and real datasets                ▪ Parametric mapping
+
+
+
+                                                                                        This and following slides: Dissertation of Julius
+                                                                                        Heitmann (2023)
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Performance on a demand responsive taxi problem
+
+
+
+
+          ▪ PCA and AE learn (and perform) better at start                                                   State representation Relative performance   Accepted requests
+                                                                                                             High-dimensional state      104.3%                30.7
+                                                                                                             PCA state                   103.1%                28.1
+          ▪ In later iterations the high-dim model catches up                                                Autoencoder state           102.0%                31.3
+                                                                                                             Aggregated state            101.5%                29.8
+                                                                                                             Myopic reference            100.0%                30.6
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Endogenous information
+
+
+
+
+        Endogenous Information
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Endogenous information
+       ▪      Look-ahead approx. and value function approx. generate values from simulation runs
+       ▪      Values observed for multiple runs are aggregated into scalar values → data mining task
+       ▪      Supervised learning methods depicts relation between features and resulting value
+       ▪      Basically, we classify an value (output) upon observed features (inputs)
+       ▪      Classification (discrete) and regression (continuous) as well as ANN can be used.
+
+       ▪ Supervised learning methods depend on feature and variable type
+         (regression/classification)
+       ▪ White-box and black-box approaches can be distinguished (decision tree/ANN)
+       ▪ One design issue is the linearity of the underlying model (regression vs. ANN)
+       ▪ Methods differ in the number of observations required for learning (decision tree/ANN)
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Classification: Example with 2-Dim Input and 2 Classes
+
+
+                                                                                                    Training samples
+                                                                                                     𝑥1 , 𝑦1 , … , 𝑥𝑁 , 𝑦𝑁 ∈ ℝ2 × {0,1}
+
+                                                                                           Coordinate        Class label
+
+                                                                                                    Task
+                                                                                                    Derive a hypothesis ℎ that allows us
+                                                                                                    to classify unlabeled data points
+                                                                                                                    ෝ = 𝒉(𝒙)
+                                                                                                                    𝒚
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Classification: Linear Regression
+
+                                                                                                    Linear Regression
+
+                                                                                                                     ෝ = 𝜽 + 𝒘𝑻 𝒙
+                                                                                                                     𝒚
+
+
+                                                                                                             Score    Bias      Weight   Input
+                                                                                                    Using the score, we predict a class by
+
+                                                                                                    Orange      if           ෝ > 𝟎. 𝟓
+                                                                                                                             𝒚
+                                                                                                    Red         if           ෝ ≤ 𝟎. 𝟓
+                                                                                                                             𝒚
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Classification: Lookup-Table of Size 8x8
+                                                                                                   Table
+
+                                                                                                                       ෝ = 𝑻(𝑨 𝒙 )
+                                                                                                                       𝒚
+
+
+                                                                                                        Count vector    Table   Aggregation   Input
+
+                                                                                                   A class is then predicted by
+
+                                                                                                   Orange         if            ෞ0 > 𝒚
+                                                                                                                                𝒚    ෞ𝟏
+                                                                                                   Red            if            ෞ1 ≤ 𝒚
+                                                                                                                                𝒚    ෞ𝟎
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Classification: Decision Tree with 29 Leaves
+              𝐼1           𝐼2                       𝐼3        𝐼4          𝐼5                         Decision Tree
+
+                                                                                                                           𝑲
+
+                                                                                                                      ෝ = ෍ 𝒑𝒌 ∙ 𝕀 𝒙∈𝑰𝒌
+                                                                                                                      𝒚
+                           𝐼7                       𝐼8       𝐼9           𝐼10                                              𝒌=𝟏
+              𝐼6
+
+                                                                                                        Probability        Vector of class   1 if x is in leaf 𝐼𝑘 ,
+                                                                                                        vector             probabilities     0 else
+              𝐼11         𝐼12                       𝐼13                   𝐼14
+              𝐼15         𝐼16                       𝐼17     𝐼18          𝐼19                         A class is then predicted by
+              𝐼20         𝐼21                       𝐼22     𝐼23          𝐼24
+                                                    𝐼27      𝐼28         𝐼29
+                                                                                                     Orange           if           ෞ0 > 𝒚
+                                                                                                                                   𝒚    ෞ𝟏
+              𝐼25         𝐼26
+                                                                                                     Red              if           ෞ1 ≤ 𝒚
+                                                                                                                                   𝒚    ෞ𝟎
+
+
+                                Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Advanced Methods: Gradient Boosted Decision Trees
+       ▪ Reminder                                A decision tree is noted by 𝐹 𝑥; 𝑝, 𝐼 ≔ σ𝐾
+                                                                                          𝑘=1 𝑝𝑘 ∙ 𝕀 𝑥∈𝐼𝑘
+
+
+       ▪ Problem                                 A single decision tree is prone to overfitting
+
+       ▪ Solution                                Fit several small trees and use them as an ensemble
+
+                                                                                                    𝐽
+       ▪ Iterative procedure 𝐹𝑚 𝑥 = 𝐹𝑚−1 𝑥 + 𝛼𝑚 σ𝑗=1 𝑝𝑗𝑚 𝕀 𝑥∈𝐼𝑗𝑚
+
+
+                                                                                       Fit the residual of 𝐹𝑚−1
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Advanced Methods: Neural Network
+       ▪ Reminder                                Linear Regression 𝑦ො = 𝜃 + 𝑤 𝑇 𝑥
+
+       ▪ Problem                                 Can only express linear relations
+
+       ▪ Solution                                Stack several linear layers 𝜃 + 𝑤 𝑇 𝑥 and introduce non-linearity
+                                                 via an activation function, e.g., 𝑅𝑒𝐿𝑢 𝑥 = 𝑚𝑎𝑥(0, 𝑥)
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Advanced Methods: Neural Network
+
+           𝑙=1                            𝑙=2                           𝑙=3                    𝑙=4
+                                                                                                                 Output of a neuron
+
+                                                                                                                 𝑎𝑗𝑙 = 𝜎 ෍ 𝑤𝑗𝑘
+                                                                                                                             𝑙
+                                                                                                                               ⋅ 𝑎𝑘𝑙−1 + 𝜃𝑗𝑙
+                                                                                                                           𝑘
+
+
+
+                                                                                                                 Output of a layer
+
+                                                                                                                 𝑎𝑙 = 𝜎(𝑤 𝑙 𝑎𝑙−1 + 𝜃 𝑙 )
+                                                                                                𝑎23
+                                                                                      Output of the 2nd neuron
+                                                                                      in the 3rd layer
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Advanced Methods: Neural Network – Tuning
+
+                                     Increase nodes per layer
+         Increase number of layers
+
+
+
+
+                                                                                                                    Also consider varying:
+                                                                                                                    • Learning rate / Learning rate
+                                                                                                                       schedule
+                                                                                                                    • Batch size
+                                                                                                                    • Weight initialization
+                                                                                                                    • Optimizer
+
+
+
+
+                                                                                                                    Code available at:
+
+                                                                                                                    https://github.com/flohilde/ifm_lecture
+
+
+
+                                      Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Some Words of Advice
+       ▪ Start with a simple model to setup a benchmark. Then try out more complex models and
+         compare them to your benchmark.
+         A possible progression: Linear regression → Gradient boosted decision tree → ANN
+       ▪ When employing a complex method, train on a few thousand data points. It should be able
+         to learn them by heart.
+       ▪ Once you have a good model you can start fine-tuning. Only fine-tune hyperparameters
+         that you actually understand and for which you can set reasonable ranges.
+       ▪ Never resort to grid-search! Random-search and Bayesian optimization are much more
+         sample efficient. Also, do use cross-validation.
+       ▪ For neural networks: Architecture over hyperparameters!
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary of lecture
+
+
+       ▪ Simulation based methods (look-ahead, VFA) make use of descriptive analytics
+
+       ▪ The size of the post-decision space of a problem can be lowered by dim. reduction
+
+       ▪ Learn relation between features observed in the simulation and an expected future reward
+
+       ▪ Generally, analytics provides generic approaches to design of ADP methods
+
+
+
+
+                               Data Driven Decision Making | Lecture 9 – Analytics Issues in ADP | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+

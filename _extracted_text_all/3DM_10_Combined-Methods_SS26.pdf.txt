@@ -1,0 +1,788 @@
+     Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+
+
+
+
+Data Driven Decision Making
+Lecture 10 – Combined Methods
+       Agenda
+
+
+       • Recap Policy Classes
+
+       • Combinations                                                                                 Handelsblatt.de
+
+
+
+       • Case Study: Dynamic Relocations in Bike-Sharing Systems
+
+       • Achievements
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 2
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policy Classes (Compare Powell 2011)
+
+
+       • Policy Function Approximation
+                                                                                                         Rule-Based
+       •      Rolling Horizon Re-Optimization
+       •      Cost Function Approximation
+       •      Look-ahead Models
+       •      Value Function Approximation                                                            Optimization-Based
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 3
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policy Classes I
+       • Policy function approximation:
+         Transfer a rule-of-thumb into a policy
+       • Rolling-Horizon Re-Optimization:
+         Determine decision based on current
+         information (myopic)
+       • Cost-Function Approximation:
+         Manipulate reward function or constraints to
+         incentivize (/avoid) (in)flexible decisions
+
+       • None of the classes anticipates the future
+         (information & decision model) explicitly
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 4
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Policy Classes II: Lookahead
+       • Methods consider future changes via sampling of realizations
+       • Rollout algorithm:
+         • Simulate paths of sampled realizations and decisions made by a base policy
+         • Use simulated values with Bellman Equation
+       • Multiple Scenario Approach:
+         • Sample sets of realizations (scenarios)
+         • Solve scenarios individually
+         • Determine most similar solution → decision
+
+       • Disadvantages: runtime, decision making in simulation
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 5
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Value Function Approximation (VFA)
+
+
+                                                                                   Simulation
+
+
+
+
+                                                                                                       Apply
+                                                         State
+
+
+
+
+                                                                                                                Update
+                                                             Optimization: Bellman’s Equation
+                                                         Request
+
+
+
+
+                                                                                                      Provide
+                                                       Acces
+                                                         s
+
+
+
+
+                                                                                      Values
+                                                                                                                         Soeffker et al., 2016
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 6
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Disadvantages of ADP-Methods
+       • Rolling horizon does not anticipate future developments
+       • Policy function approximations do not exploit full detail of state and stochastic information
+       • Cost function approximations are difficult to tune and ignore specifics in state and
+         stochastic information
+       • Lookahead methods usually require significant runtime and can only capture a few
+         samples and decisions
+       • Value function approximations require aggregation and storage of results, scalability
+         issues
+       • Further issues such as intuition, interpretability, etc.
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 7
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Recap Policy Classes
+
+       • Combinations                                                                                 Handelsblatt.de
+
+
+
+       • Case Study: Dynamic Relocations in Bike-Sharing Systems
+
+       • Achievements
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 8
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       We can combine ADP-methods
+
+
+       • Combinations of ADP-methods can exploit their strengths and alleviate their shortcomings
+
+       • For example, integrate PFA, CFA, or VFA into a rollout algorithm
+
+                • PFA or CFA can replace myopic base policy in rollout algorithm
+
+                • Even VFA can evolve an improved base policy for rollout
+
+                • The simulation horizon may be split into an 1. rollout and 2. VFA part
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 9
+
+
+© Prof. Dr. Dirk C. Mattfeld
+                                                                                                             ∗
+                                                                                                           𝑋𝑘𝜋 (𝑆𝑘 ) = arg max 𝑅𝑘 (𝑆𝑘 , 𝑥) + 𝑉(𝑆𝑘𝑥 )
+       Example: Dynamic Routing                                                                                        𝑥∈𝑋(𝑆𝑘 )
+
+
+
+
+       • Detailed online simulations with rollout
+       • Anticipatory base policy induced by offline VFA-values
+
+
+                                                                                                       b
+
+
+                                                                                                              t
+
+
+                                                                                                       Simulation
+
+                                                                                                                                    …
+                                                                                                       b
+
+
+                                                                                                              t
+
+
+                                                                                                       Simulation
+
+                                                                                                                                    …
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 10
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Results (Benchmark: Anticipatory Insertion (Ghiani et al. 2012))
+
+
+
+
+                                                             Rollout                            VFA     Combination
+
+
+                               Ulmer, Goodson, Mattfeld, Hennig: Offline-Online ADP for Dynamic Vehicle Routing with Stochastic
+                               Requests, Transportation Science, 2019
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 11
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Limited Lookahead Horizons + VFA
+
+       • Apply rollout for ℎ decision points
+       • Add VFA-value of last simulated post-decision state
+       • Avoid discrepancy of rollout and reality, save runtime
+
+
+
+
+       • Ulmer, Horizontal combinations of online and offline approximate dynamic programming for
+         stochastic dynamic vehicle routing, Central European Journal of Operations Research, 2019
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 12
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Example: Dynamic Vehicle Routing
+
+       • Comparison against myopic policy
+       • Improvement for rollout algorithm with 16 and 128 samples and different horizons ℎ
+       • With 16 samples, limiting horizon to 30 points provides best solutions
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 13
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Recap Policy Classes
+
+       • Combinations                                                                                  Handelsblatt.de
+
+
+
+       • Case Study: Dynamic Relocations in Bike-Sharing Systems
+
+       • Achievements
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 14
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Ad-hoc control of bike relocation
+                                                                                                     12
+
+
+
+
+                                                                                           Rentals
+                                                                                                     10
+                                                                                                      8
+                                                                                                      6                              Aug, 31th (Mon)
+                                                                                                      4
+                                                                                                      2                              Sep, 1st (Tue)
+                                                                                                      0                              Sep, 2nd (Wed)
+                                                                                                           16   17   18   19   20
+                                                                                                          p.m. p.m. p.m. p.m. p.m.
+                                                                                                                   Time
+                                                                                                     12
+
+
+
+
+                                                                                           Returns
+                                                                                                     10
+                                                                                                      8
+                                                                                                      6                              Aug, 31th (Mon)
+                                                                                                      4
+                                                                                                      2                              Sep, 1st (Tue)
+                                                                                                      0                              Sep, 2nd (Wed)
+                                                                                                           16   17   18   19   20
+                                                                                                          p.m. p.m. p.m. p.m. p.m.
+                                                                                                                   Time
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 15
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Ad-hoc control of bike relocation
+       •      Control of the decisions of a bike relocation truck
+
+       •      Alternating decisions
+               • At a station, decide on the number of bike to (un-)load
+               • Once done (un-)loading, identify station with urgent need to go
+
+       •      Urgent need is defined by missing bikes or missing bike racks
+
+       •      Missing rack or missing bike define so called service fail
+
+       •      One aims at the overall minimization of service fails over time
+
+       •      In order to take decisions, a measure for the expected future fail of service is needed
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 16
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Problem Definition
+
+
+       •      Station-based bike sharing system
+       •      Time horizon
+       •      Stations with capacity and initial fill levels
+       •      Fleet of vehicles (1 in the simplest case)
+
+       •      Stochastic customer trips (known probability)
+       •      Dynamic routing and loading
+
+
+
+
+       •      Objective: Minimize expected failed demands (pick up and drop off)
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 17
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Markov Decision Process
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 18
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Markov Decision Process
+       •  Decision Point: Vehicle arrives at station
+       •  States:
+         • Vehicles (next stations and arrival times)
+         • Stations (current fill levels)
+       • Decisions:
+         • Loading at current station
+         • Next station to visit
+       • Post-decision state: as state but with updated vehicle info and station fill level
+       • Stochastic information: New demand for return and pickup
+       • Transition:
+         • New state when next vehicle arrives
+         • Updated fill level based on demand
+         • Observed failed demand
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 19
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Lookahead Policy
+       •     Loading:
+            • Generate candidate solutions for current station (via
+              PFA, 25%, 50%,75%)
+            • Simulate future trips (customer demand) to evaluate
+              candidate solutions
+            • Select fill level with max prevented failed demand
+
+       •     Routing:
+            • Use same simulation to determine next station based on
+                • Max prevented failed demand
+                • Potential of other vehicles of the fleet
+                   (assignment problem)
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 20
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Determine expected failed demand
+       •      Consider to fill a station to 25% or 75%
+       •      Simulation of future demand leads to
+              failed requests for the 25% fill level
+       •      Fill levels do not differ for the next 2½ hours
+
+       •      Compare development of failed requests
+              for three independent stations (n1, n2, n3)
+       •      n3 receives one failed request early
+       •      n2 receives increasing # of failed requests
+       •      n3 receives many failed requests late in time
+       •      On the long run the failed requests do not differ anymore
+
+       •      Use VFA to learn hour-of-the-day dependent simulation horizons
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 21
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Dynamic Lookahead Horizon
+
+       • Subdivide horizon 𝑇 into periods                                                                 0, … , 23 = Ρ
+       • Consider lookahead horizons Δ𝑝                                                                   0,1, … , 6 = Δ
+                                                                                                                                 Period + Simulation Horizon
+                                                                                                                     0   3   6         9     12      15     18   21
+       • A policy can be represented by a 24-                                                                   0
+         dimensional vector, e.g. (3,3,3…,3,2,1)                                                                2
+                                                                                                                4
+                                                                                                                6
+                                                                                                                8
+       • How to determine an appropriate policy?
+
+
+
+
+                                                                                                       Period
+                                                                                                                10
+                                                                                                                12
+                                                                                                                14
+       • Short horizon neglect fails in the far future                                                          16
+                                                                                                                18
+       • Long horizon may does not relate to                                                                    20
+         current decision anymore → white noise                                                                 22
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 22
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Value Function Approximation
+       • Lookup-table with values
+       • 24 (hours) x 7 (horizons) entries
+       • Value → the expected failed demand
+         if applying a horizon in certain hour
+
+       • Start with initial values
+       • Simulate MDP
+       • In state, determine horizon from
+         lookup-table (+ Bolzmann exploration)
+       • Apply lookahead with horizon
+
+       • After simulation run, update values
+         in table
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 23
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Studies: Instances
+
+       •      Minneapolis‘ BSS „Nice Ride MN“
+       •      #trips show peaks at 8am, 12am, 5pm
+       •      Failed trips will occur during peak hours
+       •      Guess: incorporate next peak in horizon                                                  200
+
+
+                                                                                                       150
+
+
+
+
+                                                                                               Trips
+                                                                                                       100
+
+
+       • Benchmark algorithms:                                                                          50
+
+         • PFA (safety buffer approach)
+                                                                                                         0
+         • Static fixed horizon of n hours: SLA(n)                                                           0   2   4   6   8   10     12   14   16   18   20   22
+                                                                                                                                      Time
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 24
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Studies: Results
+
+               Reduction of failed demand against PFA
+
+                                                    40%
+
+
+
+                                                    30%
+                                      Improvement
+
+
+
+
+                                                    20%
+
+
+
+                                                    10%
+
+
+
+                                                    0%
+                                                          SLA(1)   SLA(2)         SLA(3)         SLA(4)   SLA(5)   SLA(6)   DLA
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 25
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Studies: Dynamic Simulation Horizons
+
+
+                                                                 0   2   4    6      8     10     12   14   16   18   20    22
+                                                            0
+                                                            2                                                              DLA
+
+                                                            4
+                                                            6
+                                                            8
+                                                            10
+                                                   Period
+
+
+                                                            12
+                                                            14
+                                                            16
+                                                            18
+                                                            20
+                                                            22
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 26
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Studies: Dynamic Simulation Horizons
+
+                                                                                   Period + Simulation Horizon
+                                                                0   2   4     6     8    10    12    14     16   18   20   22
+                                                           0
+                                                           2                                                     Manual DLA
+
+                                                           4
+                                                           6
+                                                           8
+                                                           10
+                                                  Period
+
+
+                                                           12
+                                                           14
+                                                           16
+                                                           18
+                                                           20
+                                                           22
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 27
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Case Studies: Results
+                               Reduction of failed demand against PFA
+
+
+                                                    40%
+
+
+
+                                                    30%
+                                      Improvement
+
+
+
+
+                                                    20%
+
+
+
+                                                    10%
+
+
+
+                                                    0%
+                                                               SLA                            Manual DLA   DLA
+
+
+
+                 VFA-Simulation captures “hidden” problem and data characteristics
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 28
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       General Procedure
+
+       • Assume a policy 𝜋𝛿 with 𝛿 a tuning parameter
+       • For example, 𝛿 defines a threshold (safety buffer,
+         maximal detour, lookahead horizon)
+                                                                                                       𝛿
+       • We have a set of possible values for 𝛿 ∈ Δ
+       • We can define a policy class Π 𝑐 = {𝜋𝛿𝑐 : 𝛿 ∈ Δ}
+                                                                                                           𝑡
+       • A different policy (𝛿) could be beneficial for different states
+       • Dependent on demand, resources, and environment
+       • Example: different 𝛿 for different hours of the day
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 29
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       General Procedure
+
+       • Nearly infinite number of combinations
+
+       • Divide time horizon into a set of periods
+       • Learn value 𝑉(𝑝, 𝛿) for every period 𝑝 and
+         parameter 𝛿 with VFA.
+                                                                                                       Policy 𝜋𝛿
+       • Store values in lookup table.
+       • Instead of Bellman Equation, apply
+         Boltzman Exploration to force exploration of                                                         𝛿
+         solution space
+
+       • Our VFA is not used to select a decision
+         but a policy
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 30
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Generalization (still open)
+       • Learning state-dependent parametrizations of PFA, CFA, Lookaheads, etc.
+
+       • Parameters may vary not only over time, but also based on other observations:
+         • Workload
+         • Urgency
+         • Etc. (compare features in lecture 9)
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 31
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Summary and Outlook
+       • Anticipation is beneficial in controlling bike sharing systems
+       • Lookahead horizons should be “data-dependent”
+
+       • General method for large scale dynamic decision problems:
+         • Parametrizable policy / Set of different policies
+         • Learning state-dependent parameters (still open)
+
+       • In combination with PFAs, the procedure can maintain the intuition and interpretability
+         of the method
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 32
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Agenda
+
+
+       • Recap Policy Classes
+
+       • Combinations                                                                                  Handelsblatt.de
+
+
+
+       • Case Study: Dynamic Relocations in Bike-Sharing Systems
+
+       • Achievements
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 33
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data Driven Decision Making (agenda)
+         No.           Topic
+                 1 Different states come with different data
+                 2 Per state data can vary stochastically
+                 3 Too much variation requires dynamism
+                 4 Depiction by markov decision process
+                 5 Optimal derivation of expected future value
+                 6 Policy/cost function approximation depict value externally
+                 7 Look-ahead methods cope with value internally
+                 8 Value function approximation learns value
+                 9 Data analytics is a key feature to VFA
+              10 Combination of methods yield further improvement
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 34
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data Driven Decision Making (theory)
+       •  Data becomes important if
+         • it changes over time and requires a temporal consideration
+         • changes are stochastic or even distributions are unknown
+         • variations are so large that information gain becomes important
+       • Dynamic decision making comes into play
+         • an external stochastic process has to be modeled
+         • an internal decision process has to be modeled
+         • Both are tied by succeeding state representations
+         • Markov process sequentially models stepwise
+       • Policy making by
+         • Policy function approx., cost function approx., look ahead, value func. approx.
+         • There is no favorite technique, application relates to curses of dimensionality
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 35
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Data Driven Decision Making (application)
+       •  A priori decision making has its advantages
+         • Optimality may be warranted
+         • Setup time for implementation
+         • Communication of solution to stakeholders
+       • Dynamic decision making in the face of significant information gain
+         • Assignment of internal resources to external demand
+         • Current decisions impact future flexibility
+         • Anticipation incorporates expected future reward
+       • Decision making combines
+         • Optimization (first term of Bellman equation)
+         • Analytics (second term of Bellman equation)
+         • Combination of searching for unknown features and conclusion of statistical correlation
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 36
+
+
+© Prof. Dr. Dirk C. Mattfeld
+       Outlook to next and final lecture
+       • The 11th lecture is devoted to practical food delivery
+
+       • It is based on white papers published by Uber eats
+
+       • The lecture focuses on data analytics and decision making
+
+       • Achivements of IDA, PMT and 3DM are summarized
+
+
+
+
+                               Data Driven Decision Making | Lecture 10 – Combined Methods | Page 37
+
+
+© Prof. Dr. Dirk C. Mattfeld
+
