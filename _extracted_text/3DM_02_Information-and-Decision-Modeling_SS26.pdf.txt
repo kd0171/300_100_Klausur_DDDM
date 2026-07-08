@@ -1,0 +1,1093 @@
+--- page 1 ---
+Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+Lecture 2 – Information and Decision Modeling
+
+--- page 2 ---
+Goals of today‘s lecture
+•
+The Process of Business Analytics
+•
+Information and Decision Modeling
+•
+Vehicle Routing with time-dependent Travel Times
+•
+Data comes first…
+•
+Warning: In this lecture, we will use many different methods. They will not be defined in
+detail, but only their idea.
+
+--- page 3 ---
+Agenda
+•
+Information Modeling and Decision Modeling
+•
+Case Study: Traveling salesperson with time-dependent travel times
+
+--- page 4 ---
+Decision making
+•
+Real-World: Actions are performed and
+resulting states can be observed
+•
+Aggregation: Transfers real-world data
+into dimensions of information model
+•
+Information Model: Depicts information in
+a condensed way
+•
+Decision Model: Defines decision space
+and evaluates decision
+•
+Implementation: Translates solution of the
+decision model into real-world actions
+Real-World
+Information Model
+Decision Model
+Aggregation
+Implementation
+
+--- page 5 ---
+Selection of information and decision model
+•
+Information and decision model are designed based on initial hypotheses
+•
+Hypotheses base on observed behavior of the real-world problem and data (descriptive
+analytics)
+•
+The hypotheses are not necessarily correct.
+•
+The quality of the hypotheses can be evaluated by implementing the solution of the
+decision model
+•
+Observations may lead to an update of the hypotheses, and consequently, information
+and decision model
+
+--- page 6 ---
+task
+problem
+structure
+recorded data
+search
+target data
+search
+information
+structure
+information
+model / pattern
+data model
+data
+appearance
+hypothesis
+Intelligent Data Analysis: From Appearance to Structure
+Meisel, Mattfeld (2010): Synergies of operations research and
+data mining, EJOR vol 206, pages 1-10
+system
+
+Data from any real-world system just reflects its
+appearance. The structural properties are hardly visible
+(Google Maps shows congestion, not reason)
+
+Appearance may be incomplete, faulty, exceptional
+
+System structure helps building the data model (do
+margarine sales depend on visits or vice versa?)
+
+Recorded data are just observations of general system
+appearance (data ≈tiny no. of samples)
+
+Recorded data is to be cleaned, corrected, imputed,
+validated and thinned into a target data set
+
+Data Mining computes model from target data set
+
+A DM concept implements our hypothesis (assumption)
+about statistical correlation in the data
+
+Model/pattern evidence on system structure
+
+--- page 7 ---
+Planning of Mobility/Transp.: From Structure to Appearance
+Meisel, Mattfeld (2010): Synergies of operations research and
+data mining, EJOR vol 206, pages 1-10
+The real-world decision problem has to be simplified in
+order to meet the requirements of math. modeling
+Therefore important features of the problem structure are
+selected by means of a hypothesis
+Features are only considered if data is available
+Important features are objective, decision space, constraints
+The general structure of the decision model helps to bridge
+the path from problem decision model
+
+Decision model structures are e.g. Assignment, Routing,
+Scheduling
+
+The resulting solution depicts one (optimal) appearance of
+the problem evaluation?
+goal
+problem
+structure
+search
+decision
+model structure
+decision model
+recorded data
+data model
+data
+appearance
+solution
+hypothesis
+
+--- page 8 ---
+Unified View of IDA and PMT
+goal
+problem
+structure
+search
+decision
+model structure
+decision model
+recorded data
+search
+target data
+search
+information
+structure
+information
+model / pattern
+data model
+data
+appearance
+solution
+hypothesis
+
+--- page 9 ---
+Example: Traveling Salesperson Problem
+•
+Hypotheses: Travel times are constant
+•
+Information model: travel time matrix
+•
+Decision model: mixed integer program without
+temporal considerations
+•
+Implementation leads to unexpected results
+(usually, more time is required than planned)
+•
+Hypotheses are adapted to capture time-dependent travel times leading to changes in
+• Information model: A set of travel time matrices (and some transition considerations)
+• Decision model: mixed integer program with time-of-day considerations (𝑥𝑖𝑗𝒕)
+
+--- page 10 ---
+Agenda
+•
+Information Modeling and Decision Modeling
+•
+Case Study: Traveling salesperson with time-dependent travel times
+
+--- page 11 ---
+Motivation
+•
+Service Routing
+•
+Save costly driving time
+•
+Temporal commitment:
+• Increase customer service experience
+• Ensure customer availability
+•
+Both require accurate consideration
+of travel times
+•
+Source: Jan Ehmke, Integration of Information
+and Optimization Models for Routing in City
+Logistics, Springer
+schindler.com
+lebensmittelzeitung.de
+
+--- page 12 ---
+Time-Dependent Travel Times
+•
+Varying traffic over time and space
+•
+Different travel times per street
+segment
+•
+Different shortest paths between
+customers
+•
+Different sequences of customers
+depending on start time of the tour
+10 am:
+3 pm:
+
+--- page 13 ---
+Modeling (sketched)
+•
+Information Model:
+• Time-dependent travel times between customers (including depot)
+• Time-dependent travel time matrix, or a set of travel time matrices
+•
+Decision Model:
+• Objective: Minimize travel times
+• Constraints:
+• Serve all customers
+• Routing-constraints (Subtour-elimination, etc.)
+• Decision variables: Travel between customers i an j at time t
+
+--- page 14 ---
+Data Collection: Floating Car Data
+•
+Travel times per time and street
+segment
+•
+Large quantities required to calculate
+accurate mean values
+•
+Floating Car Data: A large fleet of
+vehicles sends their position, direction,
+and potentially their speed in frequent
+time intervals
+www.thetimes.c
+o.uk
+
+--- page 15 ---
+FCD-Collection und Use
+Taxi Fleet
+Dispatcher
+Public Traffic Management
+Providers
+Internet
+GPRS, SMS,
+RDS-TMC, HTTP
+Communicatio
+n
+ca. 1/min
+source:
+Data Collection: Floating Car Data (Public)
+
+--- page 16 ---
+Floating Car Data: Speed Calculation
+•
+Taxi Data does not provide street,
+direction, and speed
+•
+Required steps:
+• Observe taxi positions
+• Project position to a street segment
+• Calculate observed speed for this segment
+Link.ID
+Zeit
+v
+1234
+03.02.2005 12:43:30
+50 km/h
+source:
+17:06
+17:07
+17:08
+17:09
+17:10
+17:11
+17:12
+17:13
+Stuttgart, Die., 1.7.2003, 17-18 Uhr
+
+--- page 17 ---
+Floating Car Data: Speed Calculation
+source:
+link
+time
+speed
+-53197590 2003-03-24 00:11:19
+55
+-53197590 2003-03-24 00:07:35
+61
+-53197590 2003-03-24 00:21:25
+49
+-53197590 2003-03-24 00:22:49
+20
+-53197590 2003-03-24 01:48:16
+64
+-53197590 2003-03-24 01:22:19
+70
+-53197590 2003-03-24 02:06:48
+43
+-53197590 2003-03-24 02:26:25
+49
+-53197590 2003-03-24 02:52:32
+29
+-53197590 2003-03-24 03:17:53
+61
+-53197590 2003-03-24 03:18:23
+63
+-53197590 2003-03-24 03:21:59
+40
+-53197590 2003-03-24 04:34:33
+67
+-53197590 2003-03-24 04:43:56
+41
+-53197590 2003-03-24 05:14:18
+74
+-53197590 2003-03-24 04:48:38
+61
+
+--- page 18 ---
+Data Analysis
+•
+Varying speed patterns over the day
+(confirms hypothesis)
+•
+Variation even at the same day, same time
+(ignored by our hypothesis, next lecture)
+•
+There might be outliers or errors (taxi data!)
+0%
+5%
+10%
+15%
+20%
+Downtown link, Monday
+0%
+5%
+10%
+15%
+20%
+Downtown link, Mon 8-9 am
+
+--- page 19 ---
+link
+time
+speed
+maxspeed
+-53197590 2003-03-24 00:11:19
+55
+75
+-53197590 2003-03-24 00:07:35
+61
+75
+-53197590 2003-03-24 00:21:25
+49
+75
+-53197590 2003-03-24 00:22:49
+20
+75
+-53197590 2003-03-24 01:48:16
+64
+75
+-53197590 2003-03-24 01:22:19
+70
+75
+-53197590 2003-03-24 02:06:48
+43
+75
+-53197590 2003-03-24 02:26:25
+49
+75
+-53197590 2003-03-24 02:52:32
+29
+75
+-53197590 2003-03-24 03:17:53
+61
+75
+-53197590 2003-03-24 03:18:23
+63
+75
+-53197590 2003-03-24 03:21:59
+40
+75
+-53197590 2003-03-24 04:34:33
+67
+75
+-53197590 2003-03-24 04:43:56
+41
+75
+-53197590 2003-03-24 05:14:18
+74
+75
+-53197590 2003-03-24 04:48:38
+61
+75
+Data Cleaning
+•
+Which observations are outliers or errors?
+•
+Objective evaluation difficult since there are
+many external factors
+(e.g., traffic lights, weather, …)
+•
+Example for data cleaning:
+Filter all observations with speed higher than
+1.5x speed limit.
+
+--- page 20 ---
+Small number of observations
+Large number of observations
+Data Visualization
+•
+Spatial distribution of observations
+•
+Some areas are well-covered
+•
+Some areas only have a few observations
+(taxi data)
+•
+Same is true for time of day
+•
+Can we trust our observations?
+Aggregation and generalization
+needed
+20
+
+--- page 21 ---
+source: DLR
+Link.ID
+Zeit
+v
+1234
+03.02.2005 12:43:30
+50 km/h
+
+=
+=
+n
+i
+lwi
+lw
+v
+n
+v
+1
+1
+/
+Zeit
+0-1
+1-2
+…
+3-4
+…
+8-9
+…
+16-17
+…
+22-23 23-24
+So
+47
+52
+…
+55
+…
+50
+…
+42
+…
+47
+50
+Fr
+47
+52
+…
+52
+…
+33
+…
+31
+…
+44
+46
+1. Define time-steps W
+(e.g.,: 24 x 7)
+2. Calculate mean travel speed
+•
+per segment l
+•
+in time-step w
+•
+from observation vlwi
+W = 1: One value per
+segment
+W = 24 x 7: Per day 24
+values per segment
+Aggregation
+
+--- page 22 ---
+22
+Generalization
+•
+Aggregation results in millions of values
+•
+Some values base only on a few observations
+•
+Decision model requires information model easy to access (and reliable)
+•
+Data visualization reveals similar traffic quality patterns on different street segments
+(not shown in this lecture)
+•
+Idea: Group street segments based on their typical traffic quality
+
+--- page 23 ---
+23
+Generalization: Normalization
+•
+Different segments have same pattern but different absolute values (e.g., speed
+limit of 30 or 50)
+•
+Normalization with maximum daily value to allow comparison
+23
+Zeit
+0-1
+1-2
+…
+3-4
+…
+8-9
+…
+16-17
+…
+22-23 23-24
+So
+47
+52
+…
+55
+…
+50
+…
+42
+…
+47
+50
+Fr
+47
+52
+…
+52
+…
+33
+…
+31
+…
+44
+46
+Zeit
+0-1
+1-2
+…
+3-4
+…
+8-9
+…
+16-17
+…
+22-23 23-24
+So
+0.4
+0.8
+…
+1.0
+…
+0.7
+…
+0.1
+…
+0.4
+0.6
+Fr
+0.8
+1.0
+…
+1.0
+…
+0.2
+…
+0.1
+…
+0.6
+0.7
+0.7
+
+--- page 24 ---
+24
+Generalization: Clustering
+•
+Clustering algorithm to group similar daily developments
+•
+6 Clusters
+•
+0 = poor traffic quality long travel time
+•
+1 = good traffic quality short travel time
+Time
+Cluster
+0-1
+1-2
+...
+3-4
+...
+8-9
+...
+16-17
+...
+22-23
+23-24
+1
+0.71
+0.76
+...
+0.79
+...
+0.25
+...
+0.23
+...
+0.59
+0.65
+2
+0.64
+0.65
+...
+0.63
+...
+0.52
+...
+0.53
+...
+0.64
+0.64
+3
+0.43
+0.46
+...
+0.55
+...
+0.30
+...
+0.27
+...
+0.38
+0.41
+4
+0.78
+0.76
+...
+0.77
+...
+0.48
+...
+0.45
+...
+0.71
+0.75
+5
+0.83
+0.81
+...
+0.81
+...
+0.33
+...
+0.70
+...
+0.83
+0.81
+
+--- page 25 ---
+25
+Spatial Validation
+•
+Clusters differ in their peak behavior
+•
+Clusters represent different street
+segment types, e.g.,
+• Downtown
+• Commercial
+• Highway
+• Conveyor belt
+
+--- page 26 ---
+Temporal Validation
+•
+Traffic quality over the course of the day (A – high, F – poor)
+
+--- page 27 ---
+source: Google Earth
+Spatial-Temporal
+Monday,
+3-4 a.m,
+90 % of the
+segments are
+free
+Free
+traffic
+
+--- page 28 ---
+source: Google Earth
+Spatial-Temporal
+Monday,
+5-6 p.m,
+30% are
+congested
+Rush hour
+
+--- page 29 ---
+Information Model: Conclusion
+•
+We have a travel time matrix for each street
+segment and each hour
+•
+Example: First hour longer travel, second
+hour shorter travel, third our longest travel
+time.
+•
+How can we route based on this
+information?
+
+--- page 30 ---
+From Segments to Paths
+•
+There are several potential
+paths between customers
+•
+Shortest paths are calculated via
+Dijkstra-algorithm
+•
+We need to consider time-
+dependency, i.e., we are looking for
+time-dependent shortest paths
+node
+bi-directional link
+directed link
+Topology
+pickup / delivery
+warehouse
+shortest path
+between nodes
+Routing
+source: in Anlehnung an Rodrigues, Comtois und Slack (2009)
+
+--- page 31 ---
+From Segments to Paths
+•
+If we start at different times, we may take different segments
+•
+The time-dependent Dijkstra takes this into account
+τij(t
+)
+t
+source: Dean (2000)
+
+--- page 32 ---
+From Segments to Paths
+•
+Hard matrix breaks lead to
+a weird transition phenomenon
+•
+FIFO: We need to ensure that we do not
+„overtake“ when starting later
+•
+We smooth the breakpoints with some
+linear combinations
+9:59
+10:02
+10:00
+10:01
+3
+min.
+1
+min.
+source: Fleischmann et al. (2004):
+Time-Varying Travel Times in Vehicle Routing
+τl(t)
+t
+t
+vl(t)
+z0
+z1
+z2
+z3
+z1-δl1
+z1+δl1
+z2+1
+z2-1
+slope
+-s0
+vl2
+τl2
+τl1
+τl3
+vl1
+vl3
+
+--- page 33 ---
+Modeling (sketched)
+•
+Information Model:
+• Time-dependent travel times between customers (including depot)
+• Time-dependent travel time matrix, or a set of travel time matrices
+•
+Decision Model:
+• Objective: Minimize travel times
+• Constraints:
+• Serve all customers
+• Routing-constraints (Subtour-elimination, etc.)
+• Decision variables: Travel between customers i an j at time t
+
+--- page 34 ---
+Time-dependent Decision Variable
+A
+B
+B
+A
+B
+A
+B
+A
+B
+A
+B
+A
+B
+A
+A
+B
+t1
+t2
+t3
+t4
+t5
+t6
+t7
+𝑑𝐴,𝐵=  1,1, –
+𝑑𝐵,𝐴=  1,5, –
+𝑑𝐴,𝐶=  2, – ,2
+𝑑𝐶,𝐴=  – ,1,1
+𝑑𝐵,𝐷=  2,2,2
+𝑑𝐷,𝐵=  2,2,3
+𝑑𝐶,𝐷=  1, – ,4
+𝑑𝐷,𝐶=  – ,2,2
+𝑑𝐷,𝐴=  – , – ,3
+Pallottino (1997)
+
+--- page 35 ---
+Time-dependent Decision Variable
+A
+B
+C
+D
+D
+B
+A
+B
+A
+B
+C
+D
+A
+B
+C
+D
+A
+B
+C
+D
+A
+B
+C
+D
+A
+A
+B
+C
+C
+C
+D
+D
+t1
+t2
+t3
+t4
+t5
+t6
+t7
+𝑑𝐴,𝐵=  1,1, –
+𝑑𝐵,𝐴=  1,5, –
+𝑑𝐴,𝐶=  2, – ,2
+𝑑𝐶,𝐴=  – ,1,1
+𝑑𝐵,𝐷=  2,2,2
+𝑑𝐷,𝐵=  2,2,3
+𝑑𝐶,𝐷=  1, – ,4
+𝑑𝐷,𝐶=  – ,2,2
+𝑑𝐷,𝐴=  – , – ,3
+Pallottino (1997)
+
+--- page 36 ---
+Finding a Solution
+•
+Optimal calculation challenging, heuristics needed
+•
+4 Heuristics
+• LANTIME: Metaheuristic (see Ehmke 2012)
+• Nearest Neighbor
+• Cheapest Insertion
+• Savings
+•
+We also solve a TSP on mean values
+
+--- page 37 ---
+Nearest Neighbor
+•
+Selects next customer closest to current position
+•
+Can deal with time-dependency
+•
+Usually leads to long travels in the end
+
+--- page 38 ---
+Cheapest Insertion
+•
+Starts with empty tour
+•
+Inserts stepwise cheapest customer in the tour
+•
+Customers are shifted and previous decisions become ineffective due to changes in the
+travel times.
+
+--- page 39 ---
+Savings
+•
+Starts with direct-trip tours
+•
+merges tours at minimal cost
+•
+Time-dependency difficult to assess
+•
+Implicitly considered at least in later steps
+
+--- page 40 ---
+Results
+•
+Different start times
+•
+Travel time depends
+on time of day
+•
+Static overestimates and
+underestimates
+60
+70
+80
+90
+100
+110
+120
+00:30
+04:30
+08:30
+12:30
+16:30
+20:30
+00:30
+04:30
+08:30
+12:30
+16:30
+20:30
+00:30
+04:30
+08:30
+12:30
+16:30
+20:30
+00:30
+04:30
+08:30
+12:30
+16:30
+20:30
+00:30
+04:30
+08:30
+12:30
+16:30
+20:30
+00:30
+04:30
+08:30
+12:30
+16:30
+20:30
+00:30
+04:30
+08:30
+12:30
+16:30
+20:30
+Travel time (min)
+Departure time
+TDNN
+TDSAV
+LANTIME
+Best static
+Sunday
+Saturday
+Friday
+Thursday
+Wednesday
+Tuesday
+Monday
+
+--- page 41 ---
+Implementation:
+•
+Start Monday noon:
+• Avoids downtown initially
+• Serves outskirts first
+•
+Start Monday evening:
+• Serves downtown first
+• Uses rural road in the beginning
+• Different paths
+
+--- page 42 ---
+Long story short…
+•
+Taking problem and data seriously requires a lot of work
+•
+Information Model: Data collection, analysis, structuring, aggregation, generalization
+•
+Decision Model: More decision variables, complex decision model, and adapted solution
+methodology
+•
+Resulting approach takes more detail in modeling but assumes deterministic behavior
+
+--- page 43 ---
+Outlook
+Uncertainty and its impact on information and decision model
+43
+0%
+2%
+4%
+6%
+8%
+10%
+12%
+14%
+16%
+18%
+20%
+0-5
+5-10
+10-15
+15-20
+20-25
+25-30
+30-35
+35-40
+40-45
+45-50
+50-55
+55-60
+60-65
+65-70
+70-75
+Downtown link, Monday
+

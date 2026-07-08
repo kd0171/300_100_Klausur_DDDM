@@ -1,0 +1,646 @@
+\section*{Lecture 1: Overview}
+
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 001: Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=1,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 表紙。Data Driven Decision Making 第1回は、講義全体の目的と位置づけを確認する回である。\par
+
+\noindent\textbf{解説}\; ここでは詳細理論より、以後の講義が「データに基づく動的な意思決定」を扱うことを把握する。\par
+
+\noindent\textbf{試験ポイント}\; 用語として DDDM, stochasticity, dynamism が後続講義の軸になる。\par
+
+\noindent\textbf{過去問関連}\; 直接の計算問題ではないが、講義全体の入口。過去問では第1問で概念整理が問われやすい。\par
+
+\noindent\textbf{確認問題}\; DDDM は単なるデータ分析ではなく何を決めるための講義か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 002: Contact „Data Driven Decision Making“}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=2,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 担当教員、TA、Decision Support オフィス、Webサイトの連絡先。試験日程もWebで確認する。\par
+
+\noindent\textbf{解説}\; 事務情報。試験前に公式Webの試験日時・教室情報を確認する場所として重要。\par
+
+\noindent\textbf{試験ポイント}\; 理論点ではない。メール前にWebを確認するという運用面を押さえる。\par
+
+\noindent\textbf{過去問関連}\; 過去問との直接関連は薄い。\par
+
+\noindent\textbf{確認問題}\; 試験情報はどこで確認するか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 003: Master @ Decision Support}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=3,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; Decision Support 分野では、基礎科目から専門科目、演習、セミナー、修士論文へ進む。DDDMは専門科目側に位置づく。\par
+
+\noindent\textbf{解説}\; DDDMは、Intelligent Data Analysisのようなデータ分析と、Planning系の意思決定モデルをつなぐ位置にある。\par
+
+\noindent\textbf{試験ポイント}\; 講義の位置づけを理解し、データ分析だけでも最適化だけでもない点を意識する。\par
+
+\noindent\textbf{過去問関連}\; 過去問では直接ではなく、Business Analytics/Decision Supportの全体像を説明する設問の背景になる。\par
+
+\noindent\textbf{確認問題}\; DDDMはどのような前提科目・分野とつながっているか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 004: About the Lecture}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=4,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 講義名は以前のモビリティ情報システム系から変化し、情報システムの描写ではなく、情報システム内の自動意思決定へ焦点が移っている。Uber, Lime, Amazonのようなデジタルビジネスモデルとも関係する。\par
+
+\noindent\textbf{解説}\; 中心は「情報を表示するシステム」ではなく「情報に基づいて決めるシステム」。PMTは意思決定、IDAはデータ分析に焦点を当て、DDDMはその接続を扱う。\par
+
+\noindent\textbf{試験ポイント}\; データを持つだけでは不十分で、それを意思決定モデルに入れて実行可能な行動に変換する点を説明できること。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 2-3, WS23/24 Aufgabe 1-3 と関連。Business Analytics/Decision Supportの構成要素を説明する際の導入になる。\par
+
+\noindent\textbf{確認問題}\; 情報システムの depiction と automated decisions の違いを説明せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 005: Goals}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=5,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 目標は、確率性と動的性質の理解、確率的・動的意思決定問題のモデル化、方法論の強み・弱みの理解、デジタル経済の問題理解、試験合格、研究準備である。\par
+
+\noindent\textbf{解説}\; 講義の本体は、stochasticity と dynamism を含む意思決定問題をどうモデル化し、どう解くかである。\par
+
+\noindent\textbf{試験ポイント}\; 「確率的」と「動的」を定義できること。特に、確率性は情報が不確実であること、動的性は時間とともに状態や情報が変わり再意思決定が必要になること。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3 および後続のMDP/ADP問題と関連。\par
+
+\noindent\textbf{確認問題}\; stochasticity と dynamism の違いを一文ずつ説明せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 006: DDDM Schedule}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=6,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 全11回の構成。情報・意思決定モデル、確率性、動的性、MDP、ADP、Look-ahead、VFA、Combined Methods、Food Deliveryへ進む。\par
+
+\noindent\textbf{解説}\; 講義は、まずモデル化、次に不確実性と動的性、最後に近似政策と応用へ進む。\par
+
+\noindent\textbf{試験ポイント}\; 試験勉強では講義1-3を基礎、講義4-5を定式化、講義6以降を解法・近似手法として整理する。\par
+
+\noindent\textbf{過去問関連}\; 過去問は Lecture 2/3/5/7/8 に多く分散するため、スケジュールを論点索引として使う。\par
+
+\noindent\textbf{確認問題}\; 講義全体を「モデル化」「不確実性」「動的性」「近似解法」に分類せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 007: Literature}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=7,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 主要文献は Warren Powell の研究と、TU Braunschweig の Ulmer らとの共同研究。交通・モビリティに合わせて発展している。\par
+
+\noindent\textbf{解説}\; PowellはADP/Sequential Decision Analyticsの基礎として重要。Ulmerらの文献は車両ルーティングやprescriptive analyticsの応用に関係する。\par
+
+\noindent\textbf{試験ポイント}\; 試験では文献名暗記より、なぜ交通・モビリティ問題がDDDMの例として適しているかを理解する。\par
+
+\noindent\textbf{過去問関連}\; 直接の出題対象というより、ADPやstochastic dynamic vehicle routingの背景。\par
+
+\noindent\textbf{確認問題}\; 交通・モビリティ問題がDDDMで典型例になる理由は何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 008: About the Exercise}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=8,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 演習は専門Decision SupportのStudienleistungで、Trucks and Bargesという serious gaming application を使って意思決定状況を練習する。\par
+
+\noindent\textbf{解説}\; 演習は理論を具体的な逐次意思決定として体験する場。複数日にわたる輸送モード選択は動的意思決定の直感を作る。\par
+
+\noindent\textbf{試験ポイント}\; 理論ページではないが、意思決定、状態変化、将来情報の不確実性をゲームで観察する発想は重要。\par
+
+\noindent\textbf{過去問関連}\; 過去問との直接関連は薄いが、後のMDP/ADP問題で具体例を作る助けになる。\par
+
+\noindent\textbf{確認問題}\; Trucks and Bargesでは何が「逐次的な意思決定」になっているか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 009: Information on exams}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=9,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 試験会場・時刻はDecision SupportのWebサイトで確認する。日程は早め、教室は直前に出る。\par
+
+\noindent\textbf{解説}\; 事務ページ。情報がWebにある場合はメールで問い合わせない。\par
+
+\noindent\textbf{試験ポイント}\; 試験準備として、教材だけでなく公式のPruefungenページを確認する。\par
+
+\noindent\textbf{過去問関連}\; 過去問との直接関連はない。\par
+
+\noindent\textbf{確認問題}\; 試験教室はいつ頃確定するか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 010: Altklausuren}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=10,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 過去問は印刷版またはWebで入手できる。ただし過去問演習だけでは十分ではなく、全講義内容が試験対象である。解答例は提供されない。\par
+
+\noindent\textbf{解説}\; このプロジェクトでは過去問を「頻出論点の発見」に使い、出題範囲を狭める材料にはしない。\par
+
+\noindent\textbf{試験ポイント}\; 過去問で聞かれた論点は強化するが、新しい事例に応用できる理解を優先する。\par
+
+\noindent\textbf{過去問関連}\; 全過去問関連。特に同じ概念が別事例で繰り返し出る傾向を意識する。\par
+
+\noindent\textbf{確認問題}\; 過去問を使う目的と限界を説明せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 011: Agenda}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=11,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 今回の本編アジェンダは、Motivation、Operations Research \& Business Analyticsの復習、今後のモデリング概要である。\par
+
+\noindent\textbf{解説}\; 第1回は理論の細部ではなく、なぜDDDMが必要なのかを流れとして示す。\par
+
+\noindent\textbf{試験ポイント}\; Motivation -> OR/BA -> Modeling という順序を押さえる。\par
+
+\noindent\textbf{過去問関連}\; 過去問ではBAのプロセスや情報/意思決定モデルの説明につながる。\par
+
+\noindent\textbf{確認問題}\; 第1回の3つの大項目を答えよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 012: Motivation}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=12,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 新しいビジネス概念は、より速く、個別化され、リアルタイム化している。即時配送、受注生産、予約スケジューリングなどが例。共通テーマはstochasticityとdynamismであり、確率的動的意思決定プロセスにつながる。\par
+
+\noindent\textbf{解説}\; リアルタイム型サービスでは需要・交通・リソースが変わるため、事前計画だけでは不十分。新情報に応じて計画を更新する必要がある。\par
+
+\noindent\textbf{試験ポイント}\; stochasticityは情報変化や不確実性、dynamismは情報変化に応じた計画更新。両者を合わせて stochastic dynamic decision processes になる。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3 と後のMDP構成要素問題の導入。\par
+
+\noindent\textbf{確認問題}\; 即時配送を例に、何が確率的で何が動的か説明せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 013: Examples: Transportation}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=13,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 交通の例として、same-day配送、ピックアップ、ドローン、食品配送などが示される。\par
+
+\noindent\textbf{解説}\; これらは「どこへ、いつ、どの手段で行くか」を、変動する情報の下で決める問題である。\par
+
+\noindent\textbf{試験ポイント}\; 具体例を見たら、需要、移動時間、リソース、制約、目的関数に分解する練習をする。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 2aの不確実性カテゴリや、後の配送MDP/VFA問題の具体例になる。\par
+
+\noindent\textbf{確認問題}\; 交通例に含まれる不確実性を3つ挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 014: Examples: Mobility and Services}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=14,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; モビリティ・サービスの例として、自転車シェア、dial-a-ride、医師訪問、エレベーター保守、タクシー、救急などが挙げられる。\par
+
+\noindent\textbf{解説}\; サービス業では顧客到着、サービス時間、移動時間、担当者の位置・可用性が変わる。\par
+
+\noindent\textbf{試験ポイント}\; 配送以外のサービスでも同じモデル化フレームを適用できることを理解する。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 2aや将来の未知シナリオ型問題に対応する背景。\par
+
+\noindent\textbf{確認問題}\; 医師訪問サービスを状態・決定・外生情報に分けると何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 015: Summary}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=15,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; サービスプロセスは時間の中で進む。需要、リクエスト、交通、ドライバー、電池残量、要件などの新情報が入り、計画更新が必要になる。反応が遅すぎる場合があるため、期待される将来を予測し柔軟性を保つ必要がある。\par
+
+\noindent\textbf{解説}\; DDDMの核心は、現在だけでなく「あとで起こりそうなこと」を考えて今の決定を選ぶこと。柔軟性は将来状態に対する備えである。\par
+
+\noindent\textbf{試験ポイント}\; anticipation と flexibility を説明できること。近視眼的な決定がなぜ危険かを例示する。\par
+
+\noindent\textbf{過去問関連}\; 後のADP/Look-ahead/VFAの基礎。SS25 Exercise 9の手法欠点説明にもつながる。\par
+
+\noindent\textbf{確認問題}\; なぜ現在最短の決定が将来悪い決定になりうるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 016: Decision making}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=16,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 意思決定ループ。現実世界で行動が実行され状態が観測される。Aggregationは現実データを情報モデルの次元に移す。Information Modelは情報を凝縮して表現する。Decision Modelは決定空間を定義し評価する。Implementationは解を現実の行動へ戻す。\par
+
+\noindent\textbf{解説}\; Real-World -> Aggregation -> Information Model -> Decision Model -> Implementation -> Real-World の流れを説明できることが最重要。\par
+
+\noindent\textbf{試験ポイント}\; AggregationとImplementationを混同しない。情報モデルは「何を知っているか」、決定モデルは「何を選び、どう評価するか」。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 1a, WS23/24 Aufgabe 2, WS23/24 Aufgabe 3 と強く関連。SS24 Aufgabe 1aでは各機能の説明が問われた。\par
+
+\noindent\textbf{確認問題}\; Aggregation, Information Model, Decision Model, Implementationをそれぞれ定義せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 017: Decision making}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=17,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; DDDMでは情報モデルだけ、最適化モデルだけを個別に見るのではなく、現実世界を含むループ全体を扱う。時間とともにシステムをモデル化する必要があり、それがdynamicである。外部効果により現実が変化するためstochasticである。実装された決定がすでに変化した現実と衝突する可能性もある。\par
+
+\noindent\textbf{解説}\; Lecture 1の最重要ページ。DDDMが従来の静的ORや単なるデータ分析から広がる点を示す。\par
+
+\noindent\textbf{試験ポイント}\; 動的意思決定では、一度計画して終わりではなく、観測・更新・再計画のループを前提にする。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 1a, WS23/24 Aufgabe 2, WS23/24 Aufgabe 3、WS22/23 Aufgabe 3と関連。後のLecture 4/5のMDP定式化につながる。\par
+
+\noindent\textbf{確認問題}\; なぜDDDMでは現実世界をループに含める必要があるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 018: Agenda}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=18,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; アジェンダの2番目、Operations Research \& Business Analyticsの復習へ移る。\par
+
+\noindent\textbf{解説}\; ここからTSP例を使って、現実問題を情報モデル・決定モデルへ変換する流れを確認する。\par
+
+\noindent\textbf{試験ポイント}\; BA/ORの復習は過去問で頻出。図や用語を答案化できるようにする。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 2-3, WS23/24 Aufgabe 1-3 と関連。\par
+
+\noindent\textbf{確認問題}\; ORはBAプロセスのどこで重要になるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 019: Example: Parcel Delivery in Braunschweig}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=19,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; ブラウンシュヴァイクの荷物配送例。車両、デポ、顧客住所、時間、道路ネットワークがあり、配送順序を決める問題である。\par
+
+\noindent\textbf{解説}\; 現実問題をTSPに単純化する入り口。全ての現実情報を使うのではなく、意思決定に必要な情報だけを抽象化する。\par
+
+\noindent\textbf{試験ポイント}\; 顧客、デポ、移動時間、ツアー順序、目的関数を識別する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 1, WS23/24 Aufgabe 3 と関連。WS23/24 Aufgabe 3では配送計画へのBA適用が問われた。\par
+
+\noindent\textbf{確認問題}\; この例で情報モデルと決定モデルに入るものを分けよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 020: Modeling: Traveling Salesperson Problem}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=20,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; TSPモデル化。道路ネットワークを顧客間アークへ、速度を移動時間へ変換し、重み付きグラフまたは移動時間行列を作る。その上で全顧客を訪問し総移動時間を最小化する。\par
+
+\noindent\textbf{解説}\; 情報モデルはtravel time matrix、決定モデルはTSPの目的関数・制約・決定変数である。\par
+
+\noindent\textbf{試験ポイント}\; 現実の道路から行列へ変換する過程を説明する。TSPの基本制約、全顧客訪問、サブツアー排除を押さえる。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 1, WS23/24 Aufgabe 3 と関連。WS22/23 Aufgabe 1ではTSPモデル化が問われた。\par
+
+\noindent\textbf{確認問題}\; TSPでtravel time matrixは情報モデルか決定モデルか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 021: Finding a Solution}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=21,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; モデルは解空間を張り、解を評価する。解は最適化やヒューリスティックで得られ、結果を実行する必要がある。\par
+
+\noindent\textbf{解説}\; モデルを作るだけでなく、解を探索し現実へ戻すまでがOR/BAプロセス。\par
+
+\noindent\textbf{試験ポイント}\; solution space, evaluation, optimization/heuristics, implementationの関係を説明する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 2-3, WS23/24 Aufgabe 1-3 と関連。\par
+
+\noindent\textbf{確認問題}\; モデルがsolution spaceを定義するとはどういう意味か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 022: Three Steps of Operations Research}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=22,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; Operations Researchの三段階は、Problem definition、Modeling、Solution。情報と意思決定を扱い、さらにImplementationが重要になる。\par
+
+\noindent\textbf{解説}\; ORは現実問題を数理モデルにし、解くための方法論。DDDMではこれにデータ取得・実装・更新が加わる。\par
+
+\noindent\textbf{試験ポイント}\; Problem definition, modeling, solution, implementationの順序を答案に書けるようにする。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 2-3, WS23/24 Aufgabe 1-3 と関連。WS22/23 Aufgabe 3でBA適用プロセスとORの位置づけが問われた。\par
+
+\noindent\textbf{確認問題}\; ORの三段階を配送例に対応させよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 023: Agenda}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=23,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; アジェンダの3番目、Modeling and Outline of the Lecturesへ移る。\par
+
+\noindent\textbf{解説}\; ここから、同じ現実問題でも情報モデルや決定モデルを変えると見える問題が変わることを示す。\par
+
+\noindent\textbf{試験ポイント}\; 静的平均モデルから時間依存・不確実・動的モデルへ拡張される流れを押さえる。\par
+
+\noindent\textbf{過去問関連}\; Lecture 2/3/4への橋渡し。\par
+
+\noindent\textbf{確認問題}\; TSPの情報モデルをより現実的にすると何が増えるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 024: Modeling}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=24,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 異なる現実問題でも同じモデルを共有できる一方、情報モデルの精度が十分か、決定モデルが適切かを検討する必要がある。\par
+
+\noindent\textbf{解説}\; モデル化は一度決めて終わりではない。観測される現象に応じて情報モデル・決定モデルを修正する。\par
+
+\noindent\textbf{試験ポイント}\; 同じTSP/VRP構造が配送・技術者訪問などに使えること、ただしデータと目的に合わせた拡張が必要なこと。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 1b と関連。詳細モデルを常に選ばない理由も説明できるようにする。\par
+
+\noindent\textbf{確認問題}\; 同じ決定モデルを別の現実問題に使うときの注意点は何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 025: Example I: Alternative information model}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=25,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 代替情報モデルの例。旅行時間には日内変動があり、7-9時、9-15時など時間帯別に移動時間を考える必要がある。\par
+
+\noindent\textbf{解説}\; 静的な平均旅行時間行列では、ピーク時間や道路ごとの速度差を表せない。時間依存travel time matrixが必要になる。\par
+
+\noindent\textbf{試験ポイント}\; 時間依存旅行時間はLecture 2の中心。平均値モデルとの違い、データ集約、FIFO条件へつながる。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 4, WS23/24 Aufgabe 4-5, SS25 Exercise 2, SS24 Aufgabe 1b と関連。\par
+
+\noindent\textbf{確認問題}\; 平均旅行時間行列と時間帯別旅行時間行列の違いは何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 026: Example II: Alternative decision model}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=26,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 代替決定モデルの例。解は実行可能に見えても、旅行時間の不確実性により残業が発生することがある。\par
+
+\noindent\textbf{解説}\; 情報モデルが「不確実性」を持つなら、決定モデルも期待値・分散・ロバスト性などを考える必要がある。\par
+
+\noindent\textbf{試験ポイント}\; 不確実性は目的関数だけでなく制約の満たし方にも影響する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3, SS24 Aufgabe 1b と関連。Lecture 3への導入。\par
+
+\noindent\textbf{確認問題}\; 旅行時間が不確実なとき、決定モデル側で何を変える必要があるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 027: Example III: Dynamism}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=27,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 動的性の例。情報モデルが時間とともに変わり、変化に反応できる。これがLecture 4のテーマである。\par
+
+\noindent\textbf{解説}\; 動的問題では、事前計画だけでなく、途中で観測した情報に基づいて再意思決定する。\par
+
+\noindent\textbf{試験ポイント}\; reactive planning と anticipatory planning の違いを意識する。\par
+
+\noindent\textbf{過去問関連}\; Lecture 4/5のMDP問題への導入。WS23/24 Aufgabe 8などに関係。\par
+
+\noindent\textbf{確認問題}\; 情報モデルが時間とともに変わるとは具体的に何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 1 / Slide 028: Outlook}\hfill {\scriptsize source: 3DM\_01\_Overview\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=28,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_01_Overview_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 今後はBusiness Analytics、情報・意思決定モデル、不確実性、動的性へ進む。\par
+
+\noindent\textbf{解説}\; 第1回は後続講義の地図である。試験対策では、概念を後の数式・事例に接続することが重要。\par
+
+\noindent\textbf{試験ポイント}\; Lecture 1は用語の出発点。以後、Lecture 2で情報/決定モデル、Lecture 3で不確実性を具体化する。\par
+
+\noindent\textbf{過去問関連}\; 過去問の多くはLecture 1の概念を具体例へ適用させる形で出る。\par
+
+\noindent\textbf{確認問題}\; 第1回の内容がLecture 2/3/4へどうつながるか説明せよ。\par
+
+\end{multicols}
+\end{minipage}

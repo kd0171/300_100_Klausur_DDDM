@@ -1,0 +1,942 @@
+\section*{Lecture 1: Overview}
+\addcontentsline{toc}{section}{Lecture 1: Overview}
+\clearpage
+\SlideHeader{Lecture 1: Overview}{001}{表紙}
+\SlideImage{1}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Data Driven Decision Making
+\item 第1回 - 概要
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{002}{連絡先}
+\SlideImage{2}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 担当教員
+\begin{itemize}
+\item Prof. Dr. Dirk Mattfeld
+\item オフィスアワー: 登録制
+\item d.mattfeld@tu-braunschweig.de
+\end{itemize}
+\item ティーチングアシスタント
+\begin{itemize}
+\item Felix Moeller
+\item オフィスアワー: 登録制
+\item felix.moeller@tu-braunschweig.de
+\end{itemize}
+\item Decision Support オフィス
+\begin{itemize}
+\item オフィスアワー: Webサイトで告知
+\item 電話: (0531) 391-3211
+\item ds@tu-braunschweig.de
+\end{itemize}
+\item Webサイト
+\begin{itemize}
+\item 講義・試験日程などを確認する場所
+\end{itemize}
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{003}{Decision Support の修士科目}
+\SlideImage{3}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 基礎・方向づけ
+\begin{itemize}
+\item Decision Support (5 LP)
+\item Intelligent Data Analysis (WS)
+\item Planning for Mobility and Transportation Purposes (WS)
+\end{itemize}
+\item 専門
+\begin{itemize}
+\item Decision Support (5 LP)
+\item Data Driven Decision Making (SS)
+\item Exercise in Data Driven Decision Making (SS)
+\item Master seminar
+\item Master thesis (6 months)
+\end{itemize}
+\item その他の専攻、とくに機械工学系学生にも開かれている。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{004}{講義について}
+\SlideImage{4}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Data Driven Decision Making
+\item 以前は『モビリティ応用のための情報システム』、さらに以前は『交通情報システム』だった。
+\item 焦点は、情報システムの描写から、情報システム内の自動意思決定へ移っている。
+\item Uber, Lime, Amazon などの先端的デジタルビジネスモデルと整合する。
+\item PMT は意思決定に、IDA はデータ分析に焦点を置く。DDDM はその上に構築される。
+\item 3DM は演習とともに『Decision Support専門』を構成する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item DDDMはデータ分析を意思決定と実装へ接続する講義である。
+\item stochasticity と dynamism を分けて説明できることが最重要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「講義について」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Data Driven Decision Making は、単にデータを分析してレポートを作ることではない。データを使って、現実で実行する行動を選び、その結果をまた観測して次の意思決定へ反映する考え方である。たとえば食品配送であれば、注文数を予測するだけではなく、どの注文を受けるか、どのドライバーに割り当てるか、どの順番で回るかまで決める。\par
+この講義の中心は、現実の意思決定が静的で完全情報の問題ではないという点にある。現実では、注文、交通、ドライバー位置、キャンセル、サービス時間などが時間とともに変わる。したがって、最初に作った計画を最後まで固定するのではなく、新しい情報を受けて状態を更新し、必要に応じて計画を変える必要がある。\par
+stochasticity は、将来何が起こるかが確率的・不確実であることを意味する。dynamism は、時間が進むにつれて状態が変わり、意思決定を繰り返す必要があることを意味する。試験では、この二語を同義語のように書かないことが重要である。注文がいつ来るか分からないことは stochasticity、注文が来た後に計画を更新することは dynamism である。\par
+答案では、DDDMを Business Analytics、Operations Research、Data Analytics、情報システム実装の交点として説明すると強い。予測モデルだけでは『何をするか』が決まらず、最適化モデルだけでは『現実データをどう入れるか』が決まらない。DDDMはこの間を接続し、現実のデータから実行可能な意思決定を作る。\par
+具体例として、Uberや食品配送では、リアルタイム注文、ドライバーの現在位置、交通状況、顧客の待ち時間を使いながら、数分ごとに新しい割当を作る。このとき、過去データから需要を学習するだけでなく、将来の不確実な注文を見越して現在のドライバーを使い切らないようにするなど、将来の柔軟性も重要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 004「講義について」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、講義について を通じて DDDMはデータ分析を意思決定と実装へ接続する講義である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 004「講義について」を、配送またはTSPの具体例で説明せよ。}\\食品配送では、注文発生は不確実であり、ドライバー位置と交通状況は時間とともに変わる。したがって、需要予測だけでなく、注文受諾、割当、ルート更新まで含めて意思決定を考える。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{005}{目標}
+\SlideImage{5}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 確率性と動的性質を理解する。
+\item 確率的・動的意思決定問題をモデル化する。
+\item 方法論の概要、機能、強み、弱みを理解する。
+\item デジタル経済における関連問題を理解する。
+\item 60分筆記試験に合格する。
+\item 修士論文、博士課程への準備を行う。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item DDDMはデータ分析を意思決定と実装へ接続する講義である。
+\item stochasticity と dynamism を分けて説明できることが最重要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「目標」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Data Driven Decision Making は、単にデータを分析してレポートを作ることではない。データを使って、現実で実行する行動を選び、その結果をまた観測して次の意思決定へ反映する考え方である。たとえば食品配送であれば、注文数を予測するだけではなく、どの注文を受けるか、どのドライバーに割り当てるか、どの順番で回るかまで決める。\par
+この講義の中心は、現実の意思決定が静的で完全情報の問題ではないという点にある。現実では、注文、交通、ドライバー位置、キャンセル、サービス時間などが時間とともに変わる。したがって、最初に作った計画を最後まで固定するのではなく、新しい情報を受けて状態を更新し、必要に応じて計画を変える必要がある。\par
+stochasticity は、将来何が起こるかが確率的・不確実であることを意味する。dynamism は、時間が進むにつれて状態が変わり、意思決定を繰り返す必要があることを意味する。試験では、この二語を同義語のように書かないことが重要である。注文がいつ来るか分からないことは stochasticity、注文が来た後に計画を更新することは dynamism である。\par
+答案では、DDDMを Business Analytics、Operations Research、Data Analytics、情報システム実装の交点として説明すると強い。予測モデルだけでは『何をするか』が決まらず、最適化モデルだけでは『現実データをどう入れるか』が決まらない。DDDMはこの間を接続し、現実のデータから実行可能な意思決定を作る。\par
+具体例として、Uberや食品配送では、リアルタイム注文、ドライバーの現在位置、交通状況、顧客の待ち時間を使いながら、数分ごとに新しい割当を作る。このとき、過去データから需要を学習するだけでなく、将来の不確実な注文を見越して現在のドライバーを使い切らないようにするなど、将来の柔軟性も重要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 005「目標」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、目標 を通じて DDDMはデータ分析を意思決定と実装へ接続する講義である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 005「目標」を、配送またはTSPの具体例で説明せよ。}\\食品配送では、注文発生は不確実であり、ドライバー位置と交通状況は時間とともに変わる。したがって、需要予測だけでなく、注文受諾、割当、ルート更新まで含めて意思決定を考える。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{006}{DDDMの講義計画}
+\SlideImage{6}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 講義トピック
+\begin{itemize}
+\item 1 概要
+\item 2 情報モデリングと意思決定モデリング
+\item 3 確率性
+\item 4 動的性
+\item 5 マルコフ意思決定過程
+\item 6 近似動的計画法
+\item 7 Look-ahead Methods
+\item 8 価値関数近似
+\item 9 ADPにおける分析上の問題
+\item 10 Combined Methods
+\item 11 プラットフォーム型フードデリバリー
+\end{itemize}
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{007}{文献}
+\SlideImage{7}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Warren Powell の研究。
+\item TU Braunschweig における Marlin Ulmer らとの近年の共同研究。
+\item 交通・モビリティに関する適用と発展。
+\item Ulmer et al. (2020): stochastic dynamic vehicle routing problems のモデル化。
+\item Ulmer et al. (2021): prescriptive analytics の観点から見た stochastic dynamic vehicle routing のレビュー。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{008}{演習について}
+\SlideImage{8}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 『Decision Support専門』の Studienleistung (2.5 LP)。
+\item serious game アプリケーション『Trucks and Barges』で講義内容を練習する。
+\item シミュレーション内容
+\begin{itemize}
+\item 貨物業者が、複数日にわたり、ターミナルからコンテナを異なる輸送モードで出荷する意思決定状況。
+\end{itemize}
+\item 運営
+\begin{itemize}
+\item 内容が積み上がる5回のオンライン日程。
+\item 宿題。
+\item StudIP: Data Driven Decision Making - Uebung
+\end{itemize}
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{009}{試験情報}
+\SlideImage{9}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 試験会場と時刻は講座のWebサイトで確認できる。
+\item 情報は定期的に更新される。
+\item 試験日は早めに告知され、試験教室は試験直前に割り当てられる。
+\item 必要な情報がWebサイトにない場合のみメールで問い合わせる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{010}{過去問}
+\SlideImage{10}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 近年の過去問の印刷版は研究所で入手できる。部数には限りがある。
+\item 過去問はWebサイトでも確認できる。
+\item 過去問を解くだけでは十分な準備ではなく、良い成績を保証しない。
+\item 講義で扱った全トピックが試験対象である。
+\item 問題形式は似ることがあるが、内容は変わり、過去問にない新問も含まれ得る。
+\item 過去問の模範解答は提供されない。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{011}{アジェンダ}
+\SlideImage{11}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 動機
+\item Operations Research と Business Analytics の復習
+\item モデリングと講義全体の見取り図
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{012}{動機}
+\SlideImage{12}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 新しく変化するビジネスコンセプト: より速く、より個別的に、リアルタイムに。
+\item 例
+\begin{itemize}
+\item 即時配送
+\item オンデマンド生産・受注生産
+\item 予約スケジューリング
+\item その他
+\end{itemize}
+\item 計画と制御が難しくなる。
+\item 二つの共通テーマ
+\begin{itemize}
+\item Stochasticity: 情報が時間とともに変化する。
+\item Dynamism: 情報変化を踏まえて計画を更新する。
+\end{itemize}
+\item 確率的・動的意思決定過程へつながる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item DDDMはデータ分析を意思決定と実装へ接続する講義である。
+\item stochasticity と dynamism を分けて説明できることが最重要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「動機」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Data Driven Decision Making は、単にデータを分析してレポートを作ることではない。データを使って、現実で実行する行動を選び、その結果をまた観測して次の意思決定へ反映する考え方である。たとえば食品配送であれば、注文数を予測するだけではなく、どの注文を受けるか、どのドライバーに割り当てるか、どの順番で回るかまで決める。\par
+この講義の中心は、現実の意思決定が静的で完全情報の問題ではないという点にある。現実では、注文、交通、ドライバー位置、キャンセル、サービス時間などが時間とともに変わる。したがって、最初に作った計画を最後まで固定するのではなく、新しい情報を受けて状態を更新し、必要に応じて計画を変える必要がある。\par
+stochasticity は、将来何が起こるかが確率的・不確実であることを意味する。dynamism は、時間が進むにつれて状態が変わり、意思決定を繰り返す必要があることを意味する。試験では、この二語を同義語のように書かないことが重要である。注文がいつ来るか分からないことは stochasticity、注文が来た後に計画を更新することは dynamism である。\par
+答案では、DDDMを Business Analytics、Operations Research、Data Analytics、情報システム実装の交点として説明すると強い。予測モデルだけでは『何をするか』が決まらず、最適化モデルだけでは『現実データをどう入れるか』が決まらない。DDDMはこの間を接続し、現実のデータから実行可能な意思決定を作る。\par
+具体例として、Uberや食品配送では、リアルタイム注文、ドライバーの現在位置、交通状況、顧客の待ち時間を使いながら、数分ごとに新しい割当を作る。このとき、過去データから需要を学習するだけでなく、将来の不確実な注文を見越して現在のドライバーを使い切らないようにするなど、将来の柔軟性も重要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 012「動機」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、動機 を通じて DDDMはデータ分析を意思決定と実装へ接続する講義である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 012「動機」を、配送またはTSPの具体例で説明せよ。}\\食品配送では、注文発生は不確実であり、ドライバー位置と交通状況は時間とともに変わる。したがって、需要予測だけでなく、注文受諾、割当、ルート更新まで含めて意思決定を考える。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{013}{例: 輸送}
+\SlideImage{13}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 同日配送、ピックアップ、ドローン配送、食品配送など、輸送サービスの例。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item DDDMはデータ分析を意思決定と実装へ接続する講義である。
+\item stochasticity と dynamism を分けて説明できることが最重要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「例: 輸送」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Data Driven Decision Making は、単にデータを分析してレポートを作ることではない。データを使って、現実で実行する行動を選び、その結果をまた観測して次の意思決定へ反映する考え方である。たとえば食品配送であれば、注文数を予測するだけではなく、どの注文を受けるか、どのドライバーに割り当てるか、どの順番で回るかまで決める。\par
+この講義の中心は、現実の意思決定が静的で完全情報の問題ではないという点にある。現実では、注文、交通、ドライバー位置、キャンセル、サービス時間などが時間とともに変わる。したがって、最初に作った計画を最後まで固定するのではなく、新しい情報を受けて状態を更新し、必要に応じて計画を変える必要がある。\par
+stochasticity は、将来何が起こるかが確率的・不確実であることを意味する。dynamism は、時間が進むにつれて状態が変わり、意思決定を繰り返す必要があることを意味する。試験では、この二語を同義語のように書かないことが重要である。注文がいつ来るか分からないことは stochasticity、注文が来た後に計画を更新することは dynamism である。\par
+答案では、DDDMを Business Analytics、Operations Research、Data Analytics、情報システム実装の交点として説明すると強い。予測モデルだけでは『何をするか』が決まらず、最適化モデルだけでは『現実データをどう入れるか』が決まらない。DDDMはこの間を接続し、現実のデータから実行可能な意思決定を作る。\par
+具体例として、Uberや食品配送では、リアルタイム注文、ドライバーの現在位置、交通状況、顧客の待ち時間を使いながら、数分ごとに新しい割当を作る。このとき、過去データから需要を学習するだけでなく、将来の不確実な注文を見越して現在のドライバーを使い切らないようにするなど、将来の柔軟性も重要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 013「例: 輸送」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、例: 輸送 を通じて DDDMはデータ分析を意思決定と実装へ接続する講義である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 013「例: 輸送」を、配送またはTSPの具体例で説明せよ。}\\食品配送では、注文発生は不確実であり、ドライバー位置と交通状況は時間とともに変わる。したがって、需要予測だけでなく、注文受諾、割当、ルート更新まで含めて意思決定を考える。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{014}{例: モビリティとサービス}
+\SlideImage{14}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item バイクシェア、オンデマンド交通、医療訪問、タクシー、エレベーター保守、緊急車両など、モビリティ・サービスの例。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item DDDMはデータ分析を意思決定と実装へ接続する講義である。
+\item stochasticity と dynamism を分けて説明できることが最重要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「例: モビリティとサービス」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Data Driven Decision Making は、単にデータを分析してレポートを作ることではない。データを使って、現実で実行する行動を選び、その結果をまた観測して次の意思決定へ反映する考え方である。たとえば食品配送であれば、注文数を予測するだけではなく、どの注文を受けるか、どのドライバーに割り当てるか、どの順番で回るかまで決める。\par
+この講義の中心は、現実の意思決定が静的で完全情報の問題ではないという点にある。現実では、注文、交通、ドライバー位置、キャンセル、サービス時間などが時間とともに変わる。したがって、最初に作った計画を最後まで固定するのではなく、新しい情報を受けて状態を更新し、必要に応じて計画を変える必要がある。\par
+stochasticity は、将来何が起こるかが確率的・不確実であることを意味する。dynamism は、時間が進むにつれて状態が変わり、意思決定を繰り返す必要があることを意味する。試験では、この二語を同義語のように書かないことが重要である。注文がいつ来るか分からないことは stochasticity、注文が来た後に計画を更新することは dynamism である。\par
+答案では、DDDMを Business Analytics、Operations Research、Data Analytics、情報システム実装の交点として説明すると強い。予測モデルだけでは『何をするか』が決まらず、最適化モデルだけでは『現実データをどう入れるか』が決まらない。DDDMはこの間を接続し、現実のデータから実行可能な意思決定を作る。\par
+具体例として、Uberや食品配送では、リアルタイム注文、ドライバーの現在位置、交通状況、顧客の待ち時間を使いながら、数分ごとに新しい割当を作る。このとき、過去データから需要を学習するだけでなく、将来の不確実な注文を見越して現在のドライバーを使い切らないようにするなど、将来の柔軟性も重要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 014「例: モビリティとサービス」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、例: モビリティとサービス を通じて DDDMはデータ分析を意思決定と実装へ接続する講義である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 014「例: モビリティとサービス」を、配送またはTSPの具体例で説明せよ。}\\食品配送では、注文発生は不確実であり、ドライバー位置と交通状況は時間とともに変わる。したがって、需要予測だけでなく、注文受諾、割当、ルート更新まで含めて意思決定を考える。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{015}{まとめ}
+\SlideImage{15}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item サービスプロセスは時間を通じて進行する。
+\item 需要、依頼、交通、ドライバー、バッテリー残量、要件などの新情報が発生する。
+\item 計画への反応と更新が必要になる。
+\item 反応が遅すぎる場合がある。例: 車両が渋滞に巻き込まれる、食事配送のドライバーが周辺にいない、ドローンが墜落する。
+\item 期待される将来を先読みする必要がある。
+\item 将来のシステム状態に対する柔軟性を目指す。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item DDDMはデータ分析を意思決定と実装へ接続する講義である。
+\item stochasticity と dynamism を分けて説明できることが最重要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「まとめ」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Data Driven Decision Making は、単にデータを分析してレポートを作ることではない。データを使って、現実で実行する行動を選び、その結果をまた観測して次の意思決定へ反映する考え方である。たとえば食品配送であれば、注文数を予測するだけではなく、どの注文を受けるか、どのドライバーに割り当てるか、どの順番で回るかまで決める。\par
+この講義の中心は、現実の意思決定が静的で完全情報の問題ではないという点にある。現実では、注文、交通、ドライバー位置、キャンセル、サービス時間などが時間とともに変わる。したがって、最初に作った計画を最後まで固定するのではなく、新しい情報を受けて状態を更新し、必要に応じて計画を変える必要がある。\par
+stochasticity は、将来何が起こるかが確率的・不確実であることを意味する。dynamism は、時間が進むにつれて状態が変わり、意思決定を繰り返す必要があることを意味する。試験では、この二語を同義語のように書かないことが重要である。注文がいつ来るか分からないことは stochasticity、注文が来た後に計画を更新することは dynamism である。\par
+答案では、DDDMを Business Analytics、Operations Research、Data Analytics、情報システム実装の交点として説明すると強い。予測モデルだけでは『何をするか』が決まらず、最適化モデルだけでは『現実データをどう入れるか』が決まらない。DDDMはこの間を接続し、現実のデータから実行可能な意思決定を作る。\par
+具体例として、Uberや食品配送では、リアルタイム注文、ドライバーの現在位置、交通状況、顧客の待ち時間を使いながら、数分ごとに新しい割当を作る。このとき、過去データから需要を学習するだけでなく、将来の不確実な注文を見越して現在のドライバーを使い切らないようにするなど、将来の柔軟性も重要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 015「まとめ」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、まとめ を通じて DDDMはデータ分析を意思決定と実装へ接続する講義である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 015「まとめ」を、配送またはTSPの具体例で説明せよ。}\\食品配送では、注文発生は不確実であり、ドライバー位置と交通状況は時間とともに変わる。したがって、需要予測だけでなく、注文受諾、割当、ルート更新まで含めて意思決定を考える。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{016}{意思決定}
+\SlideImage{16}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Real-World: 行動が実行され、その結果として状態を観測できる。
+\item Aggregation: 現実世界のデータを情報モデルの次元へ移す。
+\item Information Model: 情報を圧縮された形で描写する。
+\item Decision Model: 決定空間を定義し、決定を評価する。
+\item Implementation: 意思決定モデルの解を現実世界の行動へ変換する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。
+\item 情報モデルは現実の圧縮表現、意思決定モデルは行動選択の評価構造である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「意思決定」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Real-World は、配送車、顧客、道路、倉庫、ドライバー、注文、交通といった現実そのものである。現実は複雑すぎるため、そのまま数理モデルやアルゴリズムに入れることはできない。そこで、意思決定に必要な要素だけを抽出し、モデルが扱える形に変換する必要がある。\par
+Aggregation は、現実から得られた詳細データを情報モデルの次元に圧縮する操作である。例として、GPS点列を道路セグメントの速度に変換する、住所を顧客ノードに変換する、過去走行ログから顧客間旅行時間行列を作る、注文履歴から需要分布を推定する、といった処理がある。\par
+Information Model は、意思決定に必要な情報の構造化表現である。ここには、顧客集合、デポ、車両集合、旅行時間行列、需要、時間窓、確率分布などが含まれる。重要なのは、情報モデルは現実の全コピーではなく、意思決定に有用な抽象化だという点である。\par
+Decision Model は、その情報モデルを入力として、どの行動を選べるか、何を最適化するか、どの制約を守るかを定義する。TSPなら、顧客を一度ずつ訪問し総旅行時間を最小化する。VRPなら、複数車両、容量制約、時間窓などが加わる。ここでは決定変数、目的関数、制約が中心になる。\par
+Implementation は、モデル上の解を現実の行動に戻す処理である。たとえば x\_\{ij\}=1 というアーク選択を、ドライバーに提示する訪問順、住所、ナビゲーション、積み込み順へ変換する。実装後には実際の遅延や走行時間が観測され、それが再びAggregationを通じてモデル改善に使われる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 016「意思決定」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、意思決定 を通じて Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 016「意思決定」を、配送またはTSPの具体例で説明せよ。}\\配送現場のGPSと注文データを集約して顧客集合と旅行時間行列を作り、それをTSP/VRPへ入力し、得られた訪問順をドライバー指示へ戻す。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{017}{DDDMにおける意思決定}
+\SlideImage{17}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item DDDMでは、情報モデルだけを詳しく扱うわけではない。
+\item 最適化モデルだけに焦点を当てるわけでもない。
+\item 現実世界のプロセスを含むループ全体を考慮する。
+\item そのため、システムを時間を通じてモデル化する必要がある。これは dynamic である。
+\item 現実世界は外部効果により変化し得る。これは stochastic である。
+\item 実装された決定は、すでに変化した現実世界と衝突する可能性がある。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。
+\item 情報モデルは現実の圧縮表現、意思決定モデルは行動選択の評価構造である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「DDDMにおける意思決定」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Real-World は、配送車、顧客、道路、倉庫、ドライバー、注文、交通といった現実そのものである。現実は複雑すぎるため、そのまま数理モデルやアルゴリズムに入れることはできない。そこで、意思決定に必要な要素だけを抽出し、モデルが扱える形に変換する必要がある。\par
+Aggregation は、現実から得られた詳細データを情報モデルの次元に圧縮する操作である。例として、GPS点列を道路セグメントの速度に変換する、住所を顧客ノードに変換する、過去走行ログから顧客間旅行時間行列を作る、注文履歴から需要分布を推定する、といった処理がある。\par
+Information Model は、意思決定に必要な情報の構造化表現である。ここには、顧客集合、デポ、車両集合、旅行時間行列、需要、時間窓、確率分布などが含まれる。重要なのは、情報モデルは現実の全コピーではなく、意思決定に有用な抽象化だという点である。\par
+Decision Model は、その情報モデルを入力として、どの行動を選べるか、何を最適化するか、どの制約を守るかを定義する。TSPなら、顧客を一度ずつ訪問し総旅行時間を最小化する。VRPなら、複数車両、容量制約、時間窓などが加わる。ここでは決定変数、目的関数、制約が中心になる。\par
+Implementation は、モデル上の解を現実の行動に戻す処理である。たとえば x\_\{ij\}=1 というアーク選択を、ドライバーに提示する訪問順、住所、ナビゲーション、積み込み順へ変換する。実装後には実際の遅延や走行時間が観測され、それが再びAggregationを通じてモデル改善に使われる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 017「DDDMにおける意思決定」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、DDDMにおける意思決定 を通じて Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 017「DDDMにおける意思決定」を、配送またはTSPの具体例で説明せよ。}\\配送現場のGPSと注文データを集約して顧客集合と旅行時間行列を作り、それをTSP/VRPへ入力し、得られた訪問順をドライバー指示へ戻す。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\ExamHeader{Business Analytics とDDDMの全体像}
+\ExamQuestion{WS23/24 Aufgabe 1 [6 Punkte]}
+\ExamSubsection{問題内容}
+Business Analytics が用いる三つの分野を挙げ、各二分野の交差領域も説明する問題。合計で三つの分野と三つの交差領域が問われる。\par
+\ExamSubsection{満点答案}
+Business Analytics は、Operations Research、Statistics、Computer Science/Information Systems の三分野を組み合わせる。Operations Research は、目的関数、制約、決定変数、実行可能解、最適化アルゴリズムを扱い、どの行動を選ぶべきかを定式化する。Statistics は、不確実なデータから分布、期待値、分散、予測、推定を扱い、観測値の背後にある規則性や不確実性を表す。Computer Science/Information Systems は、データの保存、処理、アルゴリズム実装、情報システムへの統合を扱う。\par
+Operations Research と Statistics の交差では、確率的最適化や不確実性下の意思決定が中心になる。Statistics と Computer Science の交差では、データマイニング、機械学習、データ処理が中心になる。Computer Science と Operations Research の交差では、最適化アルゴリズム、計算複雑性、意思決定支援システムが中心になる。Business Analytics はこれらを統合し、データから実行可能な意思決定を導く。\par
+\ExamSubsection{具体例による解説}
+配送計画では、Statistics が旅行時間分布を推定し、Computer Science がGPS・注文データを処理し、Operations Research が車両ルートを最適化する。三つのうち一つでも欠けると、現実データに基づく実行可能な意思決定にならない。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 三分野を正しく列挙
+\item 三つの二分野交差を説明
+\item Business Analytics が統合領域であることを明示
+\item 配送などの具体例で説明
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS23/24 Aufgabe 2 [5 Punkte]}
+\ExamSubsection{問題内容}
+Real-World Problem と Decision Model がどのように関係し、どの概念的構成要素とデータフローで結ばれるかを説明する問題。\par
+\ExamSubsection{満点答案}
+現実問題は直接そのまま意思決定モデルにはならない。まず Real-World で行動が実行され、その結果として状態やデータが観測される。Aggregation は、観測データを情報モデルの次元へ変換する。Information Model は、現実を意思決定に必要な形へ圧縮した表現であり、例えば顧客、道路、旅行時間、需要などを含む。Decision Model は、この情報モデルを使い、決定空間、目的関数、制約、評価基準を定義する。Implementation または Disaggregation は、モデルの解を現実の行動へ戻す。\par
+データフローは、Real-World から Aggregation を通じて Information Model へ入り、Information Model が Decision Model の入力になる。Decision Model の解は Implementation により Real-World へ戻る。実装結果を観測することで、仮説、情報モデル、意思決定モデルを更新する。したがって、関係は一方向ではなく循環である。\par
+\ExamSubsection{具体例による解説}
+配送では、GPSと注文データを集約して顧客集合と旅行時間行列を作る。これが情報モデルである。そこからTSP/VRPを作り、訪問順序を決める。訪問順序をドライバーのナビに変換して実行し、遅延や実走時間を再び観測してモデルを改善する。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementationを全て説明
+\item データフローを正しい順序で説明
+\item ループとして説明
+\item 具体例を含める
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{018}{アジェンダ}
+\SlideImage{18}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 動機
+\item Operations Research と Business Analytics の復習
+\item モデリングと講義全体の見取り図
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{019}{例: Braunschweigの小包配送}
+\SlideImage{19}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item トラックはデポにいる。
+\item 顧客と住所がある。
+\item 道路ネットワークがある。
+\item 全顧客を訪問するように、市内でのドライバーのナビゲーションを探す。
+\item 目標は迅速な配送である。
+\item どうすれば目標を達成できるか。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。
+\item 時間依存TSPでは d\_ij が d\_ij(t) になり、到着時刻が決定に影響する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「例: Braunschweigの小包配送」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Travelling Salesman Problem は、複数の顧客を一度ずつ訪問し、最後に出発点へ戻る最短ツアーを求める基本的なルーティング問題である。顧客やデポはノード、ノード間の移動はアーク、距離や旅行時間はアークコストとして表される。\par
+意思決定モデルとしてのTSPでは、x\_\{ij\}=1 なら i から j へ直接移動する、0なら移動しない、という二値変数を使う。目的関数は、選ばれたアークの距離または旅行時間の合計を最小化する。制約として、各顧客に一度入る、各顧客から一度出る、部分巡回を禁止する条件が必要である。\par
+情報モデルとしては、顧客集合、デポ、顧客間距離または旅行時間行列が必要である。つまり、TSPは情報モデルと意思決定モデルの典型的な接続例である。旅行時間行列が情報モデル、二値変数・目的関数・制約を持つ最適化問題が意思決定モデルである。\par
+時間依存TSPでは、アークコストが出発時刻に依存する。固定の d\_\{ij\} ではなく d\_\{ij\}(t) になるため、同じ i から j への移動でも朝は20分、昼は10分、夕方は30分ということがある。この場合、訪問順序だけでなく、いつそのアークを通るかが重要になる。\par
+具体例として、顧客Aを先に訪問するとBへの移動がラッシュ前に終わるが、Cを先に訪問するとBへの移動がラッシュ中になり遅れることがある。つまり、局所的に短い移動を選んでも、時刻の変化により後続コストが悪化するため、時間を含む意思決定モデルが必要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 019「例: Braunschweigの小包配送」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、例: Braunschweigの小包配送 を通じて TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 019「例: Braunschweigの小包配送」を、配送またはTSPの具体例で説明せよ。}\\顧客をノード、移動をアーク、旅行時間をコストとして、全顧客を一度ずつ訪問する順序を選ぶ。時間依存なら出発時刻も評価に入る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{020}{モデリング: 巡回セールスマン問題}
+\SlideImage{20}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Part 1
+\begin{itemize}
+\item 道路ネットワークを顧客間のアークへ変換する。
+\item 走行速度をアークごとの旅行時間へ変換する。
+\item 重み付きグラフまたは旅行時間行列を得る。
+\end{itemize}
+\item Part 2
+\begin{itemize}
+\item ナビゲーションを、使用アークに関する決定変数へ変換する。
+\item 実行可能なナビゲーションを保証する制約を追加する。
+\item Part 1に基づいて目的関数を定義する。
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。
+\item 時間依存TSPでは d\_ij が d\_ij(t) になり、到着時刻が決定に影響する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「モデリング: 巡回セールスマン問題」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Travelling Salesman Problem は、複数の顧客を一度ずつ訪問し、最後に出発点へ戻る最短ツアーを求める基本的なルーティング問題である。顧客やデポはノード、ノード間の移動はアーク、距離や旅行時間はアークコストとして表される。\par
+意思決定モデルとしてのTSPでは、x\_\{ij\}=1 なら i から j へ直接移動する、0なら移動しない、という二値変数を使う。目的関数は、選ばれたアークの距離または旅行時間の合計を最小化する。制約として、各顧客に一度入る、各顧客から一度出る、部分巡回を禁止する条件が必要である。\par
+情報モデルとしては、顧客集合、デポ、顧客間距離または旅行時間行列が必要である。つまり、TSPは情報モデルと意思決定モデルの典型的な接続例である。旅行時間行列が情報モデル、二値変数・目的関数・制約を持つ最適化問題が意思決定モデルである。\par
+時間依存TSPでは、アークコストが出発時刻に依存する。固定の d\_\{ij\} ではなく d\_\{ij\}(t) になるため、同じ i から j への移動でも朝は20分、昼は10分、夕方は30分ということがある。この場合、訪問順序だけでなく、いつそのアークを通るかが重要になる。\par
+具体例として、顧客Aを先に訪問するとBへの移動がラッシュ前に終わるが、Cを先に訪問するとBへの移動がラッシュ中になり遅れることがある。つまり、局所的に短い移動を選んでも、時刻の変化により後続コストが悪化するため、時間を含む意思決定モデルが必要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 020「モデリング: 巡回セールスマン問題」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、モデリング: 巡回セールスマン問題 を通じて TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 020「モデリング: 巡回セールスマン問題」を、配送またはTSPの具体例で説明せよ。}\\顧客をノード、移動をアーク、旅行時間をコストとして、全顧客を一度ずつ訪問する順序を選ぶ。時間依存なら出発時刻も評価に入る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{021}{解を見つける}
+\SlideImage{21}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item モデルは解空間を張り、解を評価する。
+\item 候補解の求め方
+\begin{itemize}
+\item グラフベース手法、例: insertion procedures
+\item 混合整数計画、例: branch and bound
+\end{itemize}
+\item 最後のステップ: 実務への実装
+\begin{itemize}
+\item 数字を顧客へ変換する。
+\item 選択されたアークを道路セグメントの集合へ対応させる。
+\item ドライバーにナビゲーションを提供する。
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。
+\item 時間依存TSPでは d\_ij が d\_ij(t) になり、到着時刻が決定に影響する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「解を見つける」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Travelling Salesman Problem は、複数の顧客を一度ずつ訪問し、最後に出発点へ戻る最短ツアーを求める基本的なルーティング問題である。顧客やデポはノード、ノード間の移動はアーク、距離や旅行時間はアークコストとして表される。\par
+意思決定モデルとしてのTSPでは、x\_\{ij\}=1 なら i から j へ直接移動する、0なら移動しない、という二値変数を使う。目的関数は、選ばれたアークの距離または旅行時間の合計を最小化する。制約として、各顧客に一度入る、各顧客から一度出る、部分巡回を禁止する条件が必要である。\par
+情報モデルとしては、顧客集合、デポ、顧客間距離または旅行時間行列が必要である。つまり、TSPは情報モデルと意思決定モデルの典型的な接続例である。旅行時間行列が情報モデル、二値変数・目的関数・制約を持つ最適化問題が意思決定モデルである。\par
+時間依存TSPでは、アークコストが出発時刻に依存する。固定の d\_\{ij\} ではなく d\_\{ij\}(t) になるため、同じ i から j への移動でも朝は20分、昼は10分、夕方は30分ということがある。この場合、訪問順序だけでなく、いつそのアークを通るかが重要になる。\par
+具体例として、顧客Aを先に訪問するとBへの移動がラッシュ前に終わるが、Cを先に訪問するとBへの移動がラッシュ中になり遅れることがある。つまり、局所的に短い移動を選んでも、時刻の変化により後続コストが悪化するため、時間を含む意思決定モデルが必要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 021「解を見つける」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、解を見つける を通じて TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 021「解を見つける」を、配送またはTSPの具体例で説明せよ。}\\顧客をノード、移動をアーク、旅行時間をコストとして、全顧客を一度ずつ訪問する順序を選ぶ。時間依存なら出発時刻も評価に入る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{022}{Operations Researchの三段階}
+\SlideImage{22}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 問題定義
+\item モデリング
+\item 解法
+\item 情報と意思決定
+\item 実装を含む。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item IDAは appearance から structure、PMT/ORは structure から solution へ向かう。
+\item Business Analytics は Statistics, OR, CS/IS の統合領域である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「Operations Researchの三段階」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+IDA, Intelligent Data Analysis は、記録されたデータの appearance から出発する。appearance とは、現実システムの表面的な観測結果であり、GPSログ、注文履歴、クリック履歴、センサー値のようなものである。これらは誤差、欠損、外れ値を含むため、そのまま構造を表しているとは限らない。\par
+IDAの役割は、データをクリーニングし、補完し、検証し、統計的パターンやモデルを抽出することで、背後にある structure への証拠を与えることである。例えば、タクシーの走行ログから朝夕ラッシュの速度低下パターンを見つけることは、道路交通の構造を推定する作業である。\par
+PMTやOperations Researchは逆方向で考える。まず現実問題の重要構造を仮定し、目的、制約、決定空間を明確にする。そして、ルーティング、スケジューリング、割当、在庫管理などの意思決定モデルを作り、解を求める。これは structure から実行可能な appearance、つまり具体的な解へ向かう流れである。\par
+Business Analytics の三つの基礎は、Statistics、Computer Science/Information Systems、Operations Research である。Statistics は推定と不確実性、CS/IS はデータ処理と実装、OR は最適化と意思決定を担う。三つを列挙するだけでは不十分で、互いの交差領域が現実のデータ駆動意思決定で不可欠であることを説明する必要がある。\par
+具体例として配送計画を考えると、Statistics は旅行時間分布を推定し、CS/IS はGPSデータや注文データを保存・処理し、OR は車両ルートを最適化する。データだけではルートは決まらず、最適化だけでは現実の交通を反映できないため、この統合がDDDMの基礎になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 022「Operations Researchの三段階」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、Operations Researchの三段階 を通じて IDAは appearance から structure、PMT/ORは structure から solution へ向かう。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 022「Operations Researchの三段階」を、配送またはTSPの具体例で説明せよ。}\\IDAはGPSログから交通パターンを見つけ、ORはその旅行時間情報を使ってルートを最適化し、CS/ISはデータ処理とアプリ実装を担う。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{023}{アジェンダ}
+\SlideImage{23}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 動機
+\item Operations Research と Business Analytics の復習
+\item モデリングと講義全体の見取り図
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{024}{モデリング}
+\SlideImage{24}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 異なる問題が同じモデルを共有する場合がある。例: 小包配送と技術者サービス。
+\item 同じ問題を異なる方法でモデル化することもできる。
+\item 情報モデルと意思決定モデルの間には接続がある。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。
+\item 情報モデルは現実の圧縮表現、意思決定モデルは行動選択の評価構造である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「モデリング」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Real-World は、配送車、顧客、道路、倉庫、ドライバー、注文、交通といった現実そのものである。現実は複雑すぎるため、そのまま数理モデルやアルゴリズムに入れることはできない。そこで、意思決定に必要な要素だけを抽出し、モデルが扱える形に変換する必要がある。\par
+Aggregation は、現実から得られた詳細データを情報モデルの次元に圧縮する操作である。例として、GPS点列を道路セグメントの速度に変換する、住所を顧客ノードに変換する、過去走行ログから顧客間旅行時間行列を作る、注文履歴から需要分布を推定する、といった処理がある。\par
+Information Model は、意思決定に必要な情報の構造化表現である。ここには、顧客集合、デポ、車両集合、旅行時間行列、需要、時間窓、確率分布などが含まれる。重要なのは、情報モデルは現実の全コピーではなく、意思決定に有用な抽象化だという点である。\par
+Decision Model は、その情報モデルを入力として、どの行動を選べるか、何を最適化するか、どの制約を守るかを定義する。TSPなら、顧客を一度ずつ訪問し総旅行時間を最小化する。VRPなら、複数車両、容量制約、時間窓などが加わる。ここでは決定変数、目的関数、制約が中心になる。\par
+Implementation は、モデル上の解を現実の行動に戻す処理である。たとえば x\_\{ij\}=1 というアーク選択を、ドライバーに提示する訪問順、住所、ナビゲーション、積み込み順へ変換する。実装後には実際の遅延や走行時間が観測され、それが再びAggregationを通じてモデル改善に使われる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 024「モデリング」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、モデリング を通じて Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 024「モデリング」を、配送またはTSPの具体例で説明せよ。}\\配送現場のGPSと注文データを集約して顧客集合と旅行時間行列を作り、それをTSP/VRPへ入力し、得られた訪問順をドライバー指示へ戻す。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{025}{例I: 代替的な情報モデル}
+\SlideImage{25}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 旅行時間の日内変動、つまり時間依存旅行時間を観測する。
+\item 7-9時、9-15時、15-18時のような時間帯を考える。
+\item 情報モデルは複数の旅行時間行列の集合を含む。
+\item 情報生成はより複雑になる。
+\item 代替的な意思決定モデルが必要になる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「例I: 代替的な情報モデル」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 025「例I: 代替的な情報モデル」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、例I: 代替的な情報モデル を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 025「例I: 代替的な情報モデル」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{026}{例II: 代替的な意思決定モデル}
+\SlideImage{26}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 解が実行可能に見えても、残業が頻繁に発生する。
+\item 旅行時間に不確実性がある。
+\item 意思決定モデルを変更する。これは stochasticity に関係する。
+\item 代替的でより詳細な情報モデルが必要になる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 不確実性は、需要・リソース・環境の変化として整理できる。
+\item 頻度、範囲、破壊力、予測可能性で性質が異なる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「例II: 代替的な意思決定モデル」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+不確実性とは、意思決定時点では将来の状態や入力値が完全には分からないことである。配送であれば、注文がどこから来るか、交通がどれだけ混むか、サービス時間が何分か、ドライバーが利用可能かどうかが事前には確定していない。\par
+不確実性は一種類ではない。需要不確実性は、顧客からの注文の発生時刻、場所、量に関する不確実性である。リソース不確実性は、車両故障、ドライバーのキャンセル、バッテリー残量、積載能力に関する不確実性である。環境不確実性は、交通、天候、道路工事、事故、駐車可能性に関する不確実性である。\par
+不確実性は、頻度、範囲、破壊力、予測可能性によって性質が異なる。例えば日々の交通変動は頻繁に起きるが、過去データからある程度予測できる。一方で、大規模事故や道路閉鎖は低頻度だが、発生すれば計画を大きく壊す。\par
+不確実性を無視して平均値だけで計画すると、平均的には良く見えるが実行時に頻繁に遅れる計画になる可能性がある。特に複数顧客を連続して訪問するルーティングでは、一つの遅延が後続訪問に波及するため、単独の平均時間以上にリスクが大きい。\par
+試験答案では、不確実性の例を挙げるだけでなく、それが情報モデルと意思決定モデルにどう影響するかを書くとよい。情報モデルでは確率分布や区間として表現し、意思決定モデルでは期待値、リスク、ロバスト性、再最適化などを考える。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 026「例II: 代替的な意思決定モデル」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、例II: 代替的な意思決定モデル を通じて 不確実性は、需要・リソース・環境の変化として整理できる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 026「例II: 代替的な意思決定モデル」を、配送またはTSPの具体例で説明せよ。}\\注文がいつ来るか、ドライバーが稼働するか、道路が混むかは意思決定時点では確定しない。これが不確実性である。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{027}{例III: 動的性}
+\SlideImage{27}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 情報モデルが時間とともに変化することを観測する。
+\item 変化に反応できる。
+\item 確率的・動的モデルが必要になる。
+\item 将来の先読みが重要になる。
+\item Approximate Dynamic Programming へつながる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item DDDMはデータ分析を意思決定と実装へ接続する講義である。
+\item stochasticity と dynamism を分けて説明できることが最重要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「例III: 動的性」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Data Driven Decision Making は、単にデータを分析してレポートを作ることではない。データを使って、現実で実行する行動を選び、その結果をまた観測して次の意思決定へ反映する考え方である。たとえば食品配送であれば、注文数を予測するだけではなく、どの注文を受けるか、どのドライバーに割り当てるか、どの順番で回るかまで決める。\par
+この講義の中心は、現実の意思決定が静的で完全情報の問題ではないという点にある。現実では、注文、交通、ドライバー位置、キャンセル、サービス時間などが時間とともに変わる。したがって、最初に作った計画を最後まで固定するのではなく、新しい情報を受けて状態を更新し、必要に応じて計画を変える必要がある。\par
+stochasticity は、将来何が起こるかが確率的・不確実であることを意味する。dynamism は、時間が進むにつれて状態が変わり、意思決定を繰り返す必要があることを意味する。試験では、この二語を同義語のように書かないことが重要である。注文がいつ来るか分からないことは stochasticity、注文が来た後に計画を更新することは dynamism である。\par
+答案では、DDDMを Business Analytics、Operations Research、Data Analytics、情報システム実装の交点として説明すると強い。予測モデルだけでは『何をするか』が決まらず、最適化モデルだけでは『現実データをどう入れるか』が決まらない。DDDMはこの間を接続し、現実のデータから実行可能な意思決定を作る。\par
+具体例として、Uberや食品配送では、リアルタイム注文、ドライバーの現在位置、交通状況、顧客の待ち時間を使いながら、数分ごとに新しい割当を作る。このとき、過去データから需要を学習するだけでなく、将来の不確実な注文を見越して現在のドライバーを使い切らないようにするなど、将来の柔軟性も重要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 027「例III: 動的性」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、例III: 動的性 を通じて DDDMはデータ分析を意思決定と実装へ接続する講義である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 027「例III: 動的性」を、配送またはTSPの具体例で説明せよ。}\\食品配送では、注文発生は不確実であり、ドライバー位置と交通状況は時間とともに変わる。したがって、需要予測だけでなく、注文受諾、割当、ルート更新まで含めて意思決定を考える。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 1: Overview}{028}{次回予告}
+\SlideImage{28}{../Materials/2026/3DM_01_Overview_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Business Analytics
+\item 情報モデリングと意思決定モデリング
+\item ケーススタディ: 時間依存旅行時間を持つ配送ルーティング
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}

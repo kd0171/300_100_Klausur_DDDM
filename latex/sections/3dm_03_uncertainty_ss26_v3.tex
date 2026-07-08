@@ -1,0 +1,1343 @@
+\section*{Lecture 3: Uncertainty}
+\addcontentsline{toc}{section}{Lecture 3: Uncertainty}
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{001}{表紙}
+\SlideImage{1}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\scriptsize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Data Driven Decision Making
+\item 第3回 - 不確実性
+\end{itemize}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{002}{復習と本日}
+\SlideImage{2}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Business Analytics の全プロセス。
+\item 情報モデルと意思決定モデル。
+\item データが最初に来る。
+\item 正しい情報モデルを見つけることは難しい。
+\item より精緻な情報モデルにより意思決定の複雑性が増す。
+\item 情報モデルにおける不確実性。
+\item 不確実性をどのようにモデル化できるか。
+\item 不確実性の下でどのように意思決定できるか。
+\item ケーススタディ: 不確実な旅行時間を持つ配送ルーティング。
+\end{itemize}
+\NoteSection{解説}
+不確実性とは、意思決定時点では将来の実現値が完全には分からないことである。需要、交通、サービス時間、ドライバーの可用性、天候、政治状況などが例である。\par
+
+不確実性は、頻度、範囲、破壊力、予測可能性で異なる。例えば毎日変わる交通量は高頻度だが比較的予測可能であり、突然の道路閉鎖は低頻度だが破壊力が大きい。\par
+
+不確実性は情報モデルに入るだけでなく、意思決定モデルにも影響する。平均値だけで計画すると、遅延リスクやサービス品質低下を見落とす可能性がある。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 不確実性の発生源を、需要・リソース・環境に分けて説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Same-Day配送における三種類の不確実性を例示せよ。}\\需要不確実性は、注文がいつ・どこで・どれだけ発生するかである。リソース不確実性は、ドライバーの出勤、車両故障、バッテリー残量、スキルである。環境不確実性は、交通、駐車、天候、道路工事、ネットワーク障害である。
+\item \textbf{平均値だけを使う計画の危険性を説明せよ。}\\平均旅行時間では、遅延の裾の長さや極端な渋滞を見落とす。全アークで平均を使うと、各区間では小さな誤差でも全体ツアーでは大きな遅延になることがある。サービス時間や交通が右裾の長い分布を持つ場合、平均値だけでは信頼性を評価できない。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{003}{アジェンダ}
+\SlideImage{3}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\scriptsize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ: 都市物流におけるロバスト車両ルーティング。
+\end{itemize}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{004}{導入}
+\SlideImage{4}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 例
+\begin{itemize}
+\item 株式市場
+\item 需要
+\item 供給
+\item イノベーション
+\item 政治
+\end{itemize}
+\item 違い
+\begin{itemize}
+\item 頻度
+\item 範囲
+\item 破壊力
+\item 予測可能性
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+不確実性とは、意思決定時点では将来の実現値が完全には分からないことである。需要、交通、サービス時間、ドライバーの可用性、天候、政治状況などが例である。\par
+
+不確実性は、頻度、範囲、破壊力、予測可能性で異なる。例えば毎日変わる交通量は高頻度だが比較的予測可能であり、突然の道路閉鎖は低頻度だが破壊力が大きい。\par
+
+不確実性は情報モデルに入るだけでなく、意思決定モデルにも影響する。平均値だけで計画すると、遅延リスクやサービス品質低下を見落とす可能性がある。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 不確実性の発生源を、需要・リソース・環境に分けて説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Same-Day配送における三種類の不確実性を例示せよ。}\\需要不確実性は、注文がいつ・どこで・どれだけ発生するかである。リソース不確実性は、ドライバーの出勤、車両故障、バッテリー残量、スキルである。環境不確実性は、交通、駐車、天候、道路工事、ネットワーク障害である。
+\item \textbf{平均値だけを使う計画の危険性を説明せよ。}\\平均旅行時間では、遅延の裾の長さや極端な渋滞を見落とす。全アークで平均を使うと、各区間では小さな誤差でも全体ツアーでは大きな遅延になることがある。サービス時間や交通が右裾の長い分布を持つ場合、平均値だけでは信頼性を評価できない。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{005}{モビリティと物流における不確実性}
+\SlideImage{5}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 顧客: 依頼、需要量、サービス時間、利用可能性、行動。
+\item ドライバー: 利用可能性、行動、航続距離、スキル。
+\item 環境: 旅行時間、駐車、ネットワーク利用可能性。
+\end{itemize}
+\NoteSection{解説}
+不確実性とは、意思決定時点では将来の実現値が完全には分からないことである。需要、交通、サービス時間、ドライバーの可用性、天候、政治状況などが例である。\par
+
+不確実性は、頻度、範囲、破壊力、予測可能性で異なる。例えば毎日変わる交通量は高頻度だが比較的予測可能であり、突然の道路閉鎖は低頻度だが破壊力が大きい。\par
+
+不確実性は情報モデルに入るだけでなく、意思決定モデルにも影響する。平均値だけで計画すると、遅延リスクやサービス品質低下を見落とす可能性がある。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 不確実性の発生源を、需要・リソース・環境に分けて説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Same-Day配送における三種類の不確実性を例示せよ。}\\需要不確実性は、注文がいつ・どこで・どれだけ発生するかである。リソース不確実性は、ドライバーの出勤、車両故障、バッテリー残量、スキルである。環境不確実性は、交通、駐車、天候、道路工事、ネットワーク障害である。
+\item \textbf{平均値だけを使う計画の危険性を説明せよ。}\\平均旅行時間では、遅延の裾の長さや極端な渋滞を見落とす。全アークで平均を使うと、各区間では小さな誤差でも全体ツアーでは大きな遅延になることがある。サービス時間や交通が右裾の長い分布を持つ場合、平均値だけでは信頼性を評価できない。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{006}{旅行時間の不確実性}
+\SlideImage{6}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 天候
+\begin{itemize}
+\item 連続的
+\item 予測可能
+\end{itemize}
+\item 交通
+\begin{itemize}
+\item システム的で観測可能なパターンに従う。
+\item 事故や混雑など突発的。
+\item 部分的に予測可能。
+\end{itemize}
+\item 交通管理
+\begin{itemize}
+\item 離散イベント。
+\item 枠組み条件と過去イベントに依存する。
+\item 部分的に予測可能。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+不確実性とは、意思決定時点では将来の実現値が完全には分からないことである。需要、交通、サービス時間、ドライバーの可用性、天候、政治状況などが例である。\par
+
+不確実性は、頻度、範囲、破壊力、予測可能性で異なる。例えば毎日変わる交通量は高頻度だが比較的予測可能であり、突然の道路閉鎖は低頻度だが破壊力が大きい。\par
+
+不確実性は情報モデルに入るだけでなく、意思決定モデルにも影響する。平均値だけで計画すると、遅延リスクやサービス品質低下を見落とす可能性がある。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 不確実性の発生源を、需要・リソース・環境に分けて説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Same-Day配送における三種類の不確実性を例示せよ。}\\需要不確実性は、注文がいつ・どこで・どれだけ発生するかである。リソース不確実性は、ドライバーの出勤、車両故障、バッテリー残量、スキルである。環境不確実性は、交通、駐車、天候、道路工事、ネットワーク障害である。
+\item \textbf{平均値だけを使う計画の危険性を説明せよ。}\\平均旅行時間では、遅延の裾の長さや極端な渋滞を見落とす。全アークで平均を使うと、各区間では小さな誤差でも全体ツアーでは大きな遅延になることがある。サービス時間や交通が右裾の長い分布を持つ場合、平均値だけでは信頼性を評価できない。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{007}{起こり得る結果}
+\SlideImage{7}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 計画活動の完全なキャンセル
+\begin{itemize}
+\item 輸送: 荷物が配送されない。
+\item モビリティ: 職場に到達できない。
+\end{itemize}
+\item 計画活動の中断
+\begin{itemize}
+\item 輸送: 荷物配送が遅れる。顧客が不在になった場合、完全な失敗になり得る。
+\item モビリティ: 職場に遅れて到着する。
+\end{itemize}
+\item 一般的に望ましくない効果
+\begin{itemize}
+\item 追加費用が発生する。
+\item 顧客満足度が低下する。
+\item 後続活動が影響を受ける。
+\end{itemize}
+\item 意思決定において不確実性を考慮することは重要である。
+\end{itemize}
+\NoteSection{解説}
+不確実性とは、意思決定時点では将来の実現値が完全には分からないことである。需要、交通、サービス時間、ドライバーの可用性、天候、政治状況などが例である。\par
+
+不確実性は、頻度、範囲、破壊力、予測可能性で異なる。例えば毎日変わる交通量は高頻度だが比較的予測可能であり、突然の道路閉鎖は低頻度だが破壊力が大きい。\par
+
+不確実性は情報モデルに入るだけでなく、意思決定モデルにも影響する。平均値だけで計画すると、遅延リスクやサービス品質低下を見落とす可能性がある。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 不確実性の発生源を、需要・リソース・環境に分けて説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Same-Day配送における三種類の不確実性を例示せよ。}\\需要不確実性は、注文がいつ・どこで・どれだけ発生するかである。リソース不確実性は、ドライバーの出勤、車両故障、バッテリー残量、スキルである。環境不確実性は、交通、駐車、天候、道路工事、ネットワーク障害である。
+\item \textbf{平均値だけを使う計画の危険性を説明せよ。}\\平均旅行時間では、遅延の裾の長さや極端な渋滞を見落とす。全アークで平均を使うと、各区間では小さな誤差でも全体ツアーでは大きな遅延になることがある。サービス時間や交通が右裾の長い分布を持つ場合、平均値だけでは信頼性を評価できない。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{008}{アジェンダ}
+\SlideImage{8}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\scriptsize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ: 都市物流におけるロバスト車両ルーティング。
+\end{itemize}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{009}{不確実性のモデリング}
+\SlideImage{9}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item モデルの選択は情報レベルに依存する。
+\item 1. Deterministic: すべての情報が既知である。
+\item 2. Stochastic: 異なる情報実現の確率が既知である。
+\item 3. Quasi-stochastic: 情報実現の確率が未知である。
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{010}{基礎}
+\SlideImage{10}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 確率分布。
+\item 離散または連続。
+\item 確率変数 X は実現値 x\_1, ..., x\_i を持つ。例: x\_1=20 km/h。
+\item 対応する実現値 x\_i の確率 p\_1, ..., p\_i。
+\item 期待値: mu = E[X] = sum\_i p\_i x\_i、または積分。
+\item 分散。
+\item 標準偏差。
+\item 変動係数: CV = sigma / mu。
+\item 中央値と分位点。
+\item これらの指標は意思決定プロセスに組み込める。
+\item Sampling: 分布から新しい観測を生成すること。
+\end{itemize}
+\NoteSection{解説}
+確率分布は、不確実な変数がどの値をどの程度取りやすいかを表す。旅行時間、サービス時間、需要量、注文間隔などを表現できる。\par
+
+期待値は平均的な値、分散と標準偏差はばらつき、変動係数は平均に対する相対的なばらつきを表す。中央値・分位点は、遅延リスクやサービスレベルを説明する際に重要である。\par
+
+分布の決定では、理論分布を仮定する場合と、データに分布をフィットする場合がある。フィットでは、ヒストグラム、パラメータ推定、適合度検定、ブートストラップによる妥当性確認を行う。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 期待値・分散・標準偏差・分位点を、意思決定上の意味と結びつける。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{旅行時間分布をデータから決める手順を説明せよ。}\\観測された旅行時間を集め、外れ値を確認し、ヒストグラムや密度を描く。正規分布、ガンマ分布、対数正規分布など候補分布を選び、平均・分散などのパラメータを推定する。可視化やKolmogorov-Smirnov検定で適合度を確認し、必要ならブートストラップで推定の安定性を検査する。
+\item \textbf{サービス時間分布の典型的な特徴を述べよ。}\\サービス時間は負にならないため非負である。多くのケースでは短い時間に集中し、例外的に長い作業があるため右裾が長い。平均だけでなく分散や上位分位点が重要で、例えば90\%分位点は遅延リスクを評価するために使える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{011}{確率分布の決定}
+\SlideImage{11}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 理論分布と対応パラメータを単純に仮定する。
+\item 例
+\begin{itemize}
+\item 一様分布
+\item 正規分布
+\item 指数分布
+\end{itemize}
+\item 既存データへの確率分布の選択と調整、つまり fitting。
+\item 手順
+\begin{itemize}
+\item 適切な理論分布を選ぶ。
+\item 対応するパラメータを推定する。
+\item 適合度を検査する。可視化、Kolmogorov-Smirnov検定など。
+\item 推定パラメータの妥当性をブートストラップで検査する。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+確率分布は、不確実な変数がどの値をどの程度取りやすいかを表す。旅行時間、サービス時間、需要量、注文間隔などを表現できる。\par
+
+期待値は平均的な値、分散と標準偏差はばらつき、変動係数は平均に対する相対的なばらつきを表す。中央値・分位点は、遅延リスクやサービスレベルを説明する際に重要である。\par
+
+分布の決定では、理論分布を仮定する場合と、データに分布をフィットする場合がある。フィットでは、ヒストグラム、パラメータ推定、適合度検定、ブートストラップによる妥当性確認を行う。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 期待値・分散・標準偏差・分位点を、意思決定上の意味と結びつける。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{旅行時間分布をデータから決める手順を説明せよ。}\\観測された旅行時間を集め、外れ値を確認し、ヒストグラムや密度を描く。正規分布、ガンマ分布、対数正規分布など候補分布を選び、平均・分散などのパラメータを推定する。可視化やKolmogorov-Smirnov検定で適合度を確認し、必要ならブートストラップで推定の安定性を検査する。
+\item \textbf{サービス時間分布の典型的な特徴を述べよ。}\\サービス時間は負にならないため非負である。多くのケースでは短い時間に集中し、例外的に長い作業があるため右裾が長い。平均だけでなく分散や上位分位点が重要で、例えば90\%分位点は遅延リスクを評価するために使える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{012}{理論的な確率密度関数}
+\SlideImage{12}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 複数の理論的確率密度関数の形。
+\end{itemize}
+\NoteSection{解説}
+確率分布は、不確実な変数がどの値をどの程度取りやすいかを表す。旅行時間、サービス時間、需要量、注文間隔などを表現できる。\par
+
+期待値は平均的な値、分散と標準偏差はばらつき、変動係数は平均に対する相対的なばらつきを表す。中央値・分位点は、遅延リスクやサービスレベルを説明する際に重要である。\par
+
+分布の決定では、理論分布を仮定する場合と、データに分布をフィットする場合がある。フィットでは、ヒストグラム、パラメータ推定、適合度検定、ブートストラップによる妥当性確認を行う。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 期待値・分散・標準偏差・分位点を、意思決定上の意味と結びつける。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{旅行時間分布をデータから決める手順を説明せよ。}\\観測された旅行時間を集め、外れ値を確認し、ヒストグラムや密度を描く。正規分布、ガンマ分布、対数正規分布など候補分布を選び、平均・分散などのパラメータを推定する。可視化やKolmogorov-Smirnov検定で適合度を確認し、必要ならブートストラップで推定の安定性を検査する。
+\item \textbf{サービス時間分布の典型的な特徴を述べよ。}\\サービス時間は負にならないため非負である。多くのケースでは短い時間に集中し、例外的に長い作業があるため右裾が長い。平均だけでなく分散や上位分位点が重要で、例えば90\%分位点は遅延リスクを評価するために使える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{013}{例: 都市旅行時間分布 I}
+\SlideImage{13}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 一つの道路区間における旅行時間観測。
+\item 横軸は旅行時間、縦軸は頻度。
+\end{itemize}
+\NoteSection{解説}
+確率分布は、不確実な変数がどの値をどの程度取りやすいかを表す。旅行時間、サービス時間、需要量、注文間隔などを表現できる。\par
+
+期待値は平均的な値、分散と標準偏差はばらつき、変動係数は平均に対する相対的なばらつきを表す。中央値・分位点は、遅延リスクやサービスレベルを説明する際に重要である。\par
+
+分布の決定では、理論分布を仮定する場合と、データに分布をフィットする場合がある。フィットでは、ヒストグラム、パラメータ推定、適合度検定、ブートストラップによる妥当性確認を行う。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 期待値・分散・標準偏差・分位点を、意思決定上の意味と結びつける。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{旅行時間分布をデータから決める手順を説明せよ。}\\観測された旅行時間を集め、外れ値を確認し、ヒストグラムや密度を描く。正規分布、ガンマ分布、対数正規分布など候補分布を選び、平均・分散などのパラメータを推定する。可視化やKolmogorov-Smirnov検定で適合度を確認し、必要ならブートストラップで推定の安定性を検査する。
+\item \textbf{サービス時間分布の典型的な特徴を述べよ。}\\サービス時間は負にならないため非負である。多くのケースでは短い時間に集中し、例外的に長い作業があるため右裾が長い。平均だけでなく分散や上位分位点が重要で、例えば90\%分位点は遅延リスクを評価するために使える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{014}{ソフトウェアによるフィッティング}
+\SlideImage{14}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 支援ツール: Python とライブラリ。
+\item 自動ツール: EasyFit。
+\end{itemize}
+\NoteSection{解説}
+確率分布は、不確実な変数がどの値をどの程度取りやすいかを表す。旅行時間、サービス時間、需要量、注文間隔などを表現できる。\par
+
+期待値は平均的な値、分散と標準偏差はばらつき、変動係数は平均に対する相対的なばらつきを表す。中央値・分位点は、遅延リスクやサービスレベルを説明する際に重要である。\par
+
+分布の決定では、理論分布を仮定する場合と、データに分布をフィットする場合がある。フィットでは、ヒストグラム、パラメータ推定、適合度検定、ブートストラップによる妥当性確認を行う。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 期待値・分散・標準偏差・分位点を、意思決定上の意味と結びつける。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{旅行時間分布をデータから決める手順を説明せよ。}\\観測された旅行時間を集め、外れ値を確認し、ヒストグラムや密度を描く。正規分布、ガンマ分布、対数正規分布など候補分布を選び、平均・分散などのパラメータを推定する。可視化やKolmogorov-Smirnov検定で適合度を確認し、必要ならブートストラップで推定の安定性を検査する。
+\item \textbf{サービス時間分布の典型的な特徴を述べよ。}\\サービス時間は負にならないため非負である。多くのケースでは短い時間に集中し、例外的に長い作業があるため右裾が長い。平均だけでなく分散や上位分位点が重要で、例えば90\%分位点は遅延リスクを評価するために使える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{015}{例: 都市旅行時間分布 II}
+\SlideImage{15}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 旅行時間の頻度または密度。
+\item 観測分布に理論分布を当てはめる。
+\end{itemize}
+\NoteSection{解説}
+確率分布は、不確実な変数がどの値をどの程度取りやすいかを表す。旅行時間、サービス時間、需要量、注文間隔などを表現できる。\par
+
+期待値は平均的な値、分散と標準偏差はばらつき、変動係数は平均に対する相対的なばらつきを表す。中央値・分位点は、遅延リスクやサービスレベルを説明する際に重要である。\par
+
+分布の決定では、理論分布を仮定する場合と、データに分布をフィットする場合がある。フィットでは、ヒストグラム、パラメータ推定、適合度検定、ブートストラップによる妥当性確認を行う。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 期待値・分散・標準偏差・分位点を、意思決定上の意味と結びつける。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{旅行時間分布をデータから決める手順を説明せよ。}\\観測された旅行時間を集め、外れ値を確認し、ヒストグラムや密度を描く。正規分布、ガンマ分布、対数正規分布など候補分布を選び、平均・分散などのパラメータを推定する。可視化やKolmogorov-Smirnov検定で適合度を確認し、必要ならブートストラップで推定の安定性を検査する。
+\item \textbf{サービス時間分布の典型的な特徴を述べよ。}\\サービス時間は負にならないため非負である。多くのケースでは短い時間に集中し、例外的に長い作業があるため右裾が長い。平均だけでなく分散や上位分位点が重要で、例えば90\%分位点は遅延リスクを評価するために使える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{016}{確率的モデリングの問題点}
+\SlideImage{16}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item データが利用できない
+\begin{itemize}
+\item 事前に観測できない。
+\item データ記録がない。
+\item 道路工事などシステムが変化する。
+\item 自動運転車など新しい概念で履歴がない。
+\end{itemize}
+\item 利用可能データが限られる
+\begin{itemize}
+\item 観測が少なく、基礎分布の推定が粗くなる。
+\end{itemize}
+\item 道路セグメントごとの独立分布を畳み込んで経路旅行時間を計算する仮定では、相関が無視される。
+\item 実際には、隣接道路セグメントの相関が重要である。
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{017}{準確率的モデリング}
+\SlideImage{17}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item シナリオに基づく
+\begin{itemize}
+\item n個のシナリオを作る。
+\item 可能な実現値は有限個である。
+\item What-if分析。
+\item 例: 混雑時10 km/h、非混雑時50 km/h。
+\end{itemize}
+\item 区間に基づく
+\begin{itemize}
+\item 可能な実現値の範囲として [l,u] を使う。
+\item 最小可能値 l と最大可能値 u。
+\item 実現値は区間内の任意の値を取り得る。
+\end{itemize}
+\item シナリオと区間は、ドメイン知識またはデータから導出できる。
+\item 確率分布を直接モデル化せず、不確実性の推定を表す。
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{018}{データからシナリオを構築 I}
+\SlideImage{18}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 旅行時間の単一観測の例。
+\item Braunschweig, Hildesheimer Strasse, 月曜16-17時、n=20。
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{019}{データからシナリオを構築 II}
+\SlideImage{19}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 構築するシナリオ数を決める。例: 5。
+\item 極端シナリオを選ぶ。最良ケース・最悪ケース。
+\item 中間シナリオを選ぶ。
+\item 選択はドメイン知識に基づく。
+\item 一般にはシナリオ数を増やすと推定精度は高まる。
+\item ただし意思決定の複雑性も増す。
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{020}{データから区間を決める}
+\SlideImage{20}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 限界
+\begin{itemize}
+\item 上限: 90\%分位点。
+\item 下限: 10\%分位点。
+\end{itemize}
+\item 限界の調整
+\begin{itemize}
+\item 悲観的: 最悪ケース側へずらす。
+\item 楽観的: 最良ケース側へずらす。
+\item 区間幅を狭める、または広げる。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\ExamHeader{不確実性の種類とモデリング}
+\ExamQuestion{SS24 Aufgabe 2a [3 Punkte]}
+\ExamSubsection{問題内容}
+Same-Day配送における不確実性を、需要、リソース、環境の三カテゴリについて一例ずつ挙げる問題。\par
+\ExamSubsection{満点答案}
+需要の不確実性として、注文がいつ発生するか、どの地域から発生するか、注文量がどれくらいかがある。リソースの不確実性として、ドライバーの利用可能性、車両故障、バッテリー残量、積載容量、ドライバーのスキルがある。環境の不確実性として、交通渋滞、駐車可能性、天候、道路工事、事故、通信ネットワーク障害がある。\par
+満点を取るには、単に三語を列挙するのではなく、それぞれが配送計画へどう影響するかを説明する。需要は訪問先と負荷を変え、リソースは実行可能な割当を変え、環境は旅行時間や遅延リスクを変える。\par
+\ExamSubsection{具体例による解説}
+夕方に予想外の大量注文が入ると需要不確実性、登録ドライバーがアプリを切って稼働しないとリソース不確実性、突然の道路閉鎖で到着時間が変わると環境不確実性である。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 三カテゴリをすべて挙げる
+\item 各カテゴリに具体例
+\item 計画への影響を説明
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS24/25 Aufgabe 3 [12 Punkte]}
+\ExamSubsection{問題内容}
+stochastic と quasi-stochastic の違い、および各手法の考え方を説明する問題。\par
+\ExamSubsection{満点答案}
+stochastic model では、不確実な実現値について確率分布またはシナリオ確率が既知または推定可能である。したがって、期待値、分散、確率制約、Monte Carlo sampling などを用いて意思決定を評価できる。例として、旅行時間がガンマ分布に従うと仮定し、その期待値や分位点を使ってルートを評価する場合がある。\par
+quasi-stochastic model では、確率分布は分からないが、起こり得るシナリオや区間は分かる。例えば、旅行時間が [l,u] の範囲にあることだけが分かる場合である。このとき、Hurwicz基準、最悪ケース最適化、minmax regret、What-if分析を使う。\par
+両者の違いは、確率を使って平均的・分布的に評価できるか、確率なしで代表シナリオや区間に対して頑健に評価するかである。データが十分なら stochastic、データが少ない・分布仮定が難しいなら quasi-stochastic が適する。\par
+\ExamSubsection{具体例による解説}
+旅行時間の過去観測が大量にあり、分布をフィットできるなら stochastic。新しい道路工事で過去データがなく、専門家が『10分から25分』という範囲だけを与えるなら quasi-stochastic。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 確率既知/未知の違い
+\item stochastic手法
+\item quasi-stochastic手法
+\item 適用条件
+\item 具体例
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{021}{アジェンダ}
+\SlideImage{21}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\scriptsize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ。
+\end{itemize}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{022}{例: ナップサック問題 I}
+\SlideImage{22}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 泥棒がナップサックを持って家に入り、後で売るために物を盗む。
+\item 各物品には価値と重さがある。
+\item 物品の組合せの総重量はナップサック容量に収まらなければならない。
+\item 売却価格の合計が最大となる組合せを探す。
+\item 決定論的環境
+\begin{itemize}
+\item 可能な物品の正確な価値 v\_i と重さ w\_i を知っている。
+\item ナップサック容量 W を正確に知っている。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+確率的意思決定では、決定 x を選んだ後にランダム情報 xi が実現する。費用 F(x,xi) は事前には確定していないため、期待費用 E[F(x,xi)] やリスクを含む基準を最適化する。\par
+
+Monte Carlo Sampling では、分布から複数のシナリオを発生させ、期待値を標本平均で近似する。サンプル数が多いほど安定しやすいが、計算量も増える。\par
+
+期待値-分散原理では、平均性能だけでなくばらつきも評価する。リスク回避的なら分散の大きい解を避け、リスク中立なら期待値中心で判断する。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 決定後にランダム情報が実現するため、F(x,xi)ではなく期待値やリスク基準を最適化する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{なぜ F(x,xi) を直接最適化できないのか。}\\xi は意思決定時点ではまだ実現していないランダム情報である。したがって、特定の実現値に対する費用 F(x,xi) は事前に確定していない。意思決定時点では、分布に基づく期待値、分散、分位点、サンプリング平均などを使って x を評価する必要がある。
+\item \textbf{Monte Carlo Sampling の役割を説明せよ。}\\確率分布から多数のシナリオを発生させ、それぞれで費用を計算することで、期待費用を標本平均で近似する。解析的に期待値を計算できない場合でも、サンプルに基づいて近似的な意思決定が可能になる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{023}{例: ナップサック問題 II}
+\SlideImage{23}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 確率的環境
+\begin{itemize}
+\item 目的関数の不確実性: 闇市場での正確な売却価格が分からない。
+\item 制約の不確実性: 物品の正確な重さが分からない。
+\item 制約の不確実性: ナップサックの正確な容量が分からない。
+\end{itemize}
+\item 例
+\begin{itemize}
+\item 目的関数にランダム変数がある。
+\item 制約左辺にランダム変数がある。
+\item 制約右辺にランダム変数がある。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+確率的意思決定では、決定 x を選んだ後にランダム情報 xi が実現する。費用 F(x,xi) は事前には確定していないため、期待費用 E[F(x,xi)] やリスクを含む基準を最適化する。\par
+
+Monte Carlo Sampling では、分布から複数のシナリオを発生させ、期待値を標本平均で近似する。サンプル数が多いほど安定しやすいが、計算量も増える。\par
+
+期待値-分散原理では、平均性能だけでなくばらつきも評価する。リスク回避的なら分散の大きい解を避け、リスク中立なら期待値中心で判断する。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 決定後にランダム情報が実現するため、F(x,xi)ではなく期待値やリスク基準を最適化する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{なぜ F(x,xi) を直接最適化できないのか。}\\xi は意思決定時点ではまだ実現していないランダム情報である。したがって、特定の実現値に対する費用 F(x,xi) は事前に確定していない。意思決定時点では、分布に基づく期待値、分散、分位点、サンプリング平均などを使って x を評価する必要がある。
+\item \textbf{Monte Carlo Sampling の役割を説明せよ。}\\確率分布から多数のシナリオを発生させ、それぞれで費用を計算することで、期待費用を標本平均で近似する。解析的に期待値を計算できない場合でも、サンプルに基づいて近似的な意思決定が可能になる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{024}{不確実性下の意思決定}
+\SlideImage{24}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 確率的意思決定は準確率的意思決定と異なる。
+\item 不確実性は目的関数と制約のどちらにも影響し得る。
+\item 実現値は決定後に現れる。
+\item 確率的意思決定: 期待値と偏差が既知である。
+\item 準確率的意思決定: 期待値と偏差が未知である。
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{025}{確率的意思決定}
+\SlideImage{25}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item X はすべての実行可能決定の領域である。
+\item x は特定の決定である。
+\item xi はランダム情報であり、決定後に利用可能になる。
+\item F は最小化される費用関数であり、F(x,xi) と表される。
+\item F(x,xi) を直接最適化することはできない。
+\item 期待値 E[F(x,xi)] を最小化する。
+\item 最適値と最適決定集合を定義する。
+\end{itemize}
+\NoteSection{解説}
+確率的意思決定では、決定 x を選んだ後にランダム情報 xi が実現する。費用 F(x,xi) は事前には確定していないため、期待費用 E[F(x,xi)] やリスクを含む基準を最適化する。\par
+
+Monte Carlo Sampling では、分布から複数のシナリオを発生させ、期待値を標本平均で近似する。サンプル数が多いほど安定しやすいが、計算量も増える。\par
+
+期待値-分散原理では、平均性能だけでなくばらつきも評価する。リスク回避的なら分散の大きい解を避け、リスク中立なら期待値中心で判断する。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 決定後にランダム情報が実現するため、F(x,xi)ではなく期待値やリスク基準を最適化する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{なぜ F(x,xi) を直接最適化できないのか。}\\xi は意思決定時点ではまだ実現していないランダム情報である。したがって、特定の実現値に対する費用 F(x,xi) は事前に確定していない。意思決定時点では、分布に基づく期待値、分散、分位点、サンプリング平均などを使って x を評価する必要がある。
+\item \textbf{Monte Carlo Sampling の役割を説明せよ。}\\確率分布から多数のシナリオを発生させ、それぞれで費用を計算することで、期待費用を標本平均で近似する。解析的に期待値を計算できない場合でも、サンプルに基づいて近似的な意思決定が可能になる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{026}{確率的意思決定 II: Monte Carlo Sampling}
+\SlideImage{26}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item ランダム情報 xi から n 個のシナリオ xi\_i を選ぶ。
+\item 目的関数 E[F(x,xi)] を標本平均で近似する。
+\item 右辺の決定論的問題を解く。
+\item 近似最適値を求める。
+\item 例
+\begin{itemize}
+\item 各物品の売却価格分布が既知である。
+\item 各物品価格をサンプリングして n 個のシナリオを生成する。
+\item 各シナリオを独立に解く。
+\item n個の解から近似最適値と近似最適決定集合を決定する。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+確率的意思決定では、決定 x を選んだ後にランダム情報 xi が実現する。費用 F(x,xi) は事前には確定していないため、期待費用 E[F(x,xi)] やリスクを含む基準を最適化する。\par
+
+Monte Carlo Sampling では、分布から複数のシナリオを発生させ、期待値を標本平均で近似する。サンプル数が多いほど安定しやすいが、計算量も増える。\par
+
+期待値-分散原理では、平均性能だけでなくばらつきも評価する。リスク回避的なら分散の大きい解を避け、リスク中立なら期待値中心で判断する。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 決定後にランダム情報が実現するため、F(x,xi)ではなく期待値やリスク基準を最適化する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{なぜ F(x,xi) を直接最適化できないのか。}\\xi は意思決定時点ではまだ実現していないランダム情報である。したがって、特定の実現値に対する費用 F(x,xi) は事前に確定していない。意思決定時点では、分布に基づく期待値、分散、分位点、サンプリング平均などを使って x を評価する必要がある。
+\item \textbf{Monte Carlo Sampling の役割を説明せよ。}\\確率分布から多数のシナリオを発生させ、それぞれで費用を計算することで、期待費用を標本平均で近似する。解析的に期待値を計算できない場合でも、サンプルに基づいて近似的な意思決定が可能になる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{027}{確率的意思決定 III: 期待値-分散原理}
+\SlideImage{27}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item x は期待値と分散を用いる選好関数で評価される。
+\item より精密な目的関数のために分散を組み込む。
+\item 分散は q で重み付けされる: mu(x) + q sigma\textasciicircum{}2(x)。
+\item q=-1: リスクへの親和性が高い。
+\item q=0: リスク中立。
+\item q=1: リスク回避。
+\item 例
+\begin{itemize}
+\item 泥棒は各物品の売却価格分布を知っている。
+\item 履歴データに基づく仮定など。
+\item 期待値と分散を計算する。
+\item 総期待売却価格が最もよい組合せを選ぶ。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+確率的意思決定では、決定 x を選んだ後にランダム情報 xi が実現する。費用 F(x,xi) は事前には確定していないため、期待費用 E[F(x,xi)] やリスクを含む基準を最適化する。\par
+
+Monte Carlo Sampling では、分布から複数のシナリオを発生させ、期待値を標本平均で近似する。サンプル数が多いほど安定しやすいが、計算量も増える。\par
+
+期待値-分散原理では、平均性能だけでなくばらつきも評価する。リスク回避的なら分散の大きい解を避け、リスク中立なら期待値中心で判断する。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 決定後にランダム情報が実現するため、F(x,xi)ではなく期待値やリスク基準を最適化する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{なぜ F(x,xi) を直接最適化できないのか。}\\xi は意思決定時点ではまだ実現していないランダム情報である。したがって、特定の実現値に対する費用 F(x,xi) は事前に確定していない。意思決定時点では、分布に基づく期待値、分散、分位点、サンプリング平均などを使って x を評価する必要がある。
+\item \textbf{Monte Carlo Sampling の役割を説明せよ。}\\確率分布から多数のシナリオを発生させ、それぞれで費用を計算することで、期待費用を標本平均で近似する。解析的に期待値を計算できない場合でも、サンプルに基づいて近似的な意思決定が可能になる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{028}{準確率的意思決定 I: Hurwicz基準}
+\SlideImage{28}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 最悪実現と最良実現を考慮する。
+\item 楽観パラメータ lambda in [0,1] を用いて重み付き和を計算する。
+\item (1-lambda) × worst case + lambda × best case。
+\item 例
+\begin{itemize}
+\item 泥棒は各物品の過去の売却価格を知っている。
+\item 異なるシナリオを選ぶ。
+\item 各物品について重み付き平均または合計価格を計算する。
+\item 決定された総価格が最良となる組合せを選ぶ。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+Hurwicz基準は、最悪ケースと最良ケースを楽観係数 lambda で重み付けする。lambda が大きいほど楽観的、0に近いほど悲観的である。\par
+
+Minmax regret は、選んだ解が各シナリオで、そのシナリオの完全情報最適解に比べてどれだけ悪いかを regret として測る。各解の最大 regret を計算し、それが最小の解を選ぶ。\par
+
+regret の直感は『後からそのシナリオが実現したと分かった時に、別の解を選んでおけばよかったという損失を抑える』ことである。平均的な効率だけでなく、後悔の大きい極端な失敗を避ける。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Hurwicz は楽観/悲観の重み付け、minmax regret は最悪の後悔を最小化する基準。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{minmax regret を言葉で説明せよ。}\\各シナリオについて、選んだ解の費用と、そのシナリオを事前に知っていた場合の最良費用との差を regret とする。候補解ごとに最も大きい regret を求め、その最大 regret が最も小さい解を選ぶ。目的は、どのシナリオが実現しても『別の解なら大幅に良かった』という状況を抑えることである。
+\item \textbf{Hurwicz基準とminmax regretの違いを述べよ。}\\Hurwicz基準は最良ケースと最悪ケースの性能そのものを重み付けして評価する。minmax regret は性能そのものではなく、各シナリオの完全情報最適解との差、つまり後悔を評価する。前者は楽観度を直接反映し、後者はシナリオ間での相対的な失敗を抑える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{029}{準確率的意思決定 II: Minmax-Regret基準}
+\SlideImage{29}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item あるシナリオにおける悲観的決定を、同じシナリオで完全情報がある場合の最良決定と比較する。
+\item Regret は、同じシナリオにおける最良決定からの乖離である。
+\item 例
+\begin{itemize}
+\item 泥棒が最良ケースを実現できなかったことへのregret。
+\item 泥棒は各物品の過去の売却価格を知っている。
+\item 各組合せについて最良ケースと最悪ケースの差を計算する。
+\item 取った物品については最悪売却価格、残した物品については最良売却価格を考える。
+\item 安定した市場価格の物品を取り、楽観ケースでだけ高価な物品を残す結果になり得る。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+Hurwicz基準は、最悪ケースと最良ケースを楽観係数 lambda で重み付けする。lambda が大きいほど楽観的、0に近いほど悲観的である。\par
+
+Minmax regret は、選んだ解が各シナリオで、そのシナリオの完全情報最適解に比べてどれだけ悪いかを regret として測る。各解の最大 regret を計算し、それが最小の解を選ぶ。\par
+
+regret の直感は『後からそのシナリオが実現したと分かった時に、別の解を選んでおけばよかったという損失を抑える』ことである。平均的な効率だけでなく、後悔の大きい極端な失敗を避ける。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Hurwicz は楽観/悲観の重み付け、minmax regret は最悪の後悔を最小化する基準。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{minmax regret を言葉で説明せよ。}\\各シナリオについて、選んだ解の費用と、そのシナリオを事前に知っていた場合の最良費用との差を regret とする。候補解ごとに最も大きい regret を求め、その最大 regret が最も小さい解を選ぶ。目的は、どのシナリオが実現しても『別の解なら大幅に良かった』という状況を抑えることである。
+\item \textbf{Hurwicz基準とminmax regretの違いを述べよ。}\\Hurwicz基準は最良ケースと最悪ケースの性能そのものを重み付けして評価する。minmax regret は性能そのものではなく、各シナリオの完全情報最適解との差、つまり後悔を評価する。前者は楽観度を直接反映し、後者はシナリオ間での相対的な失敗を抑える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\ExamHeader{不確実性下の意思決定: expectation, Hurwicz, regret}
+\ExamQuestion{SS24 Aufgabe 2b [3 Punkte]}
+\ExamSubsection{問題内容}
+修理サービスや在宅介護の顧客サービス時間について、確率密度関数の典型的性質を三つ説明する問題。\par
+\ExamSubsection{満点答案}
+第一に、サービス時間は負にならないため、分布の定義域は0以上である。第二に、多くのサービスは標準的な短い所要時間に集中するが、例外的に長い作業が起こるため右裾が長くなりやすい。第三に、サービス品質や遅延リスクを評価するには平均だけでは不十分であり、分散、標準偏差、分位点、特に上位分位点が重要である。\par
+試験では、単に『正規分布』など分布名を書くよりも、なぜ非負・右裾・ばらつきが意思決定に影響するかを説明する方がよい。サービス時間の上振れは次顧客への遅延を引き起こし、ツアー全体に伝播する。\par
+\ExamSubsection{具体例による解説}
+家電修理では多くの訪問は20分で終わるが、故障が複雑な場合は90分かかる。この長い右裾を無視して平均30分だけで計画すると、後続訪問が連鎖的に遅れる。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 非負性
+\item 右裾/歪み
+\item 平均だけでなく分散・分位点
+\item 計画への影響
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS23 Aufgabe 3 [6 Punkte] / WS24/25 Aufgabe 1 [10 Punkte]}
+\ExamSubsection{問題内容}
+区間旅行時間、楽観値・悲観値、regret に基づき、最大の後悔を抑える意思決定の論理を説明する問題。\par
+\ExamSubsection{満点答案}
+区間旅行時間では、各アークについて楽観的旅行時間 l\_\{ij\} と悲観的旅行時間 u\_\{ij\} が分かるが、その確率は分からない。この場合、平均値で最適化するのではなく、複数の可能な交通状態に対して解を評価する。regret とは、あるシナリオが実現したときに、自分が選んだ解の費用と、そのシナリオを事前に知っていた場合の最適解の費用との差である。\par
+minmax regret では、各候補ルートについて全シナリオの regret を計算し、その最大値を求める。そして最大 regret が最小になるルートを選ぶ。これにより、どのシナリオが実現しても『別のルートなら大幅に良かった』という最悪の後悔を小さくできる。\par
+この基準は、最良ケースだけを見てリスクを無視することも、最悪ケースだけを見て過度に保守的になることも避ける。都市物流では、効率性とサービス信頼性のバランスを取るために有用である。\par
+\ExamSubsection{具体例による解説}
+ルートAは通常なら短いが、渋滞時に大きく悪化する。ルートBは通常少し長いが、どの状態でも安定している。minmax regretでは、シナリオごとに完全情報最適ルートとの差を見て、最悪の差が小さいBを選ぶ可能性がある。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item regretの定義
+\item 完全情報最適解との差
+\item 最大regretを最小化
+\item 平均/最悪ケースとの違い
+\item 物流例
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{030}{アジェンダ}
+\SlideImage{30}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\scriptsize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 不確実性。
+\item 不確実性のモデリング。
+\item 不確実性下の意思決定。
+\item ケーススタディ。
+\end{itemize}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{031}{ケーススタディ: 都市物流のロバスト車両ルーティング}
+\SlideImage{31}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 都市物流の課題
+\begin{itemize}
+\item 高い需要とコスト圧力。
+\item 高い顧客期待。
+\end{itemize}
+\item 都市交通システム
+\begin{itemize}
+\item 限定されたインフラ: 渋滞。
+\item 変動しやすい旅行時間: 不確実性。
+\end{itemize}
+\item 都市物流の車両ルーティングへ、旅行時間不確実性の情報を統合する。
+\end{itemize}
+\NoteSection{解説}
+都市物流では、顧客期待、渋滞、狭い配送時間、車両数制約により、単に平均旅行時間を最小化するだけでは不十分である。\par
+
+区間旅行時間 [l,u] は、下限と上限で不確実性を表す準確率的情報モデルである。十分な分布推定が難しい場合でも、5\%分位点や95\%分位点を使って現実的な範囲を作れる。\par
+
+ロバストルーティングでは、平均的に短いルートだけでなく、複数の交通シナリオで大きく崩れにくいルートを選ぶ。効率性とサービス信頼性のトレードオフが中心である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 都市物流では、平均時間最小化・最悪ケース・regret の違いを説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{都市物流で区間旅行時間が有用な理由を説明せよ。}\\都市交通では旅行時間のばらつきが大きく、十分な確率分布を推定できない道路や時間帯もある。区間旅行時間なら、下限・上限で不確実性の範囲を表せるため、少ないデータや専門知識でもロバストな計画に使える。
+\item \textbf{効率性と信頼性のトレードオフを説明せよ。}\\平均旅行時間だけを最小化すると短いが遅延に弱いルートになる場合がある。最悪ケースだけを重視すると非常に安全だが過度に長いルートになる場合がある。regretやロバスト基準は、その中間で、複数の交通状況に対して大きく悪化しにくいルートを選ぼうとする。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{032}{都市物流における役割}
+\SlideImage{32}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Shipping Company
+\begin{itemize}
+\item オンライン小売業者。
+\item 既知の顧客数。
+\item 商品の配送を物流サービスプロバイダに委託する。
+\item 約束された配送日に基づき alpha サービスレベルを要求する。
+\end{itemize}
+\item Logistic service provider
+\begin{itemize}
+\item 小包サービス。
+\item 配送車両フリートを運用する。
+\item 事前または前日計画を行う。
+\item 旅行時間を最小化する。
+\end{itemize}
+\item alpha サービスレベルは旅行時間の影響を受ける。
+\item 旅行時間の不確実性に関する情報は計画段階で考慮されなければならない。
+\end{itemize}
+\NoteSection{解説}
+都市物流では、顧客期待、渋滞、狭い配送時間、車両数制約により、単に平均旅行時間を最小化するだけでは不十分である。\par
+
+区間旅行時間 [l,u] は、下限と上限で不確実性を表す準確率的情報モデルである。十分な分布推定が難しい場合でも、5\%分位点や95\%分位点を使って現実的な範囲を作れる。\par
+
+ロバストルーティングでは、平均的に短いルートだけでなく、複数の交通シナリオで大きく崩れにくいルートを選ぶ。効率性とサービス信頼性のトレードオフが中心である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 都市物流では、平均時間最小化・最悪ケース・regret の違いを説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{都市物流で区間旅行時間が有用な理由を説明せよ。}\\都市交通では旅行時間のばらつきが大きく、十分な確率分布を推定できない道路や時間帯もある。区間旅行時間なら、下限・上限で不確実性の範囲を表せるため、少ないデータや専門知識でもロバストな計画に使える。
+\item \textbf{効率性と信頼性のトレードオフを説明せよ。}\\平均旅行時間だけを最小化すると短いが遅延に弱いルートになる場合がある。最悪ケースだけを重視すると非常に安全だが過度に長いルートになる場合がある。regretやロバスト基準は、その中間で、複数の交通状況に対して大きく悪化しにくいルートを選ぼうとする。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{033}{旅行時間不確実性のモデル化}
+\SlideImage{33}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Quasi-stochastic
+\begin{itemize}
+\item 上限・下限 [l,u] を持つ区間旅行時間。
+\item 少数の観測で利用しやすい。
+\item 区間限界を決定する。
+\item 区間演算。
+\item 直感的で単純。
+\end{itemize}
+\item Stochastic
+\begin{itemize}
+\item 期待値 mu と分散 sigma\textasciicircum{}2 を持つ旅行時間分布。
+\item 多数の観測を必要とする。
+\item 分布型とパラメータ化が必要。
+\item 畳み込みによる集約。
+\item 抽象的で複雑。
+\end{itemize}
+\item 都市物流には区間旅行時間が適切な情報モデルである。
+\end{itemize}
+\NoteSection{解説}
+都市物流では、顧客期待、渋滞、狭い配送時間、車両数制約により、単に平均旅行時間を最小化するだけでは不十分である。\par
+
+区間旅行時間 [l,u] は、下限と上限で不確実性を表す準確率的情報モデルである。十分な分布推定が難しい場合でも、5\%分位点や95\%分位点を使って現実的な範囲を作れる。\par
+
+ロバストルーティングでは、平均的に短いルートだけでなく、複数の交通シナリオで大きく崩れにくいルートを選ぶ。効率性とサービス信頼性のトレードオフが中心である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 都市物流では、平均時間最小化・最悪ケース・regret の違いを説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{都市物流で区間旅行時間が有用な理由を説明せよ。}\\都市交通では旅行時間のばらつきが大きく、十分な確率分布を推定できない道路や時間帯もある。区間旅行時間なら、下限・上限で不確実性の範囲を表せるため、少ないデータや専門知識でもロバストな計画に使える。
+\item \textbf{効率性と信頼性のトレードオフを説明せよ。}\\平均旅行時間だけを最小化すると短いが遅延に弱いルートになる場合がある。最悪ケースだけを重視すると非常に安全だが過度に長いルートになる場合がある。regretやロバスト基準は、その中間で、複数の交通状況に対して大きく悪化しにくいルートを選ぼうとする。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{034}{情報モデルデータの生成}
+\SlideImage{34}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Shifted Gamma distribution。
+\item パラメータ
+\begin{itemize}
+\item 平均旅行時間。
+\item 変動係数。
+\end{itemize}
+\item サンプリングアプローチ。
+\item 500個の観測をランダムに抽出する。
+\item 接続の例: 平均旅行時間15.5、変動係数10\%と30\%。
+\end{itemize}
+\NoteSection{解説}
+確率分布は、不確実な変数がどの値をどの程度取りやすいかを表す。旅行時間、サービス時間、需要量、注文間隔などを表現できる。\par
+
+期待値は平均的な値、分散と標準偏差はばらつき、変動係数は平均に対する相対的なばらつきを表す。中央値・分位点は、遅延リスクやサービスレベルを説明する際に重要である。\par
+
+分布の決定では、理論分布を仮定する場合と、データに分布をフィットする場合がある。フィットでは、ヒストグラム、パラメータ推定、適合度検定、ブートストラップによる妥当性確認を行う。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 期待値・分散・標準偏差・分位点を、意思決定上の意味と結びつける。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{旅行時間分布をデータから決める手順を説明せよ。}\\観測された旅行時間を集め、外れ値を確認し、ヒストグラムや密度を描く。正規分布、ガンマ分布、対数正規分布など候補分布を選び、平均・分散などのパラメータを推定する。可視化やKolmogorov-Smirnov検定で適合度を確認し、必要ならブートストラップで推定の安定性を検査する。
+\item \textbf{サービス時間分布の典型的な特徴を述べよ。}\\サービス時間は負にならないため非負である。多くのケースでは短い時間に集中し、例外的に長い作業があるため右裾が長い。平均だけでなく分散や上位分位点が重要で、例えば90\%分位点は遅延リスクを評価するために使える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{035}{情報モデル}
+\SlideImage{35}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 二つの旅行時間行列。
+\item U: 区間旅行時間の上限。ピーク交通の95\%分位点。
+\item L: 区間旅行時間の下限。オフピーク交通の5\%分位点。
+\item l\_ij <= u\_ij。
+\end{itemize}
+\NoteSection{解説}
+都市物流では、顧客期待、渋滞、狭い配送時間、車両数制約により、単に平均旅行時間を最小化するだけでは不十分である。\par
+
+区間旅行時間 [l,u] は、下限と上限で不確実性を表す準確率的情報モデルである。十分な分布推定が難しい場合でも、5\%分位点や95\%分位点を使って現実的な範囲を作れる。\par
+
+ロバストルーティングでは、平均的に短いルートだけでなく、複数の交通シナリオで大きく崩れにくいルートを選ぶ。効率性とサービス信頼性のトレードオフが中心である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 都市物流では、平均時間最小化・最悪ケース・regret の違いを説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{都市物流で区間旅行時間が有用な理由を説明せよ。}\\都市交通では旅行時間のばらつきが大きく、十分な確率分布を推定できない道路や時間帯もある。区間旅行時間なら、下限・上限で不確実性の範囲を表せるため、少ないデータや専門知識でもロバストな計画に使える。
+\item \textbf{効率性と信頼性のトレードオフを説明せよ。}\\平均旅行時間だけを最小化すると短いが遅延に弱いルートになる場合がある。最悪ケースだけを重視すると非常に安全だが過度に長いルートになる場合がある。regretやロバスト基準は、その中間で、複数の交通状況に対して大きく悪化しにくいルートを選ぼうとする。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{036}{Minmax Regret基準を持つRobust TSP}
+\SlideImage{36}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item ツアーで使う辺。
+\item 使わない辺。
+\item Minmax regret により、複数の旅行時間実現に対して後悔の大きいルートを避ける。
+\end{itemize}
+\NoteSection{解説}
+Hurwicz基準は、最悪ケースと最良ケースを楽観係数 lambda で重み付けする。lambda が大きいほど楽観的、0に近いほど悲観的である。\par
+
+Minmax regret は、選んだ解が各シナリオで、そのシナリオの完全情報最適解に比べてどれだけ悪いかを regret として測る。各解の最大 regret を計算し、それが最小の解を選ぶ。\par
+
+regret の直感は『後からそのシナリオが実現したと分かった時に、別の解を選んでおけばよかったという損失を抑える』ことである。平均的な効率だけでなく、後悔の大きい極端な失敗を避ける。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Hurwicz は楽観/悲観の重み付け、minmax regret は最悪の後悔を最小化する基準。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{minmax regret を言葉で説明せよ。}\\各シナリオについて、選んだ解の費用と、そのシナリオを事前に知っていた場合の最良費用との差を regret とする。候補解ごとに最も大きい regret を求め、その最大 regret が最も小さい解を選ぶ。目的は、どのシナリオが実現しても『別の解なら大幅に良かった』という状況を抑えることである。
+\item \textbf{Hurwicz基準とminmax regretの違いを述べよ。}\\Hurwicz基準は最良ケースと最悪ケースの性能そのものを重み付けして評価する。minmax regret は性能そのものではなく、各シナリオの完全情報最適解との差、つまり後悔を評価する。前者は楽観度を直接反映し、後者はシナリオ間での相対的な失敗を抑える。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{037}{何を達成したいか}
+\SlideImage{37}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 多くの交通速度シナリオで実装できるルートを見つけたい。
+\item 旅行時間という効率性と、時間厳守というサービス信頼性のトレードオフを扱う。
+\item 最良ケースだけを考えることは選択肢ではない。実行可能性を破る。
+\item 道路セグメントごとの最良・最悪速度の平均はサービス品質を悪化させ得る。
+\item 最悪ケース速度を考えると効率は悪いがサービス品質は良い。
+\item regret に基づくアプローチが効率性と信頼性のバランスを取ることを期待する。
+\item 評価: 自己設定した到着時刻からの早着・遅着の合計偏差。
+\end{itemize}
+\NoteSection{解説}
+都市物流では、顧客期待、渋滞、狭い配送時間、車両数制約により、単に平均旅行時間を最小化するだけでは不十分である。\par
+
+区間旅行時間 [l,u] は、下限と上限で不確実性を表す準確率的情報モデルである。十分な分布推定が難しい場合でも、5\%分位点や95\%分位点を使って現実的な範囲を作れる。\par
+
+ロバストルーティングでは、平均的に短いルートだけでなく、複数の交通シナリオで大きく崩れにくいルートを選ぶ。効率性とサービス信頼性のトレードオフが中心である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 都市物流では、平均時間最小化・最悪ケース・regret の違いを説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{都市物流で区間旅行時間が有用な理由を説明せよ。}\\都市交通では旅行時間のばらつきが大きく、十分な確率分布を推定できない道路や時間帯もある。区間旅行時間なら、下限・上限で不確実性の範囲を表せるため、少ないデータや専門知識でもロバストな計画に使える。
+\item \textbf{効率性と信頼性のトレードオフを説明せよ。}\\平均旅行時間だけを最小化すると短いが遅延に弱いルートになる場合がある。最悪ケースだけを重視すると非常に安全だが過度に長いルートになる場合がある。regretやロバスト基準は、その中間で、複数の交通状況に対して大きく悪化しにくいルートを選ぼうとする。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{038}{問題設定}
+\SlideImage{38}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 二階層配送ネットワーク。
+\item サテライトは積み替え地点である。
+\item デポから積み替え地点へ車両群で配送する。
+\item 最終配送は各積み替え地点から始まる。
+\item 目的: 積み替え地点での待機時間を含む旅行時間を最小化する。
+\end{itemize}
+\NoteSection{解説}
+都市物流では、顧客期待、渋滞、狭い配送時間、車両数制約により、単に平均旅行時間を最小化するだけでは不十分である。\par
+
+区間旅行時間 [l,u] は、下限と上限で不確実性を表す準確率的情報モデルである。十分な分布推定が難しい場合でも、5\%分位点や95\%分位点を使って現実的な範囲を作れる。\par
+
+ロバストルーティングでは、平均的に短いルートだけでなく、複数の交通シナリオで大きく崩れにくいルートを選ぶ。効率性とサービス信頼性のトレードオフが中心である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 都市物流では、平均時間最小化・最悪ケース・regret の違いを説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{都市物流で区間旅行時間が有用な理由を説明せよ。}\\都市交通では旅行時間のばらつきが大きく、十分な確率分布を推定できない道路や時間帯もある。区間旅行時間なら、下限・上限で不確実性の範囲を表せるため、少ないデータや専門知識でもロバストな計画に使える。
+\item \textbf{効率性と信頼性のトレードオフを説明せよ。}\\平均旅行時間だけを最小化すると短いが遅延に弱いルートになる場合がある。最悪ケースだけを重視すると非常に安全だが過度に長いルートになる場合がある。regretやロバスト基準は、その中間で、複数の交通状況に対して大きく悪化しにくいルートを選ぼうとする。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{039}{結果}
+\SlideImage{39}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 手法
+\begin{itemize}
+\item minmax regret 基準を用いるVRP。
+\item メタヒューリスティック。
+\end{itemize}
+\item 評価
+\begin{itemize}
+\item AVG: 平均。
+\item UB: 最悪ケース。
+\item ITT: 区間旅行時間。
+\end{itemize}
+\item 評価基準
+\begin{itemize}
+\item 使用車両数。
+\item 総旅行時間。
+\item サテライト到着の平均偏差、すなわち非同期化。
+\end{itemize}
+\end{itemize}
+\NoteSection{解説}
+都市物流では、顧客期待、渋滞、狭い配送時間、車両数制約により、単に平均旅行時間を最小化するだけでは不十分である。\par
+
+区間旅行時間 [l,u] は、下限と上限で不確実性を表す準確率的情報モデルである。十分な分布推定が難しい場合でも、5\%分位点や95\%分位点を使って現実的な範囲を作れる。\par
+
+ロバストルーティングでは、平均的に短いルートだけでなく、複数の交通シナリオで大きく崩れにくいルートを選ぶ。効率性とサービス信頼性のトレードオフが中心である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 都市物流では、平均時間最小化・最悪ケース・regret の違いを説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{都市物流で区間旅行時間が有用な理由を説明せよ。}\\都市交通では旅行時間のばらつきが大きく、十分な確率分布を推定できない道路や時間帯もある。区間旅行時間なら、下限・上限で不確実性の範囲を表せるため、少ないデータや専門知識でもロバストな計画に使える。
+\item \textbf{効率性と信頼性のトレードオフを説明せよ。}\\平均旅行時間だけを最小化すると短いが遅延に弱いルートになる場合がある。最悪ケースだけを重視すると非常に安全だが過度に長いルートになる場合がある。regretやロバスト基準は、その中間で、複数の交通状況に対して大きく悪化しにくいルートを選ぼうとする。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{040}{まとめ}
+\SlideImage{40}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 不確実性は情報モデルと意思決定モデルで考慮されるべきである。
+\item 不確実性は多くの応用に影響し、意思決定に大きな影響を及ぼし得る。
+\item 意思決定に関連するデータを有効に使うには、不確実性を適切にモデル化する必要がある。
+\item 意思決定モデルは、応用と不確実性のモデリングに応じて選択されなければならない。
+\end{itemize}
+\NoteSection{解説}
+Deterministic model は、すべての入力値が既知で固定されているとみなす。簡単で解きやすいが、不確実性を無視する。\par
+
+Stochastic model は、実現値の確率分布または確率を仮定する。期待値、分散、サンプリング、確率制約などを使えるが、十分なデータと妥当な分布仮定が必要である。\par
+
+Quasi-stochastic model は、確率は分からないが、あり得るシナリオや区間は分かる場合に使う。What-if分析、区間旅行時間、Hurwicz基準、minmax regret が典型である。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item stochastic と quasi-stochastic の違いを、確率が分かるかどうかで説明する。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{stochastic と quasi-stochastic を比較せよ。}\\stochastic では確率分布や各シナリオの確率が既知または推定可能であるため、期待値最小化やMonte Carlo samplingを使える。quasi-stochastic では確率が未知で、シナリオ集合や区間だけを用いる。したがって、最悪ケース、Hurwicz、minmax regret のような基準で決定する。
+\item \textbf{いつ quasi-stochastic model が有用か。}\\過去データが少ない、新しいサービスで履歴がない、道路工事などで環境が変わった、確率分布を置くには不確実性が大きすぎる場合である。このとき、区間や代表シナリオを用いることで、完全な確率分布なしに頑健な意思決定ができる。
+\end{enumerate}
+\end{multicols}
+
+\clearpage
+\ExamHeader{ロバスト都市物流と区間旅行時間}
+\ExamQuestion{WS22/23 Aufgabe 5 [6 Punkte]}
+\ExamSubsection{問題内容}
+旅行時間不確実性を確率的または準確率的にモデル化し、ロバストな解が何を意味するかを説明する問題。\par
+\ExamSubsection{満点答案}
+確率的モデルでは、旅行時間の確率分布やシナリオ確率を仮定し、期待旅行時間、分散、分位点、サンプリングに基づいてルートを評価する。準確率的モデルでは、確率は分からないが、区間やシナリオ集合を使って不確実性を表す。区間旅行時間 [l\_\{ij\},u\_\{ij\}] はその典型である。\par
+ロバストな解とは、単一の平均ケースで最も短いだけでなく、複数のあり得る交通状態で大きく性能が崩れにくい解である。例えば、平均旅行時間最小ルートはラッシュ時に大きく遅れる可能性がある。一方、ロバストルートは少し長くても、遅延リスクやサービス品質低下を抑える。\par
+都市物流では、効率性と信頼性のトレードオフが重要である。最悪ケースだけに最適化すると過度に保守的になり、平均ケースだけではサービス違反が増える。regretや区間ベースの基準は、その中間を狙う。\par
+\ExamSubsection{具体例による解説}
+Aルートは平均45分だが渋滞時90分、Bルートは平均55分だが渋滞時65分なら、平均だけならA、ロバスト性ならBが有利になる場合がある。配送時間約束がある場合、Bの方が顧客サービスに適する。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 確率的/準確率的の違い
+\item 区間旅行時間
+\item ロバスト解の定義
+\item 効率性と信頼性のトレードオフ
+\item 具体例
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+
+\clearpage
+\SlideHeader{Lecture 3: Uncertainty}{041}{さらなる問い}
+\SlideImage{41}{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}
+\begin{multicols}{2}\footnotesize\raggedcolumns
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 変化に反応できるか。
+\item 例: 現在の交通情報に基づいてTSPを再計画する。これは dynamic decision making である。
+\item 将来の不確実な発展を予測できるか。
+\item 例: 渋滞リスクのある地域を避ける。
+\item Anticipation。
+\item Stochastic dynamic decision making。
+\end{itemize}
+\NoteSection{解説}
+不確実性とは、意思決定時点では将来の実現値が完全には分からないことである。需要、交通、サービス時間、ドライバーの可用性、天候、政治状況などが例である。\par
+
+不確実性は、頻度、範囲、破壊力、予測可能性で異なる。例えば毎日変わる交通量は高頻度だが比較的予測可能であり、突然の道路閉鎖は低頻度だが破壊力が大きい。\par
+
+不確実性は情報モデルに入るだけでなく、意思決定モデルにも影響する。平均値だけで計画すると、遅延リスクやサービス品質低下を見落とす可能性がある。\par
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 不確実性の発生源を、需要・リソース・環境に分けて説明できる。
+\end{itemize}
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Same-Day配送における三種類の不確実性を例示せよ。}\\需要不確実性は、注文がいつ・どこで・どれだけ発生するかである。リソース不確実性は、ドライバーの出勤、車両故障、バッテリー残量、スキルである。環境不確実性は、交通、駐車、天候、道路工事、ネットワーク障害である。
+\item \textbf{平均値だけを使う計画の危険性を説明せよ。}\\平均旅行時間では、遅延の裾の長さや極端な渋滞を見落とす。全アークで平均を使うと、各区間では小さな誤差でも全体ツアーでは大きな遅延になることがある。サービス時間や交通が右裾の長い分布を持つ場合、平均値だけでは信頼性を評価できない。
+\end{enumerate}
+\end{multicols}

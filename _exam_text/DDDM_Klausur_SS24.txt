@@ -1,0 +1,441 @@
+--- page 1 ---
+ 
+ 
+Technische Universität Braunschweig, Institut für Wirtschaftsinformatik 
+Lehrstuhl Decision Support, Prof. Dr. Dirk C. Mattfeld 
+ 
+Klausur 
+Data Driven Decision Making 
+30.07.2024 (SoSe 2024) 
+ 
+Studiengang 
+❑  Wirtschaftsinformatik (Master) 
+❑  Wirtschaftsingenieurwesen (Master), 
+      Fachrichtung _____________________ 
+❑  Sonstiges:   ________________________ 
+Persönliche Daten 
+Name: 
+________________________ 
+ 
+Vorname: 
+________________________ 
+ 
+Matr.-Nr.: 
+________________________ 
+ 
+Semester: ____ 
+ 
+❑  1. Versuch 
+❑  2. Versuch 
+❑  3. Versuch 
+ 
+ 
+Bearbeitungshinweise 
+• Überprüfen Sie bitte sofort nach Erhalt die Vollständigkeit der Klausur (8 Seiten 
+inkl. Deckblatt). Schreiben Sie bitte auf jedes Blatt Ihre Matrikelnummer! 
+• Zur Lösung – auch für Konzepte – sind nur die vorgesehenen Lösungsfelder und 
+die entsprechenden Rückseiten bzw. gestempelte Leerseiten zu verwenden. 
+• Als Hilfsmittel sind nur Schreib- und Zeichengeräte zugelassen. 
+• Verwenden Sie ein dokumentenechtes Schreibmittel. Mit Bleistift geschriebene  
+Antworten werden nicht gewertet. 
+• Antworten ohne ausreichende Begründung führen zu Punktabzug. 
+• Die Bearbeitungszeit beträgt 60 Minuten. 
+• Insgesamt sind 60 Punkte erreichbar. 
+ 
+Ergebnis 
+ 
+ 
+Aufgabe 
+1 
+2 
+3 
+4 
+5 
+Summe 
+Maximale 
+Punktzahl 
+12 
+6 
+14 
+8 
+20 
+60 
+Erreichte 
+Punktzahl 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 2 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 2 – 
+Aufgabe 1 (12 Punkte) 
+ 
+a) 
+Beschreiben Sie die Funktion von “Information Model”, “Decision Model”, 
+“Aggregation” und “Disaggregation“. 
+ 
+ 
+ 
+ 
+ 
+(8 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) 
+Geben Sie zwei Beispiele für Informationsmodelle für Reisezeiten. Warum 
+wird nicht immer das detailliertere Modell gewählt? 
+ 
+ 
+ 
+(4 Punkte) 
+ 
+ 
+ 
+
+--- page 3 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 3 – 
+Aufgabe 2 (6 Punkte) 
+ 
+a) 
+Same-Day Lieferdienste sind geprägt von Unsicherheiten in der Planung. Ge-
+ben Sie ein Beispiel für Unsicherheit bezüglich jeder der folgenden relevanten Prob-
+lemkategorien: Nachfrage, Ressourcen, Umgebung.   
+ 
+ 
+(3 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) 
+ In anderen Problemstellungen gibt es Unsicherheit in der Servicezeit, zum 
+Beispiel für Reparaturservices oder in der häuslichen Pflege.  Beschreiben Sie drei 
+typische Eigenschaften einer Wahrscheinlichkeitsdichtefunktion für Servicezeiten 
+beim Kunden. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(3 Punkte) 
+ 
+ 
+ 
+
+--- page 4 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 4 – 
+Aufgabe 3 (14 Punkte) 
+ 
+a) 
+Die Graphik stellt einen MDP für ein Maximierungsproblem dar. Bestimmen 
+Sie den Erwartungswert der von der optimalen Policy gesammelten gesamten Beloh-
+nung in Abhängigkeit des unbekannten Belohnungsparameters 𝛼 (siehe Graphik). 
+Für welche Werte von 𝛼 stimmen die optimale und Greedy Policy überein? Falls die 
+Greedy Policy mehrere gleichwertige Entscheidungen hat, wählt sie die Entschei-
+dung die im Graphen weiter oben steht. Hinweis: Betrachten Sie mindestens die 
+Fälle 𝛼≤10 und 𝛼> 10, wenn Sie den Erwartungswert der Greedy Policy betrach-
+ten. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+
+--- page 5 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 5 – 
+ 
+b) 
+Wir setzen 𝛼= 10. Wir nehmen an, dass jeder Post-Decision State zu zwei 
+Features aggregiert wird. Wir entscheiden mit Hilfe einer Value Function Approxima-
+tion, die jedem aggregierten Post-Decision State eine approximierte zukünftig erwar-
+tete Belohnung zuweist. Die approximierte zukünftig erwartete Belohnung für jeden 
+Post-Decision State ist in der Tabelle gegeben und die Aggregation der Post-Deci-
+sion States ist im Graph als (Feature 1, Feature 2) gegeben. Berechnen Sie die er-
+wartete gesamte Belohnung, wenn wir mit Hilfe der VFA entscheiden und markieren 
+Sie die Entscheidungen der VFA. 
+ 
+ 
+ 
+ 
+ 
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+c) 
+Formulieren Sie die Bellmann-Gleichung. Markieren Sie welcher Teil der  
+Bellman-Gleichung rechnerisch unlösbar wird, wenn die Anzahl der States und 
+Übergänge wächst.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 6 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 6 – 
+Aufgabe 4 (8 Punkte) 
+ 
+a) 
+Beschreiben Sie die generelle Idee des Multiple Scenario Approach. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) 
+Die Consensus Function ist ein essenzieller Teil des MSA, da sie die Überein-
+stimmung zwischen unabhängigen Lösungen misst. Stellen Sie zwei Arten vor 
+wie Übereinstimmung für verschiedene Lösungen in einem Vehicle Routing 
+Problem gemessen werden könnte. Begründen Sie Ihre Wahl. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(4 Punkte) 
+ 
+ 
+
+--- page 7 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 7 – 
+Aufgabe 5 (20 Punkte) 
+ 
+a) 
+Sie betreiben einen Paketlieferdienst mit einem Depot. Über den Zeitraum ei-
+ner Woche kommen neue Pakete jeden Morgen an ihrem Depot an. Jedes Paket ist 
+definiert durch seinen spätesten Versandtag und seinen Zielort. Der späteste Liefer-
+tag muss eingehalten werden und spätestens am Freitag muss jedes Paket versandt 
+werden. Sie haben jeden Tag eine unendliche Menge Trucks mit jeweils einer Kapa-
+zität von 100 Paketen zur Verfügung. Der Einsatz eines Trucks kostet 𝑐 mal die Dis-
+tanz der kürzesten Tour zu den Zielorten der transportierten Pakete und zurück zum 
+Depot. Pakete, die nicht transportiert wurden, verbleiben im Depot für den nächsten 
+Tag. Am Anfang jeden Tages (nachdem die neuen Pakete das Depot erreicht haben) 
+entscheiden Sie welche Pakete Sie versenden sowie die Lieferrouten der zu versen-
+denden Pakete. Ihr Ziel ist es die Transportkosten für die Woche zu minimieren ohne 
+die vorgegeben Versandtage der Pakete zu verletzen. Beschreiben Sie das Problem 
+als Markov Entscheidungsprozess.  
+ 
+ 
+ 
+ 
+         (11 Punkte) 
+ 
+ 
+ 
+Decision point (1P): 
+ 
+ 
+ 
+State (3P): 
+ 
+ 
+ 
+Decision (2P): 
+ 
+ 
+ 
+Costs (1P): 
+ 
+ 
+ 
+Post-Decision State (1P): 
+ 
+ 
+ 
+Stochastic Information (1P): 
+ 
+ 
+ 
+Transition (1P): 
+ 
+ 
+ 
+Objective function (1P): 
+ 
+ 
+ 
+ 
+ 
+
+--- page 8 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 8 – 
+b) 
+ Erklären Sie warum sich der Einsatz einer Value Function Approximation für 
+den gegebenen Entscheidungsraum (Decision Space) als schwierig gestaltet. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+(2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+c)  
+Value Function Approximations operieren oft auf einem aggregierten Post-De-
+cision State-Space, in dem Post-Decision States durch eine handvoll Features dar-
+gestellt werden. Ein Beispiel für ein sinnvolles Feature für das gegebene Problem ist 
+der momentane Tag. Nennen Sie zwei weitere aussagekräftige Features für das ge-
+gebene Problem. Begründen Sie Ihre Wahl knapp. 
+ 
+ 
+ 
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+d)  
+Beschreiben Sie eine sinnvolle Policy Function Approximation für das gege-
+bene Problem. Begründen Sie Ihre Wahl.  
+ 
+ 
+ 
+ 
+(3 Punkte) 
+

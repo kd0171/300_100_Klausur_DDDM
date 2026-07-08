@@ -1,0 +1,60 @@
+
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=7mm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\setmainfont{Noto Sans}
+\setsansfont{Noto Sans}
+\setCJKmainfont{Noto Sans CJK JP}
+\definecolor{TUBSred}{HTML}{BE1E3C}
+\definecolor{lightgray}{HTML}{F4F4F4}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3.2pt}
+\setlength{\columnsep}{5mm}
+\setlist[itemize]{leftmargin=1.15em,itemsep=1.2pt,topsep=1.5pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.35em,itemsep=2pt,topsep=1.5pt,parsep=0pt}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\titleformat{\section}{\Large\bfseries\color{TUBSred}}{}{0pt}{}
+\newcommand{\SlideHeader}[3]{%
+  \noindent{\large\bfseries #1 / Slide #2: #3}\hfill {\scriptsize review v3}\par
+  \vspace{0.8mm}\hrule\vspace{1.0mm}
+}
+\newcommand{\SlideImage}[2]{%
+  \noindent\makebox[\textwidth][c]{\includegraphics[page=#1,width=0.96\textwidth,height=0.31\textheight,keepaspectratio]{#2}}\par
+  \vspace{1.0mm}
+}
+\newcommand{\NoteSection}[1]{%
+  \vspace{1.8mm}\noindent{\normalsize\bfseries\color{TUBSred}#1}\par\vspace{0.8mm}
+}
+\newcommand{\ExamHeader}[1]{%
+  \noindent{\Large\bfseries\color{TUBSred}過去問演習: #1}\hfill {\scriptsize review v3}\par
+  \vspace{1mm}\hrule\vspace{2mm}
+  {\small このページは、関連概念を説明した後に一度だけ配置する過去問演習ページである。スライドページには同じ過去問を繰り返さない。}\par\vspace{2mm}
+}
+\newcommand{\ExamQuestion}[1]{\vspace{2mm}\noindent{\large\bfseries #1}\par\vspace{0.8mm}}
+\newcommand{\ExamSubsection}[1]{\vspace{1.2mm}\noindent{\normalsize\bfseries\color{TUBSred}#1}\par\vspace{0.6mm}}
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge Data Driven Decision Making\par}
+\vspace{0.5cm}
+{\Large Lecture 1: Overview - 日本語訳・解説・試験対策ノート\par}
+\vspace{1cm}
+\begin{minipage}{0.88\textwidth}
+このPDFは review v3 です。各スライドページは、元スライド、日本語訳、解説、確認問題を原則1ページに収めています。過去問は重複を避け、必要知識を説明した後に独立した演習ページとして配置しています。過去問ページには、問題内容、満点答案、具体例、採点要素を記載しています。
+\end{minipage}
+\vfill
+{\large Materials/2026}
+\end{titlepage}
+\tableofcontents
+\clearpage
+\input{sections/3dm_01_overview_ss26_v3.tex}
+\end{document}

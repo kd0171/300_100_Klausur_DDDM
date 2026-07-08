@@ -1,0 +1,384 @@
+--- page 1 ---
+ 
+ 
+Technische Universität Braunschweig, Institut für Wirtschaftsinformatik 
+Lehrstuhl Decision Support 
+ 
+Klausur 
+Data Driven Decision Making 
+07.08.2023 (Sommersemester 2023) 
+ 
+ 
+Studiengang 
+❑  Wirtschaftsinformatik (Master) 
+❑  Wirtschaftsingenieurwesen (Master), 
+      Fachrichtung _____________________ 
+❑  Sonstiges:   ________________________ 
+Persönliche Daten 
+Name: 
+________________________ 
+ 
+Vorname: 
+________________________ 
+ 
+Matr.-Nr.: 
+________________________ 
+ 
+Semester: ____ 
+ 
+❑  1. Versuch 
+❑  2. Versuch 
+❑  3. Versuch 
+ 
+ 
+Bearbeitungshinweise 
+• Überprüfen Sie bitte sofort nach Erhalt die Vollständigkeit der Klausur (7 Seiten 
+inkl. Deckblatt). 
+Schreiben Sie bitte auf jedes Blatt Ihre Matrikelnummer! 
+• Zur Lösung – auch für Konzepte – sind nur die vorgesehenen Lösungsfelder und 
+die entsprechenden Rückseiten bzw. gestempelte Leerseiten zu verwenden. 
+• Als Hilfsmittel sind nur dokumentenechte Schreib- und Zeichengeräte zugelas-
+sen. Mit Bleistift geschriebene Antworten können nicht gewertet werden. 
+• Antworten ohne ausreichende Begründung oder in unvollständigen Sätzen  
+führen zu Punktabzug. 
+• Die Bearbeitungszeit beträgt 60 Minuten. 
+• Insgesamt sind 60 Punkte erreichbar. 
+ 
+Ergebnis 
+ 
+ 
+ 
+Aufgabe 
+1 
+2 
+3 
+4 
+5 
+6 
+Summe 
+Maximale 
+Punktzahl 
+6 
+5 
+6 
+3 
+8 
+32 
+60 
+Erreichte 
+Punktzahl 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 2 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 2 – 
+Aufgabe 1: 
+ 
+In der Vorlesung wurden die Verfahren des Rollouts sowie der Value Function Appro-
+ximation vorgestellt. Beide basieren auf einer Simulation zukünftiger Perioden.  
+Diskutieren Sie die Länge des Simulationshorizonts. Bringen Sie dazu ein Beispiel, 
+für das der Simulationshorizont bis zum Ende des gesamten Planungshorizontes ge-
+wählt werden soll, sowie ein Beispiel, für das ein nur kurzer Simulations-horizont 
+Sinn ergibt.  
+(6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 2:  
+ 
+Welche Klassen von Politiken gibt es nach Powell (2011)?  
+(5 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 3 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 3 – 
+Aufgabe 3:  
+ 
+In der Vorlesung wurde das quasi-stochastische Modell der intervall-basierten Reise-
+zeiten zwischen Kundenstandorten behandelt. Ein Fahrzeug soll alle Standorte besu-
+chen, wobei für die Reisezeiten zwischen den Standorten jeweils ein optimistischer 
+sowie ein pessimistischer Wert bekannt ist. Die Eintrittswahrscheinlichkeit des opti-
+mistischen bzw. pessimistischen Falls ist nicht bekannt. Zur Lösung soll ein Regret-
+basiertes Verfahren zur Anwendung kommen, dass das maximale Bedauern des 
+Fahrers minimiert. Erläutern und begründen Sie die Logik dieses Ansatzes.  
+(6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 4: 
+  
+Welche Nachteile bringt die Anwendung eines Post-Decision Roll-out mit sich?  
+(3 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 4 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 4 – 
+Aufgabe 5: 
+ 
+Das in der Vorlesung vorgestellte Problem der Restaurantbelieferung verbindet den 
+derzeitigen Einsatzort der Fahrer mit der Abholung von Speisen in verschiedenen 
+Restaurants und der Auslieferung dieser Speisen an unterschiedlichen Wohnorten 
+der Kunden. Es wird versucht mehrere Bestellvorgänge in einer Tour zu konsolidie-
+ren ohne dass dem Kunden zugesagte Lieferzeitpunkte überschritten werden. Gege-
+benenfalls können Verzögerungen bei der Essensausgabe in den Restaurants auf-
+treten. 
+Im Beispiel wird lediglich der Fahrer V1 eingesetzt um Restaurants R1 und R2 zu be-
+suchen um später die Kunden C1 und C2 zu beliefern. Nach der Bestellung zum 
+Zeitpunkt 60 kann der Kunde C2 zum Zeitpunkt 95 beliefert werden. Treten allerdings 
+Verzögerungen in der Restaurantabholung ein, so ist der späteste Lieferzeitpunkt 
+100 für Kunden C2 nicht mehr gewährleistet. 
+(insgesamt 8 Punkte) 
+ 
+ 
+a) Schlagen Sie eine Cost Function Approximation für das betrachtete Problem der 
+zeitlich unsicheren Liefervorgänge vor.  
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) Schlagen Sie eine Policy Function Approximation vor, mit der eine Konsolidierung 
+von Kunden wie im Beispiel gezeigt erreicht werden kann.  
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 5 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 5 – 
+Aufgabe 6: 
+ 
+Der Gas Importeur UNIPER kauft Gas im Ausland ein und verkauft es im Inland. Zum 
+Ausgleich der Ein- und Verkaufsmengen steht UNIPER eine Gasspeicherinfrastruktur 
+zur Verfügung. Neben der eigenen Rendite steht UNIPER gegenüber der Bundesre-
+gierung mit der Wahrnehmung der Versorgungssicherheit in der Pflicht. Insbeson-
+dere soll auch in den typischerweise angespannten Wintermonaten ein weitestge-
+hend konstanter Abgabepreis realisiert werden.  
+(insgesamt 32 Punkte) 
+ 
+a) Stellen Sie das UNIPER Geschäft in wenigen Sätzen als dynamisches und 
+stochastisches Lagerhaltungsproblem dar.  
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) Geben Sie Elemente des Markov Entscheidungsprozesses an.  
+(6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+c) Benennen Sie mit Bezug zu a) mögliche quantitative Größen für die Elemente 
+des Markov Entscheidungsprozess.  
+(6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 6 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 6 – 
+d) Wir betrachten üblicherweise endliche Planungshorizonte. Machen Sie einen Vor-
+schlag für den Planungshorizont von UNIPER.  
+(2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+e) Machen Sie Vorschläge für ein stochastisches Modell sowie ein quasi-stochasti-
+sches Modell zur Abbildung des Unsicherheit-behafteten Übergangs.  
+(2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+f) Beschreiben Sie die besondere Kosten- und Ertragsstruktur im vorgeschlagenen 
+Markov Prozess ein.  
+(2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 7 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 7 – 
+g) Entwickeln Sie konzeptuell eine Value Function Approximation für die identifi-
+zierte Problemstellung.  
+(6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+h) Beschreiben Sie das Ergebnis der Value Function Approximation.  
+(4 Punkte) 
+ 
+

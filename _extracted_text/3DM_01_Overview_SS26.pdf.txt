@@ -1,0 +1,659 @@
+--- page 1 ---
+Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+Lecture 1 – Overview
+
+--- page 2 ---
+Contact „Data Driven Decision Making“
+Lecturer
+Office hours: with registration only
+d.mattfeld@tu-braunschweig.de
+Teaching Assistant
+Felix Möller
+Office hours: with registration only
+felix.moeller@tu-braunschweig.de
+Office Decision Support
+Office hours: as announced on website
+Phone: (0531) 391-3211
+ds@tu-braunschweig.de
+Website
+https://www.tu-braunschweig.de/winfo
+https://www.tu-braunschweig.de/winfo/teaching, e.g. exam dates
+
+--- page 3 ---
+Master @ Decision Support
+Orientierung
+Decision Support (5 LP)
+Intelligent Data Analysis (WS)
+Planning for Mobility and
+Transportation Purposes (WS)
+Spezialisierung
+Decision Support (5 LP)
+Exercise in Data Driven
+Decision Making (SS)
+Master seminar
+Master thesis
+(6 months)
+In addition: Interested students of all
+disciplines, especially mechanical engineering
+students (NT subject, 3 LP)
+
+--- page 4 ---
+About the Lecture
+•
+•
+Previously Informationssysteme für Mobilitätsanwendungen
+•
+… before   Verkehrsinformationssysteme
+•
+Shift from depiction of information system to automated decisions in information systems
+•
+Inline with state-of-the-art digital business models like UBER, LIME, AMAZON etc.
+•
+Builds on PMT (focusing on decisions) and IDA (focusing on data analytics)
+•
+With respect to coursework, 3DM represents “Spezialisierung Decision Support” together
+with 3DM exercise
+
+--- page 5 ---
+Goals
+•
+Understanding stochasticity and dynamism
+•
+Modeling stochastic dynamic decision problems
+•
+Overview over methodology (functionality, strengths, weaknesses, etc.)
+•
+Insight about relevant problems in the digital economy
+•
+Pass exam (60min written exam)
+•
+Preparation for master thesis (and PhD)
+
+--- page 6 ---
+DDDM Schedule
+Lecture
+Topic
+1
+Overview
+2
+Information Modeling and Decision Modeling
+3
+Stochasticity
+4
+Dynamism
+5
+Markov Decision Process
+6
+Approximate Dynamic Programming
+7
+Look-ahead Methods
+8
+Value Function Approximation
+9
+Analytics Issues in Approximate Dynamic Programming
+10
+Combined Methods
+11
+Platform-based Food Delivery
+
+--- page 7 ---
+Literature
+•
+Work by Warren Powell (https://castlelab.princeton.edu/)
+•
+Recent joint work at TU Braunschweig with Marlin Ulmer and others
+•
+Adaptation and development with respect to transportation and mobility
+•
+Ulmer et. al (2020) On modeling stochastic dynamic vehicle routing problems,
+https://www.sciencedirect.com/science/article/pii/S219243762030008X
+•
+Ulmer et al. (2021) Stochastic dynamic vehicle routing in the light of prescriptive analytics:
+A review, https://www.sciencedirect.com/science/article/pii/S0377221721006093
+
+--- page 8 ---
+About the Exercise
+•
+“Studienleistung” for “Spezialisierung
+Decision Support” (2.5 LP)
+•
+Practice lecture content in the serious
+gaming application “Trucks and Barges”
+•
+Simulates decision situation of a freight
+forwarder who can ship containers from
+a terminal using different transport modes
+on consecutive days
+•
+Organization:
+•
+5 dates with content building on each other (online)
+•
+Homework assignments
+•
+StudIP: “Data Driven Decision Making - Übung”
+
+--- page 9 ---
+Information on exams
+You can find the locations and times of all
+exams offered by our department on our
+website:
+https://www.tu-braunschweig.de/
+winfo/teaching/pruefungen
+The information is updated regularly.
+Exam dates are announced well in advance,
+while exam rooms are assigned shortly before
+the exams.
+Please only email us if the information you
+need is not on our website.
+
+--- page 10 ---
+Altklausuren
+You can find printed copies of past exams from recent
+semesters directly at our institute. These are leftover copies,
+so there are only a limited number available. You can also
+find past exams on our website:
+https://www.tu-braunschweig.de/winfo/teaching/pruefungen
+However, simply working through past exams is not
+sufficient preparation for the exam and does not guarantee a
+good grade. All topics covered in the lecture are relevant to
+the exam. While the types of questions on the exam are
+similar each semester, the content may vary, and new
+questions that do not appear in any of the past exams may
+also be included. No sample solutions for the past exams
+will be provided.
+
+--- page 11 ---
+Agenda
+•
+Motivation
+•
+Operations Research & Business Analytics (Recap)
+•
+Modeling and Outline of the Lectures
+
+--- page 12 ---
+Motivation
+•
+New and changing business concepts.
+faster, more individually, real-time
+•
+Examples:
+• Instant delivery
+• Production on demand/made to order
+• Appointment scheduling
+• etc.
+•
+Challenging planning and control
+•
+Two common themes:
+• Stochasticity: Information changes over time
+• Dynamism: Updated plans under the light of information change
+Stochastic Dynamic Decision Processes
+Handelsblatt.de
+
+--- page 13 ---
+Examples: Transportation
+gizmodo.org
+amazon.de
+lebensmittelzeitung.de
+Handelsblatt.de
+amazon.de
+
+--- page 14 ---
+Examples: Mobility and Services
+schindler.com
+housecallsok.com
+ecomento.tv
+wikimedia.or
+g
+www.wnyc.org
+brk.de
+McKinsey
+
+--- page 15 ---
+Summary
+•
+Service processes over time
+•
+New information (demand, requests, traffic, drivers, battery levels, requirements, etc.)
+•
+Reactions and updates of planning required
+•
+Reactions might be too late (vehicle stuck in traffic, no drivers around to deliver meals,
+drone crashes, etc.)
+•
+Anticipation of an expected future required
+•
+Aim at flexibility with respect to a future system state
+
+--- page 16 ---
+Decision making
+•
+Real-World: Actions are performed and
+resulting states can be observed
+•
+Aggregation: Transfers real-world data
+into dimensions of information model
+•
+Information Model: Depicts information in
+a condensed way
+•
+Decision Model: Defines decision space
+and evaluates decision
+•
+Implementation: Translates solution of the
+decision model into real-world actions
+Real-World
+Information Model
+Decision Model
+Aggregation
+Implementation
+
+--- page 17 ---
+Decision making
+•
+•
+No longer elaborates on information
+models
+•
+Does not focus on optimization
+models anymore
+•
+It takes the whole loop including the
+real world process into account
+•
+This requires the modeling of the
+system over time dynamic
+•
+The real-world may change due to
+external effects stochastic
+•
+Implemented decisions may collide
+with an already changed real-world
+Real-World
+Information Model
+Decision Model
+Aggregation
+Implementation
+Intelligent Data Analysis
+Planning of Mobility and
+Transportation Purposes
+
+--- page 18 ---
+Agenda
+•
+Motivation
+•
+Operations Research & Business Analytics (Recap)
+•
+Modeling and Outline of the Lectures
+
+--- page 19 ---
+Example: Parcel Delivery in Braunschweig
+•
+Truck at depot
+•
+Customers with addresses
+•
+Street network
+•
+We are looking for a navigation
+of the driver through the city visiting
+every customer.
+•
+Goal is fast delivery
+•
+How can we achieve our goal?
+
+--- page 20 ---
+Modeling: Traveling Salesperson Problem
+Part 1:
+• Transfer street network to arcs between customers
+• Transfer travel speeds  to travel time per arc
+Weighted graph / Travel time matrix
+Part 2:
+• Transfer navigation into decision variables about used arcs
+• Add constraints to ensure feasible navigation
+• Define objective (with respect to Part 1)
+2
+1
+3
+5
+7
+6
+
+1,0
+)
+4
+(
+subtours.
+define
+cannot
+variables
+The
+)3
+(
+,...,
+1
+,1
+)
+2
+(
+,...,
+1
+,1
+)1(
+:
+subject to
+min
+
+=
+=
+=
+=
+
+
+
+ij
+ij
+j
+ij
+i
+ij
+ij
+ij
+x
+x
+n
+i
+x
+n
+j
+x
+x
+d
+
+--- page 21 ---
+Finding a Solution
+•
+Model spans solution space
+and provides evaluation of solutions
+•
+Potential solutions via
+• Graph-based method (e.g., insertion procedures)
+• Mixed-integer programming (e.g., branch and bound)
+•
+Final step: Implementation in practice (e.g., 1-3-2)
+• Translate numbers to customers
+• Map selected arcs to sets of street segments
+• Provide navigation to driver
+2
+1
+3
+5
+7
+6
+
+1,0
+)
+4
+(
+subtours.
+define
+cannot
+variables
+The
+)3
+(
+,...,
+1
+,1
+)
+2
+(
+,...,
+1
+,1
+)1(
+:
+subject to
+min
+
+=
+=
+=
+=
+
+
+
+ij
+ij
+j
+ij
+i
+ij
+ij
+ij
+x
+x
+n
+i
+x
+n
+j
+x
+x
+d
+
+--- page 22 ---
+Three Steps of Operations Research
+Problem definition
+Modeling
+Solution
+(Information and decisions)
+(plus Implementation)
+
+1,0
+)
+4
+(
+subtours.
+define
+cannot
+variables
+The
+)3
+(
+,...,
+1
+,1
+)
+2
+(
+,...,
+1
+,1
+)1(
+:
+subject to
+min
+
+=
+=
+=
+=
+
+
+
+ij
+ij
+j
+ij
+i
+ij
+ij
+ij
+x
+x
+n
+i
+x
+n
+j
+x
+x
+d
+2
+1
+3
+5
+7
+6
+(1,3,2)
+
+--- page 23 ---
+Agenda
+•
+Motivation
+•
+Operations Research & Business Analytics (Recap)
+•
+Modeling and Outline of the Lectures
+
+--- page 24 ---
+Modeling
+•
+Different problems may share
+the same model (e.g., parcel delivery
+and technician services)
+•
+The same problem can be modeled
+differently
+•
+There is a connection between
+information and decision model
+
+--- page 25 ---
+Example I: Alternative information model
+•
+We observe daily variation in travel times, i.e., time-dependent travel times
+•
+7am-9am
+9am-3pm
+3pm-6pm
+•
+Information model contains a set of travel time matrices
+•
+Information generation more complex
+•
+An alternative decision model is required (see next lecture)
+2
+1
+3
+10
+8
+7
+2
+1
+3
+5
+7
+6
+2
+1
+3
+9
+9
+9
+
+--- page 26 ---
+Example II: Alternative decision model
+•
+We regularly observe overtime even though the solution “looks” feasible
+•
+Uncertainty in travel times
+•
+Change of decision model (stochasticity)
+•
+Alternative and more detailed
+information model required (see lecture 3)
+speed
+observations
+
+--- page 27 ---
+Example III: Dynamism
+•
+We observe changes in the information
+model over time
+•
+We can react to changes (lecture 4)
+•
+Stochastic dynamic model required (lecture 5)
+•
+Anticipation of future becomes important
+Approximate Dynamic Programming
+•
+(lecture 6 to 10 following)
+•
+
+1,0
+)
+4
+(
+subtours.
+define
+cannot
+variables
+The
+)3
+(
+,...,
+1
+,1
+)
+2
+(
+,...,
+1
+,1
+)1(
+:
+subject to
+min
+
+=
+=
+=
+=
+
+
+
+ij
+ij
+j
+ij
+i
+ij
+ij
+ij
+x
+x
+n
+i
+x
+n
+j
+x
+x
+d
+
+--- page 28 ---
+Outlook
+•
+Business Analytics
+•
+Information and Decision Modeling
+•
+Case-Study: Delivery Routing with time-dependent travel times
+

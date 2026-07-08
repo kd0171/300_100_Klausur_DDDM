@@ -1,0 +1,416 @@
+--- page 1 ---
+Technical University Braunschweig, Institute of Business Information Systems 
+Decision Support Group, Prof. Dr. Dirk C. Mattfeld 
+ 
+Exam 
+Data Driven Decision Making 
+05.08.2025 (Summer 2025) 
+ 
+ Study program 
+❑  Wirtschaftsinformatik (Master) 
+❑  Technologieorientiertes Management (Master) 
+❑  Wirtschaftsingenieurwesen (Master), Specialization: ___________________ 
+❑  Other:   ________________________  
+ Personal data 
+Last name: ________________________ 
+ 
+First name: ________________________ 
+ 
+Matr. no.: 
+________________________ 
+ 
+Semester: ____ 
+ 
+❑  1. attempt 
+❑  2. attempt 
+❑  3. attempt 
+ 
+ Instructions 
+• Please check the completeness of the exam (7 pages incl. cover) immediately 
+upon receipt. Please write your matriculation number on each page! 
+• Only use the provided solution fields and the corresponding back pages or 
+stamped blank pages for the solution. 
+• Only document-proof writing and drawing instruments are permitted as aids. 
+Answers written in pencil cannot be assessed. 
+• Answers without sufficient justification will result in points being deducted. 
+• Answers are allowed in German or English. 
+• The working time is 60 minutes. 
+• A total of 60 points can be achieved. 
+ Results 
+ 
+ 
+Exercise 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+10 
+Sum 
+Maximum score 
+2 
+6 
+4 
+4 
+4 
+8 
+6 
+4 
+10 
+12 
+60 
+Score achieved 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 2 ---
+Exam Data Driven Decision Making  
+ 
+Matriculation number: …………… 
+– 2 – 
+ 
+Exercise 1  (2 points) 
+What are the two advantages of a priori optimization as opposed to dynamic decision-
+making? 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Exercise 2  (6 points) 
+Travel times are observed on a road segment and assigned to the hour in which the 
+observation was made. The expected travel time for a given hour is calculated from 
+the average of all observations made during that hour. What is meant by the FIFO 
+condition regarding average travel times in consecutive hours? When is the FIFO  
+condition violated? How can the FIFO condition be? 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 3 ---
+Exam Data Driven Decision Making  
+ 
+Matriculation number: …………… 
+– 3 – 
+ 
+Exercise 3  (4 points) 
+In a dynamic stochastic inventory problem without prediction, how can you ensure that 
+orders are placed at all? Which category of ADP methods would you classify your  
+proposed solution under? 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Exercise 4  (4 points) 
+ADP methods such as rollout or value function approximation simulate possible  
+developments based on post-decision states. In such a simulation, the stochastic  
+transitions are drawn from an externally given distribution. Outline the procedure for 
+an exponentially distributed distribution. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 4 ---
+Exam Data Driven Decision Making  
+ 
+Matriculation number: …………… 
+– 4 – 
+ 
+Exercise 5  (4 points) 
+Explain in keywords the difference between (filter-based) feature selection and  
+dimensionality reduction techniques. Give two specific examples for each. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Exercise 6  (8 points) 
+You are looking at a dynamic inventory problem. Name the external process, the  
+decision process, the state space, and the reward. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 5 ---
+Exam Data Driven Decision Making  
+ 
+Matriculation number: …………… 
+– 5 – 
+ 
+Exercise 7  (6 points) 
+Specify the components of a Markov decision process. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Exercise 8  (4 points) 
+Explain the function and prerequisites for the applicability of the Hurwicz criterion in 
+optimization. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 6 ---
+Exam Data Driven Decision Making  
+ 
+Matriculation number: …………… 
+– 6 – 
+ 
+Exercise 9  (10 points) 
+You have learned about five ADP method classes. Name these classes and state one 
+substantial disadvantage of using each class. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 7 ---
+Exam Data Driven Decision Making  
+ 
+Matriculation number: …………… 
+– 7 – 
+ 
+Exercise 10  (12 points) 
+Suggest three different combinations of two ADP methods in each case. Describe the 
+advantages you expect from the combination of the respective two methods. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+

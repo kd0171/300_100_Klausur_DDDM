@@ -1,0 +1,1631 @@
+\section*{Lecture 2: Information and Decision Modeling}
+\addcontentsline{toc}{section}{Lecture 2: Information and Decision Modeling}
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{001}{表紙}
+\SlideImage{1}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Data Driven Decision Making
+\item 第2回 - 情報モデリングと意思決定モデリング
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{002}{本日の講義目標}
+\SlideImage{2}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Business Analytics のプロセス。
+\item 情報モデリングと意思決定モデリング。
+\item 時間依存旅行時間を持つ車両ルーティング。
+\item データが最初に来る。
+\item 注意: この講義では多くの手法を使うが、詳細な定義ではなく考え方のみを扱う。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。
+\item 情報モデルは現実の圧縮表現、意思決定モデルは行動選択の評価構造である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「本日の講義目標」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Real-World は、配送車、顧客、道路、倉庫、ドライバー、注文、交通といった現実そのものである。現実は複雑すぎるため、そのまま数理モデルやアルゴリズムに入れることはできない。そこで、意思決定に必要な要素だけを抽出し、モデルが扱える形に変換する必要がある。\par
+Aggregation は、現実から得られた詳細データを情報モデルの次元に圧縮する操作である。例として、GPS点列を道路セグメントの速度に変換する、住所を顧客ノードに変換する、過去走行ログから顧客間旅行時間行列を作る、注文履歴から需要分布を推定する、といった処理がある。\par
+Information Model は、意思決定に必要な情報の構造化表現である。ここには、顧客集合、デポ、車両集合、旅行時間行列、需要、時間窓、確率分布などが含まれる。重要なのは、情報モデルは現実の全コピーではなく、意思決定に有用な抽象化だという点である。\par
+Decision Model は、その情報モデルを入力として、どの行動を選べるか、何を最適化するか、どの制約を守るかを定義する。TSPなら、顧客を一度ずつ訪問し総旅行時間を最小化する。VRPなら、複数車両、容量制約、時間窓などが加わる。ここでは決定変数、目的関数、制約が中心になる。\par
+Implementation は、モデル上の解を現実の行動に戻す処理である。たとえば x\_\{ij\}=1 というアーク選択を、ドライバーに提示する訪問順、住所、ナビゲーション、積み込み順へ変換する。実装後には実際の遅延や走行時間が観測され、それが再びAggregationを通じてモデル改善に使われる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 002「本日の講義目標」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、本日の講義目標 を通じて Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 002「本日の講義目標」を、配送またはTSPの具体例で説明せよ。}\\配送現場のGPSと注文データを集約して顧客集合と旅行時間行列を作り、それをTSP/VRPへ入力し、得られた訪問順をドライバー指示へ戻す。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{003}{アジェンダ}
+\SlideImage{3}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 情報モデリングと意思決定モデリング。
+\item ケーススタディ: 時間依存旅行時間を持つ巡回セールスマン問題。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{004}{意思決定}
+\SlideImage{4}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item Real-World: 行動が実行され、その結果として状態を観測できる。
+\item Aggregation: 現実世界のデータを情報モデルの次元へ移す。
+\item Information Model: 情報を圧縮された形で描写する。
+\item Decision Model: 決定空間を定義し、決定を評価する。
+\item Implementation: 意思決定モデルの解を現実世界の行動へ変換する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。
+\item 情報モデルは現実の圧縮表現、意思決定モデルは行動選択の評価構造である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「意思決定」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Real-World は、配送車、顧客、道路、倉庫、ドライバー、注文、交通といった現実そのものである。現実は複雑すぎるため、そのまま数理モデルやアルゴリズムに入れることはできない。そこで、意思決定に必要な要素だけを抽出し、モデルが扱える形に変換する必要がある。\par
+Aggregation は、現実から得られた詳細データを情報モデルの次元に圧縮する操作である。例として、GPS点列を道路セグメントの速度に変換する、住所を顧客ノードに変換する、過去走行ログから顧客間旅行時間行列を作る、注文履歴から需要分布を推定する、といった処理がある。\par
+Information Model は、意思決定に必要な情報の構造化表現である。ここには、顧客集合、デポ、車両集合、旅行時間行列、需要、時間窓、確率分布などが含まれる。重要なのは、情報モデルは現実の全コピーではなく、意思決定に有用な抽象化だという点である。\par
+Decision Model は、その情報モデルを入力として、どの行動を選べるか、何を最適化するか、どの制約を守るかを定義する。TSPなら、顧客を一度ずつ訪問し総旅行時間を最小化する。VRPなら、複数車両、容量制約、時間窓などが加わる。ここでは決定変数、目的関数、制約が中心になる。\par
+Implementation は、モデル上の解を現実の行動に戻す処理である。たとえば x\_\{ij\}=1 というアーク選択を、ドライバーに提示する訪問順、住所、ナビゲーション、積み込み順へ変換する。実装後には実際の遅延や走行時間が観測され、それが再びAggregationを通じてモデル改善に使われる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 004「意思決定」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、意思決定 を通じて Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 004「意思決定」を、配送またはTSPの具体例で説明せよ。}\\配送現場のGPSと注文データを集約して顧客集合と旅行時間行列を作り、それをTSP/VRPへ入力し、得られた訪問順をドライバー指示へ戻す。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{005}{情報モデルと意思決定モデルの選択}
+\SlideImage{5}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 情報モデルと意思決定モデルは初期仮説に基づいて設計される。
+\item 仮説は現実問題の観測行動とデータに基づく。これは descriptive analytics に対応する。
+\item 仮説は必ずしも正しいとは限らない。
+\item 仮説の品質は、意思決定モデルの解を実装することで評価できる。
+\item 観測結果により仮説が更新され、その結果として情報モデルと意思決定モデルも更新される。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。
+\item 情報モデルは現実の圧縮表現、意思決定モデルは行動選択の評価構造である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「情報モデルと意思決定モデルの選択」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Real-World は、配送車、顧客、道路、倉庫、ドライバー、注文、交通といった現実そのものである。現実は複雑すぎるため、そのまま数理モデルやアルゴリズムに入れることはできない。そこで、意思決定に必要な要素だけを抽出し、モデルが扱える形に変換する必要がある。\par
+Aggregation は、現実から得られた詳細データを情報モデルの次元に圧縮する操作である。例として、GPS点列を道路セグメントの速度に変換する、住所を顧客ノードに変換する、過去走行ログから顧客間旅行時間行列を作る、注文履歴から需要分布を推定する、といった処理がある。\par
+Information Model は、意思決定に必要な情報の構造化表現である。ここには、顧客集合、デポ、車両集合、旅行時間行列、需要、時間窓、確率分布などが含まれる。重要なのは、情報モデルは現実の全コピーではなく、意思決定に有用な抽象化だという点である。\par
+Decision Model は、その情報モデルを入力として、どの行動を選べるか、何を最適化するか、どの制約を守るかを定義する。TSPなら、顧客を一度ずつ訪問し総旅行時間を最小化する。VRPなら、複数車両、容量制約、時間窓などが加わる。ここでは決定変数、目的関数、制約が中心になる。\par
+Implementation は、モデル上の解を現実の行動に戻す処理である。たとえば x\_\{ij\}=1 というアーク選択を、ドライバーに提示する訪問順、住所、ナビゲーション、積み込み順へ変換する。実装後には実際の遅延や走行時間が観測され、それが再びAggregationを通じてモデル改善に使われる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 005「情報モデルと意思決定モデルの選択」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、情報モデルと意思決定モデルの選択 を通じて Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 005「情報モデルと意思決定モデルの選択」を、配送またはTSPの具体例で説明せよ。}\\配送現場のGPSと注文データを集約して顧客集合と旅行時間行列を作り、それをTSP/VRPへ入力し、得られた訪問順をドライバー指示へ戻す。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{006}{IDA: Appearance から Structureへ}
+\SlideImage{6}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 現実システムからのデータは、その見かけ appearance を反映するだけで、構造は直接見えにくい。
+\item appearance は不完全、誤り、例外を含む可能性がある。
+\item システム構造はデータモデル構築を助ける。
+\item 記録データは一般的なシステムappearanceの少数サンプルにすぎない。
+\item 記録データは、クリーニング、修正、補完、検証、絞り込みによりターゲットデータセットへ変換される。
+\item データマイニングはターゲットデータからモデルを計算する。
+\item データマイニング概念は、データ内の統計的相関に関する仮説を実装する。
+\item モデルまたはパターンはシステム構造に関する証拠を与える。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item IDAは appearance から structure、PMT/ORは structure から solution へ向かう。
+\item Business Analytics は Statistics, OR, CS/IS の統合領域である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「IDA: Appearance から Structureへ」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+IDA, Intelligent Data Analysis は、記録されたデータの appearance から出発する。appearance とは、現実システムの表面的な観測結果であり、GPSログ、注文履歴、クリック履歴、センサー値のようなものである。これらは誤差、欠損、外れ値を含むため、そのまま構造を表しているとは限らない。\par
+IDAの役割は、データをクリーニングし、補完し、検証し、統計的パターンやモデルを抽出することで、背後にある structure への証拠を与えることである。例えば、タクシーの走行ログから朝夕ラッシュの速度低下パターンを見つけることは、道路交通の構造を推定する作業である。\par
+PMTやOperations Researchは逆方向で考える。まず現実問題の重要構造を仮定し、目的、制約、決定空間を明確にする。そして、ルーティング、スケジューリング、割当、在庫管理などの意思決定モデルを作り、解を求める。これは structure から実行可能な appearance、つまり具体的な解へ向かう流れである。\par
+Business Analytics の三つの基礎は、Statistics、Computer Science/Information Systems、Operations Research である。Statistics は推定と不確実性、CS/IS はデータ処理と実装、OR は最適化と意思決定を担う。三つを列挙するだけでは不十分で、互いの交差領域が現実のデータ駆動意思決定で不可欠であることを説明する必要がある。\par
+具体例として配送計画を考えると、Statistics は旅行時間分布を推定し、CS/IS はGPSデータや注文データを保存・処理し、OR は車両ルートを最適化する。データだけではルートは決まらず、最適化だけでは現実の交通を反映できないため、この統合がDDDMの基礎になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 006「IDA: Appearance から Structureへ」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、IDA: Appearance から Structureへ を通じて IDAは appearance から structure、PMT/ORは structure から solution へ向かう。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 006「IDA: Appearance から Structureへ」を、配送またはTSPの具体例で説明せよ。}\\IDAはGPSログから交通パターンを見つけ、ORはその旅行時間情報を使ってルートを最適化し、CS/ISはデータ処理とアプリ実装を担う。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{007}{PMT: Structure から Appearanceへ}
+\SlideImage{7}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 現実の意思決定問題は、数理モデリングの要件を満たすよう単純化される。
+\item 仮説により重要な問題構造の特徴が選択される。
+\item データが利用可能な特徴だけが考慮される。
+\item 重要な特徴は目的、決定空間、制約である。
+\item 意思決定モデルの一般構造が、問題から意思決定モデルへの道を橋渡しする。
+\item 意思決定モデル構造の例は、割当、ルーティング、スケジューリングである。
+\item 得られた解は問題の一つの最適な appearance を描く。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item IDAは appearance から structure、PMT/ORは structure から solution へ向かう。
+\item Business Analytics は Statistics, OR, CS/IS の統合領域である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「PMT: Structure から Appearanceへ」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+IDA, Intelligent Data Analysis は、記録されたデータの appearance から出発する。appearance とは、現実システムの表面的な観測結果であり、GPSログ、注文履歴、クリック履歴、センサー値のようなものである。これらは誤差、欠損、外れ値を含むため、そのまま構造を表しているとは限らない。\par
+IDAの役割は、データをクリーニングし、補完し、検証し、統計的パターンやモデルを抽出することで、背後にある structure への証拠を与えることである。例えば、タクシーの走行ログから朝夕ラッシュの速度低下パターンを見つけることは、道路交通の構造を推定する作業である。\par
+PMTやOperations Researchは逆方向で考える。まず現実問題の重要構造を仮定し、目的、制約、決定空間を明確にする。そして、ルーティング、スケジューリング、割当、在庫管理などの意思決定モデルを作り、解を求める。これは structure から実行可能な appearance、つまり具体的な解へ向かう流れである。\par
+Business Analytics の三つの基礎は、Statistics、Computer Science/Information Systems、Operations Research である。Statistics は推定と不確実性、CS/IS はデータ処理と実装、OR は最適化と意思決定を担う。三つを列挙するだけでは不十分で、互いの交差領域が現実のデータ駆動意思決定で不可欠であることを説明する必要がある。\par
+具体例として配送計画を考えると、Statistics は旅行時間分布を推定し、CS/IS はGPSデータや注文データを保存・処理し、OR は車両ルートを最適化する。データだけではルートは決まらず、最適化だけでは現実の交通を反映できないため、この統合がDDDMの基礎になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 007「PMT: Structure から Appearanceへ」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、PMT: Structure から Appearanceへ を通じて IDAは appearance から structure、PMT/ORは structure から solution へ向かう。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 007「PMT: Structure から Appearanceへ」を、配送またはTSPの具体例で説明せよ。}\\IDAはGPSログから交通パターンを見つけ、ORはその旅行時間情報を使ってルートを最適化し、CS/ISはデータ処理とアプリ実装を担う。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{008}{IDAとPMTの統一的見方}
+\SlideImage{8}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 記録データからターゲットデータへ。
+\item ターゲットデータから情報構造と情報モデル/パターンへ。
+\item 問題構造から意思決定モデル構造と意思決定モデルへ。
+\item 仮説が、データ側と意思決定側の両方を接続する。
+\item 解は現実で実装され、再び観測につながる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item IDAは appearance から structure、PMT/ORは structure から solution へ向かう。
+\item Business Analytics は Statistics, OR, CS/IS の統合領域である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「IDAとPMTの統一的見方」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+IDA, Intelligent Data Analysis は、記録されたデータの appearance から出発する。appearance とは、現実システムの表面的な観測結果であり、GPSログ、注文履歴、クリック履歴、センサー値のようなものである。これらは誤差、欠損、外れ値を含むため、そのまま構造を表しているとは限らない。\par
+IDAの役割は、データをクリーニングし、補完し、検証し、統計的パターンやモデルを抽出することで、背後にある structure への証拠を与えることである。例えば、タクシーの走行ログから朝夕ラッシュの速度低下パターンを見つけることは、道路交通の構造を推定する作業である。\par
+PMTやOperations Researchは逆方向で考える。まず現実問題の重要構造を仮定し、目的、制約、決定空間を明確にする。そして、ルーティング、スケジューリング、割当、在庫管理などの意思決定モデルを作り、解を求める。これは structure から実行可能な appearance、つまり具体的な解へ向かう流れである。\par
+Business Analytics の三つの基礎は、Statistics、Computer Science/Information Systems、Operations Research である。Statistics は推定と不確実性、CS/IS はデータ処理と実装、OR は最適化と意思決定を担う。三つを列挙するだけでは不十分で、互いの交差領域が現実のデータ駆動意思決定で不可欠であることを説明する必要がある。\par
+具体例として配送計画を考えると、Statistics は旅行時間分布を推定し、CS/IS はGPSデータや注文データを保存・処理し、OR は車両ルートを最適化する。データだけではルートは決まらず、最適化だけでは現実の交通を反映できないため、この統合がDDDMの基礎になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 008「IDAとPMTの統一的見方」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、IDAとPMTの統一的見方 を通じて IDAは appearance から structure、PMT/ORは structure から solution へ向かう。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 008「IDAとPMTの統一的見方」を、配送またはTSPの具体例で説明せよ。}\\IDAはGPSログから交通パターンを見つけ、ORはその旅行時間情報を使ってルートを最適化し、CS/ISはデータ処理とアプリ実装を担う。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\ExamHeader{情報モデル・意思決定モデル・Business Analyticsプロセス}
+\ExamQuestion{SS24 Aufgabe 1a [8 Punkte]}
+\ExamSubsection{問題内容}
+Information Model, Decision Model, Aggregation, Disaggregation の機能を説明する問題。\par
+\ExamSubsection{満点答案}
+Aggregation は、現実世界から得られる詳細で雑多なデータを、情報モデルで扱える抽象度へ変換する機能である。例えば、GPS点列を道路セグメントの速度に変換し、住所を顧客ノードに変換し、過去走行記録を時間帯別旅行時間に集約する。\par
+Information Model は、意思決定に必要な情報を構造化した表現である。現実のすべてを含むのではなく、目的に関連する顧客、デポ、道路、旅行時間、需要、時間帯などを圧縮して表す。Decision Model は、情報モデルを入力として、どの決定を選べるか、どの制約を守るか、何を最小化または最大化するかを定義する。TSPなら、アーク選択変数、訪問制約、部分巡回除去制約、総旅行時間最小化が該当する。\par
+Disaggregation は、モデルの解を現実の実行可能な指示へ戻す機能である。例えば、モデル上のノード番号列を住所・道路ルート・ドライバー指示に変換する。したがって、Aggregation は現実からモデルへ、Disaggregation はモデルから現実への橋である。\par
+\ExamSubsection{具体例による解説}
+顧客A,B,Cへの配送では、住所と地図から旅行時間行列を作るのがAggregation、旅行時間行列と顧客集合がInformation Model、最短訪問順を求めるTSPがDecision Model、A->C->Bという解を実際のナビにするのがDisaggregationである。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 四概念をそれぞれ定義
+\item モデル入力・出力の方向を明示
+\item 配送/TSP例で対応付け
+\item 現実とモデルのループを説明
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS23/24 Aufgabe 3 [10 Punkte]}
+\ExamSubsection{問題内容}
+配送車両フリートの業務的ツアープランニングを例に、Real-World, Aggregation, Information Model, Decision Model, Implementation の構成要素とデータフローを説明する問題。\par
+\ExamSubsection{満点答案}
+Real-World は、配送センター、顧客住所、道路ネットワーク、配送車両、ドライバー、交通状況である。ここで実際の配送が行われ、走行時間や遅延などが観測される。Aggregation では、顧客住所をノードにし、道路地図やGPSから顧客間旅行時間を計算し、必要なら時間帯別旅行時間行列を作る。\par
+Information Model は、デポ、顧客集合、車両集合、顧客需要、旅行時間または距離行列、時間帯などから成る。Decision Model は、どの車両がどの顧客をどの順序で訪問するかを決めるVRP/TSPである。決定変数はアーク使用や車両割当を表し、制約は各顧客を一度訪問すること、車両容量、勤務時間、時間窓などである。目的関数は総旅行時間、車両数、遅延、コストの最小化である。\par
+Implementation は、得られたルートをドライバーの配送順序、ナビゲーション、出発時刻、作業指示に変換することである。実装後の走行時間や遅延は再び観測され、旅行時間モデルや制約仮説の改善に使われる。\par
+\ExamSubsection{具体例による解説}
+例えば、モデルが『車両1: Depot-A-C-Depot、車両2: Depot-B-D-Depot』を出した場合、Implementationでは実住所、積載順、ナビ経路、時間窓をドライバーに渡す。もしA-C間が常に遅れるなら、AggregationやInformation Modelを更新する。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 配送例のReal-Worldを具体化
+\item 各構成要素の対応付け
+\item 決定変数・制約・目的関数を説明
+\item 実装とフィードバックを説明
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{009}{例: 巡回セールスマン問題}
+\SlideImage{9}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 仮説: 旅行時間は一定である。
+\item 情報モデル: 旅行時間行列。
+\item 意思決定モデル: 時間的考慮を持たない混合整数計画。
+\item 実装すると予想外の結果が生じる。通常、計画より時間がかかる。
+\item 仮説を、時間依存旅行時間を捉えるように調整する。
+\begin{itemize}
+\item 情報モデル: 複数の旅行時間行列と遷移に関する考慮。
+\item 意思決定モデル: 時刻を考慮した混合整数計画。決定変数は x\_ij(t) のようになる。
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。
+\item 時間依存TSPでは d\_ij が d\_ij(t) になり、到着時刻が決定に影響する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「例: 巡回セールスマン問題」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Travelling Salesman Problem は、複数の顧客を一度ずつ訪問し、最後に出発点へ戻る最短ツアーを求める基本的なルーティング問題である。顧客やデポはノード、ノード間の移動はアーク、距離や旅行時間はアークコストとして表される。\par
+意思決定モデルとしてのTSPでは、x\_\{ij\}=1 なら i から j へ直接移動する、0なら移動しない、という二値変数を使う。目的関数は、選ばれたアークの距離または旅行時間の合計を最小化する。制約として、各顧客に一度入る、各顧客から一度出る、部分巡回を禁止する条件が必要である。\par
+情報モデルとしては、顧客集合、デポ、顧客間距離または旅行時間行列が必要である。つまり、TSPは情報モデルと意思決定モデルの典型的な接続例である。旅行時間行列が情報モデル、二値変数・目的関数・制約を持つ最適化問題が意思決定モデルである。\par
+時間依存TSPでは、アークコストが出発時刻に依存する。固定の d\_\{ij\} ではなく d\_\{ij\}(t) になるため、同じ i から j への移動でも朝は20分、昼は10分、夕方は30分ということがある。この場合、訪問順序だけでなく、いつそのアークを通るかが重要になる。\par
+具体例として、顧客Aを先に訪問するとBへの移動がラッシュ前に終わるが、Cを先に訪問するとBへの移動がラッシュ中になり遅れることがある。つまり、局所的に短い移動を選んでも、時刻の変化により後続コストが悪化するため、時間を含む意思決定モデルが必要になる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 009「例: 巡回セールスマン問題」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、例: 巡回セールスマン問題 を通じて TSPの要素をノード、アーク、コスト、決定変数、目的関数、制約に分けて説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 009「例: 巡回セールスマン問題」を、配送またはTSPの具体例で説明せよ。}\\顧客をノード、移動をアーク、旅行時間をコストとして、全顧客を一度ずつ訪問する順序を選ぶ。時間依存なら出発時刻も評価に入る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{010}{アジェンダ}
+\SlideImage{10}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 情報モデリングと意思決定モデリング。
+\item ケーススタディ: 時間依存旅行時間を持つ巡回セールスマン問題。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{011}{動機}
+\SlideImage{11}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item サービスルーティング。
+\item 高価な走行時間を節約する。
+\item 時間的コミットメント
+\begin{itemize}
+\item 顧客サービス経験を向上させる。
+\item 顧客の在宅・利用可能性を確保する。
+\end{itemize}
+\item どちらも旅行時間の正確な考慮を必要とする。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「動機」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 011「動機」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、動機 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 011「動機」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{012}{時間依存旅行時間}
+\SlideImage{12}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 交通は時間と空間により変化する。
+\item 道路セグメントごとに旅行時間が異なる。
+\item 顧客間の最短経路が異なる。
+\item ツアー開始時刻により顧客の訪問順序が異なる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「時間依存旅行時間」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 012「時間依存旅行時間」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、時間依存旅行時間 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 012「時間依存旅行時間」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{013}{モデリングの概略}
+\SlideImage{13}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 情報モデル
+\begin{itemize}
+\item 顧客間、デポを含む時間依存旅行時間。
+\item 時間依存旅行時間行列、または複数の旅行時間行列。
+\end{itemize}
+\item 意思決定モデル
+\begin{itemize}
+\item 目的: 旅行時間を最小化する。
+\item 制約: 全顧客をサービスする。
+\item 制約: ルーティング制約、部分巡回除去など。
+\item 決定変数: 時刻 t に顧客 i と j の間を移動するか。
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「モデリングの概略」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 013「モデリングの概略」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、モデリングの概略 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 013「モデリングの概略」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{014}{データ収集: Floating Car Data}
+\SlideImage{14}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 時刻と道路セグメントごとの旅行時間。
+\item 正確な平均値を計算するには大量のデータが必要である。
+\item Floating Car Data: 大規模な車両群が、位置、方向、場合によって速度を短い時間間隔で送信する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「データ収集: Floating Car Data」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 014「データ収集: Floating Car Data」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、データ収集: Floating Car Data を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 014「データ収集: Floating Car Data」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{015}{FCDの収集と利用}
+\SlideImage{15}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item タクシー車両群。
+\item ディスパッチャー。
+\item 公共交通管理。
+\item プロバイダ。
+\item インターネット。
+\item GPRS, SMS, RDS-TMC, HTTP による通信。
+\item およそ1分に1回の通信。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「FCDの収集と利用」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 015「FCDの収集と利用」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、FCDの収集と利用 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 015「FCDの収集と利用」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{016}{FCD: 速度計算}
+\SlideImage{16}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item タクシーデータは、道路、方向、速度を直接与えない。
+\item 必要な手順
+\begin{itemize}
+\item タクシー位置を観測する。
+\item 位置を道路セグメントに投影する。
+\item このセグメントの観測速度を計算する。
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「FCD: 速度計算」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 016「FCD: 速度計算」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、FCD: 速度計算 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 016「FCD: 速度計算」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{017}{FCD: 速度計算の表}
+\SlideImage{17}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item link, time, speed の観測表。
+\item 同じリンクでも時刻により速度が大きく異なる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「FCD: 速度計算の表」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 017「FCD: 速度計算の表」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、FCD: 速度計算の表 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 017「FCD: 速度計算の表」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\ExamHeader{Floating Car Data と旅行時間情報モデル}
+\ExamQuestion{WS22/23 Aufgabe 4 [8 Punkte]}
+\ExamSubsection{問題内容}
+交通観測データから、時間帯別の平均旅行時間または旅行時間行列を構築する手順を説明する問題。\par
+\ExamSubsection{満点答案}
+まず、車両から時刻付き位置データ、速度、方向などを収集する。次に、位置データを道路ネットワーク上のリンクに対応付ける map matching を行う。これにより、各観測がどの道路セグメント・どの方向・どの時刻に属するかが分かる。\par
+その後、エラー、外れ値、停止中データ、GPSのずれを除去または補正する。観測を時間帯と道路セグメントごとにグループ化し、平均速度または平均旅行時間を計算する。観測数が少ないセグメントや時間帯では、時間帯をまとめる、類似道路で補完する、空間的・時間的な一般化を使う。\par
+最後に、顧客間の経路を道路セグメント列として求め、各セグメントの時間帯別旅行時間を足し合わせて、顧客間の時間依存旅行時間行列を作る。この情報モデルは、時間依存TSP/VRPの意思決定モデルの入力になる。\par
+\ExamSubsection{具体例による解説}
+タクシーFCDが1分ごとに位置を送る場合、Hildesheimer Strasseの月曜8時台に属する観測を集め、平均速度を出す。その速度からリンク旅行時間を求め、顧客AからBへ行く経路上のリンク旅行時間を合計してA-Bの8時台旅行時間を作る。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item データ収集
+\item map matching
+\item 外れ値処理
+\item 時間帯・セグメント別集約
+\item 顧客間行列への変換
+\item 観測不足への対応
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{SS24 Aufgabe 1b [4 Punkte]}
+\ExamSubsection{問題内容}
+旅行時間の情報モデルを二つ例示し、なぜ常により詳細なモデルを選ばないのかを説明する問題。\par
+\ExamSubsection{満点答案}
+旅行時間情報モデルの例として、第一に単一の平均旅行時間行列がある。これは各顧客間の旅行時間を一つの値で表す。第二に時間帯別旅行時間行列がある。これは朝、昼、夕方などの時間帯ごとに異なる旅行時間を持つ。さらに詳細には、道路セグメントごとの連続的な時間依存関数も考えられる。\par
+常に詳細なモデルを選ばない理由は、データ量、信頼性、計算複雑性、解釈可能性にコストがあるからである。時間帯や道路を細かく分けるほど、各セルの観測数が減り、平均値が不安定になる。また、意思決定モデルの変数・制約が増え、解くのが難しくなる。したがって、目的に十分な粒度を選ぶ必要がある。\par
+\ExamSubsection{具体例による解説}
+夜間配送が中心なら、朝夕ラッシュを細かく分けたモデルは不要かもしれない。一方、Same-Day配送で夕方ラッシュに多く走るなら、平均行列では遅延を過小評価するため、時間帯別モデルが有用である。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 二つ以上の情報モデルを提示
+\item 詳細モデルの利点
+\item データ量・信頼性・計算量の欠点
+\item 目的に応じた粒度選択
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{018}{データ分析}
+\SlideImage{18}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 一日の中で速度パターンが変化する。これは仮説を確認する。
+\item 同じ曜日・同じ時刻でもばらつきがある。これは今回の仮説では無視し、次回扱う。
+\item 外れ値やエラーが存在し得る。タクシーデータでは特に注意が必要である。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「データ分析」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 018「データ分析」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、データ分析 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 018「データ分析」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{019}{データクリーニング}
+\SlideImage{19}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item どの観測が外れ値またはエラーかを判断する。
+\item 交通信号、天候など多くの外部要因があるため、客観的評価は難しい。
+\item データクリーニング例: 制限速度の1.5倍を超える速度観測をすべてフィルタする。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「データクリーニング」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 019「データクリーニング」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、データクリーニング を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 019「データクリーニング」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{020}{データ可視化}
+\SlideImage{20}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 観測の空間分布を見る。
+\item よくカバーされている地域がある。
+\item 観測が少ない地域もある。これはタクシーデータに由来する。
+\item 時間帯についても同様である。
+\item 観測を信頼できるか。
+\item 集約と一般化が必要である。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「データ可視化」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 020「データ可視化」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、データ可視化 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 020「データ可視化」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{021}{集約}
+\SlideImage{21}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 時間ステップ W を定義する。例: 24×7。
+\item セグメント l、時間ステップ w ごとに、観測速度から平均旅行速度を計算する。
+\item W=1: セグメントごとに一つの値。
+\item W=24×7: 一日あたり24個、週7日分の値。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「集約」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 021「集約」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、集約 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 021「集約」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{022}{一般化}
+\SlideImage{22}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 集約結果は数百万個の値になる。
+\item 一部の値は少数の観測にしか基づかない。
+\item 意思決定モデルは、アクセスしやすく信頼できる情報モデルを必要とする。
+\item データ可視化は、異なる道路セグメントで類似した交通品質パターンを示す。
+\item 考え方: 典型的な交通品質に基づいて道路セグメントをグループ化する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「一般化」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 022「一般化」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、一般化 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 022「一般化」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{023}{一般化: 正規化}
+\SlideImage{23}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 異なるセグメントは同じパターンを持っていても絶対値が異なる。例: 制限速度30または50。
+\item 比較を可能にするため、日内最大値で正規化する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「一般化: 正規化」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 023「一般化: 正規化」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、一般化: 正規化 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 023「一般化: 正規化」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{024}{一般化: クラスタリング}
+\SlideImage{24}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item クラスタリングアルゴリズムで類似した日内変化をグループ化する。
+\item 6つのクラスタ。
+\item 0は交通品質が悪く旅行時間が長い。
+\item 1は交通品質が良く旅行時間が短い。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「一般化: クラスタリング」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 024「一般化: クラスタリング」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、一般化: クラスタリング を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 024「一般化: クラスタリング」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{025}{空間的検証}
+\SlideImage{25}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item クラスタはピーク時の挙動が異なる。
+\item クラスタは異なる道路セグメントタイプを表す。
+\begin{itemize}
+\item 市中心部
+\item 商業地区
+\item 高速道路
+\item コンベヤーベルト型の道路
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「空間的検証」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 025「空間的検証」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、空間的検証 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 025「空間的検証」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{026}{時間的検証}
+\SlideImage{26}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 一日の中の交通品質。Aは高品質、Fは低品質。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「時間的検証」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 026「時間的検証」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、時間的検証 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 026「時間的検証」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{027}{空間・時間: 深夜}
+\SlideImage{27}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 月曜日3-4時。
+\item セグメントの90\%は空いている。
+\item 自由流交通。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「空間・時間: 深夜」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 027「空間・時間: 深夜」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、空間・時間: 深夜 を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 027「空間・時間: 深夜」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{028}{空間・時間: ラッシュアワー}
+\SlideImage{28}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 月曜日17-18時。
+\item 30\%が混雑している。
+\item ラッシュアワー。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。
+\item 観測数が少ないセルでは信頼性が下がるため一般化が必要である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「空間・時間: ラッシュアワー」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Floating Car Data は、移動する車両から得られる位置、時刻、場合によって速度や方向のデータである。タクシー、配送車、一般車両、公共交通車両などがプローブとして機能し、道路交通の状態を間接的に観測する。\par
+FCDはそのまま旅行時間行列ではない。まずGPS点を道路ネットワーク上の正しい道路セグメントに対応付ける map matching が必要である。GPSには誤差があるため、位置が道路からずれていたり、並行道路のどちらを走ったか判定が難しかったりする。\par
+次にデータクリーニングが必要である。信号待ち、駐車、GPSジャンプ、異常に高い速度、方向の誤りなどを処理しなければ、平均速度や旅行時間が歪む。例えば制限速度の1.5倍を超える観測を外すという単純なルールも、外れ値処理の一例である。\par
+集約では、道路セグメント l と時間ステップ w ごとに観測をまとめ、平均速度や平均旅行時間を計算する。W=1なら全時間を一つにまとめる。W=24x7なら曜日と時間帯ごとに別の値を持つ。粒度が細かいほど情報は詳しいが、観測数が少ないセルが増える。\par
+一般化では、似た交通パターンを持つ道路セグメントをグループ化し、信頼できる情報モデルを作る。例えば、中心市街地、商業地区、高速道路では速度レベルも日内変化も異なる。クラスタリングにより類似パターンをまとめれば、観測不足を補い、意思決定モデルが扱いやすい旅行時間情報を作れる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 028「空間・時間: ラッシュアワー」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、空間・時間: ラッシュアワー を通じて FCDは生データであり、map matching, cleaning, aggregation, generalization を経て情報モデルになる。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 028「空間・時間: ラッシュアワー」を、配送またはTSPの具体例で説明せよ。}\\タクシーGPSを道路セグメントへ対応付け、時間帯ごとに平均速度を集計し、顧客間旅行時間行列を作る。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{029}{情報モデル: 結論}
+\SlideImage{29}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 道路セグメントと各時間について旅行時間行列を持つ。
+\item 例: 最初の時間は長い旅行時間、二番目の時間は短い旅行時間、三番目の時間は最長の旅行時間。
+\item この情報に基づいてどのようにルーティングするか。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「情報モデル: 結論」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 029「情報モデル: 結論」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、情報モデル: 結論 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 029「情報モデル: 結論」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{030}{セグメントから経路へ}
+\SlideImage{30}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 顧客間には複数の潜在的経路がある。
+\item 最短経路はDijkstraアルゴリズムで計算される。
+\item 時間依存性を考慮する必要がある。つまり時間依存最短経路を探す。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「セグメントから経路へ」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 030「セグメントから経路へ」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、セグメントから経路へ を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 030「セグメントから経路へ」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{031}{セグメントから経路へ}
+\SlideImage{31}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 異なる時刻に出発すると、異なる道路セグメントを通る可能性がある。
+\item 時間依存Dijkstraはこれを考慮する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「セグメントから経路へ」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 031「セグメントから経路へ」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、セグメントから経路へ を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 031「セグメントから経路へ」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{032}{セグメントから経路へ: FIFO}
+\SlideImage{32}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 行列の硬い切り替えは奇妙な遷移現象を引き起こす。
+\item FIFO: 遅く出発したときに追い越しが起きないようにする必要がある。
+\item ブレークポイントを線形結合で滑らかにする。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item FIFOは、同じ経路で遅く出発した人が早く出発した人を不自然に追い越さない条件である。
+\item 時間帯別行列の急な切替は不連続な旅行時間を作り得る。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「セグメントから経路へ: FIFO」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存最短経路では、出発時刻によってリンク旅行時間が変わる。ここで重要なのがFIFO条件である。FIFOとは First In, First Out の略で、同じリンクや経路に先に入った車両が、後から入った車両に追い越されないという自然な条件を意味する。\par
+もし時間帯の境界で旅行時間が突然大きく短くなると、少し遅く出発した車両の方が早く到着するという不自然な状況が発生することがある。これは、時間帯別旅行時間行列を硬く切り替える場合に起きやすい。\par
+FIFOが満たされないと、時間依存Dijkstraなどの最短経路アルゴリズムの前提が崩れる場合がある。そのため、ブレークポイントを線形補間で滑らかにしたり、旅行時間関数を調整したりして、現実的で計算可能な情報モデルにする必要がある。\par
+具体例として、7:59出発では旅行時間30分、8:00出発では旅行時間5分という行列切替があると、8:00出発の方が先に着いてしまう。現実には渋滞が急に消えることは少ないため、このような不連続はモデル上の人工的な問題である。\par
+試験では、FIFOを単なる略語としてではなく、時間依存旅行時間モデルの妥当性条件として説明する。特に、情報モデルを精密化するときは、データの細かさだけでなく、モデルが現実的・計算可能な性質を持つことも重要である。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 032「セグメントから経路へ: FIFO」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、セグメントから経路へ: FIFO を通じて FIFOは、同じ経路で遅く出発した人が早く出発した人を不自然に追い越さない条件である。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 032「セグメントから経路へ: FIFO」を、配送またはTSPの具体例で説明せよ。}\\7:59出発が8:30着、8:00出発が8:05着になるようなモデルは不自然であり、FIFO条件を満たすよう修正する。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{033}{モデリングの概略}
+\SlideImage{33}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 情報モデル
+\begin{itemize}
+\item 顧客間、デポを含む時間依存旅行時間。
+\item 時間依存旅行時間行列、または複数の旅行時間行列。
+\end{itemize}
+\item 意思決定モデル
+\begin{itemize}
+\item 目的: 旅行時間を最小化する。
+\item 制約: 全顧客をサービスする。
+\item 制約: ルーティング制約、部分巡回除去など。
+\item 決定変数: 時刻 t に顧客 i と j の間を移動するか。
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「モデリングの概略」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 033「モデリングの概略」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、モデリングの概略 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 033「モデリングの概略」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{034}{時間依存決定変数}
+\SlideImage{34}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item アークごとの旅行時間は時刻により異なる。
+\item 例: d\_AB は時刻により 1, 1, 欠落のような値を取る。
+\item 時刻を含むネットワーク表現が必要になる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「時間依存決定変数」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 034「時間依存決定変数」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、時間依存決定変数 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 034「時間依存決定変数」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{035}{時間依存決定変数}
+\SlideImage{35}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item A, B, C, D と時刻 t1 から t7 による時間展開ネットワーク。
+\item ある時刻のノードから将来時刻のノードへ移動することで、時刻依存旅行時間を表現する。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「時間依存決定変数」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 035「時間依存決定変数」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、時間依存決定変数 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 035「時間依存決定変数」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{036}{解を見つける}
+\SlideImage{36}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 最適計算は難しく、ヒューリスティックが必要である。
+\item 4つのヒューリスティック
+\begin{itemize}
+\item LANTIME: メタヒューリスティック
+\item Nearest Neighbor
+\item Cheapest Insertion
+\item Savings
+\end{itemize}
+\item 平均値に基づくTSPも解く。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。
+\item 時間依存旅行時間では局所的評価が後続時刻に波及する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「解を見つける」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+ヒューリスティックは、厳密な最適解を保証しない代わりに、現実的な時間で良い解を作る方法である。TSPやVRPは顧客数が増えると組合せ数が急増するため、実務では厳密解法だけでは間に合わないことが多い。そこで、Nearest Neighbor, Cheapest Insertion, Savings, メタヒューリスティックなどを使う。\par
+Nearest Neighbor は、現在位置から最も近い未訪問顧客を次に選ぶ単純な貪欲法である。直感的で速いが、近い顧客を先に消費した結果、最後に遠い顧客同士をつなぐ悪い移動が残ることがある。短期的に最良の選択が全体最良とは限らない典型例である。\par
+Cheapest Insertion は、現在のツアーにどの未訪問顧客をどの位置へ挿入すると追加コストが最小かを調べる。静的TSPなら、追加コストは局所的に計算しやすい。しかし時間依存TSPでは、挿入によって後続顧客の到着時刻が変わり、後続アークの旅行時間も変わるため、局所評価だけでは不十分である。\par
+Savings は、別々に配送する場合と同じルートにまとめる場合の節約量を見てルートを統合する考え方である。これは車両ルーティングでよく使われる。ただし、時間依存性がある場合、統合により後続時刻が変化し、節約量の評価が単純ではなくなる。\par
+試験では、ヒューリスティック名を列挙するだけでは不十分である。各手法がどのような局所判断をするか、その長所と弱点は何か、時間依存旅行時間でなぜ評価が難しくなるかを具体例で説明する必要がある。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 036「解を見つける」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、解を見つける を通じて ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 036「解を見つける」を、配送またはTSPの具体例で説明せよ。}\\Nearest Neighborは現在地から近い顧客を選び、Cheapest Insertionは追加コストが小さい位置へ顧客を挿入するが、時間依存では後続時刻も変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{037}{Nearest Neighbor}
+\SlideImage{37}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 現在位置から最も近い顧客を次に選ぶ。
+\item 時間依存性を扱うことができる。
+\item 通常、終盤に長い移動が残る。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。
+\item 時間依存旅行時間では局所的評価が後続時刻に波及する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「Nearest Neighbor」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+ヒューリスティックは、厳密な最適解を保証しない代わりに、現実的な時間で良い解を作る方法である。TSPやVRPは顧客数が増えると組合せ数が急増するため、実務では厳密解法だけでは間に合わないことが多い。そこで、Nearest Neighbor, Cheapest Insertion, Savings, メタヒューリスティックなどを使う。\par
+Nearest Neighbor は、現在位置から最も近い未訪問顧客を次に選ぶ単純な貪欲法である。直感的で速いが、近い顧客を先に消費した結果、最後に遠い顧客同士をつなぐ悪い移動が残ることがある。短期的に最良の選択が全体最良とは限らない典型例である。\par
+Cheapest Insertion は、現在のツアーにどの未訪問顧客をどの位置へ挿入すると追加コストが最小かを調べる。静的TSPなら、追加コストは局所的に計算しやすい。しかし時間依存TSPでは、挿入によって後続顧客の到着時刻が変わり、後続アークの旅行時間も変わるため、局所評価だけでは不十分である。\par
+Savings は、別々に配送する場合と同じルートにまとめる場合の節約量を見てルートを統合する考え方である。これは車両ルーティングでよく使われる。ただし、時間依存性がある場合、統合により後続時刻が変化し、節約量の評価が単純ではなくなる。\par
+試験では、ヒューリスティック名を列挙するだけでは不十分である。各手法がどのような局所判断をするか、その長所と弱点は何か、時間依存旅行時間でなぜ評価が難しくなるかを具体例で説明する必要がある。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 037「Nearest Neighbor」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、Nearest Neighbor を通じて ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 037「Nearest Neighbor」を、配送またはTSPの具体例で説明せよ。}\\Nearest Neighborは現在地から近い顧客を選び、Cheapest Insertionは追加コストが小さい位置へ顧客を挿入するが、時間依存では後続時刻も変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{038}{Cheapest Insertion}
+\SlideImage{38}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 空のツアーから始める。
+\item 段階的に最も安い顧客をツアーに挿入する。
+\item 顧客がずらされ、旅行時間の変化により以前の決定が有効でなくなる。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。
+\item 時間依存旅行時間では局所的評価が後続時刻に波及する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「Cheapest Insertion」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+ヒューリスティックは、厳密な最適解を保証しない代わりに、現実的な時間で良い解を作る方法である。TSPやVRPは顧客数が増えると組合せ数が急増するため、実務では厳密解法だけでは間に合わないことが多い。そこで、Nearest Neighbor, Cheapest Insertion, Savings, メタヒューリスティックなどを使う。\par
+Nearest Neighbor は、現在位置から最も近い未訪問顧客を次に選ぶ単純な貪欲法である。直感的で速いが、近い顧客を先に消費した結果、最後に遠い顧客同士をつなぐ悪い移動が残ることがある。短期的に最良の選択が全体最良とは限らない典型例である。\par
+Cheapest Insertion は、現在のツアーにどの未訪問顧客をどの位置へ挿入すると追加コストが最小かを調べる。静的TSPなら、追加コストは局所的に計算しやすい。しかし時間依存TSPでは、挿入によって後続顧客の到着時刻が変わり、後続アークの旅行時間も変わるため、局所評価だけでは不十分である。\par
+Savings は、別々に配送する場合と同じルートにまとめる場合の節約量を見てルートを統合する考え方である。これは車両ルーティングでよく使われる。ただし、時間依存性がある場合、統合により後続時刻が変化し、節約量の評価が単純ではなくなる。\par
+試験では、ヒューリスティック名を列挙するだけでは不十分である。各手法がどのような局所判断をするか、その長所と弱点は何か、時間依存旅行時間でなぜ評価が難しくなるかを具体例で説明する必要がある。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 038「Cheapest Insertion」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、Cheapest Insertion を通じて ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 038「Cheapest Insertion」を、配送またはTSPの具体例で説明せよ。}\\Nearest Neighborは現在地から近い顧客を選び、Cheapest Insertionは追加コストが小さい位置へ顧客を挿入するが、時間依存では後続時刻も変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{039}{Savings}
+\SlideImage{39}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 直接往復ツアーから始める。
+\item 最小費用でツアーを統合する。
+\item 時間依存性の評価は難しい。
+\item 少なくとも後のステップでは暗黙に考慮される。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。
+\item 時間依存旅行時間では局所的評価が後続時刻に波及する。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「Savings」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+ヒューリスティックは、厳密な最適解を保証しない代わりに、現実的な時間で良い解を作る方法である。TSPやVRPは顧客数が増えると組合せ数が急増するため、実務では厳密解法だけでは間に合わないことが多い。そこで、Nearest Neighbor, Cheapest Insertion, Savings, メタヒューリスティックなどを使う。\par
+Nearest Neighbor は、現在位置から最も近い未訪問顧客を次に選ぶ単純な貪欲法である。直感的で速いが、近い顧客を先に消費した結果、最後に遠い顧客同士をつなぐ悪い移動が残ることがある。短期的に最良の選択が全体最良とは限らない典型例である。\par
+Cheapest Insertion は、現在のツアーにどの未訪問顧客をどの位置へ挿入すると追加コストが最小かを調べる。静的TSPなら、追加コストは局所的に計算しやすい。しかし時間依存TSPでは、挿入によって後続顧客の到着時刻が変わり、後続アークの旅行時間も変わるため、局所評価だけでは不十分である。\par
+Savings は、別々に配送する場合と同じルートにまとめる場合の節約量を見てルートを統合する考え方である。これは車両ルーティングでよく使われる。ただし、時間依存性がある場合、統合により後続時刻が変化し、節約量の評価が単純ではなくなる。\par
+試験では、ヒューリスティック名を列挙するだけでは不十分である。各手法がどのような局所判断をするか、その長所と弱点は何か、時間依存旅行時間でなぜ評価が難しくなるかを具体例で説明する必要がある。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 039「Savings」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、Savings を通じて ヒューリスティックは高速に良い解を作る近似手法であり、最適性保証は弱い。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 039「Savings」を、配送またはTSPの具体例で説明せよ。}\\Nearest Neighborは現在地から近い顧客を選び、Cheapest Insertionは追加コストが小さい位置へ顧客を挿入するが、時間依存では後続時刻も変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\ExamHeader{TSP、時間依存TSP、ヒューリスティック}
+\ExamQuestion{WS22/23 Aufgabe 1 [7 Punkte]}
+\ExamSubsection{問題内容}
+TSPの数理最適化モデルをスケッチし、時間次元をTSPモデルでどのように考慮するかを説明する問題。\par
+\ExamSubsection{満点答案}
+標準TSPでは、ノード集合を顧客とデポ、アーク集合を顧客間移動として定義する。各アーク (i,j) には距離または旅行時間 d\_\{ij\} がある。二値決定変数 x\_\{ij\} は、i から j へ直接移動するなら1、そうでなければ0である。目的関数は、sum\_i sum\_j d\_\{ij\} x\_\{ij\} を最小化する。制約として、各顧客にちょうど一度入る、各顧客からちょうど一度出る、部分巡回を排除する制約が必要である。\par
+時間次元を考慮する場合、旅行時間 d\_\{ij\} は定数ではなく、出発時刻 t に依存する d\_\{ij\}(t) になる。さらに、顧客 i への到着時刻、サービス開始時刻、顧客 j への出発時刻などの時間変数が必要になる。アークを選ぶかどうかだけでなく、いつそのアークを通るかが重要になるため、x\_\{ij\}(t) のような時刻依存決定変数や時間伝播制約が必要になる。\par
+\ExamSubsection{具体例による解説}
+A->B が朝8時なら20分、昼12時なら10分なら、同じ訪問順でも出発時刻により目的関数値が変わる。Aを先に訪問するか後に訪問するかが、後続の全旅行時間に影響する。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item 変数 x\_ij
+\item 目的関数
+\item 入次数・出次数制約
+\item 部分巡回除去
+\item 時間依存旅行時間 d\_ij(t)
+\item 到着時刻/出発時刻の伝播
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+\ExamQuestion{WS23/24 Aufgabe 5 [7 Punkte]}
+\ExamSubsection{問題内容}
+Cheapest Insertion が時間依存旅行時間を持つ場合になぜ難しくなるかを説明する問題。\par
+\ExamSubsection{満点答案}
+Cheapest Insertion は、未訪問顧客を現在のツアーのどの位置へ挿入すると追加コストが最小になるかを計算し、その最安挿入を繰り返すヒューリスティックである。静的TSPでは、追加コストは d\_\{i,k\}+d\_\{k,j\}-d\_\{i,j\} のように局所的に計算できる。\par
+時間依存旅行時間では、顧客 k を i と j の間に挿入すると、j 以降の到着時刻が変わる。旅行時間が出発時刻に依存するため、後続アークの旅行時間もすべて変わり得る。したがって、局所的な追加コストだけでは真の影響を測れず、ツアー全体の時刻を再計算しなければならない。\par
+\ExamSubsection{具体例による解説}
+A-Bの間にCを入れると、Bへの到着が15分遅れ、その結果B-Dを夕方ラッシュ時に走ることになるかもしれない。この場合、Cの挿入自体は短く見えても、後続アークが大きく悪化する。\par
+\ExamSubsection{採点で落とさない要素}
+\begin{itemize}
+\item Cheapest Insertionの基本説明
+\item 静的追加コスト
+\item 後続到着時刻への波及
+\item 時間依存コストの再評価
+\item 局所貪欲法の限界
+\end{itemize}
+\vspace{2mm}\hrule\vspace{2mm}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{040}{結果}
+\SlideImage{40}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 出発時刻が異なる。
+\item 旅行時間は時刻に依存する。
+\item 静的モデルは過大評価も過小評価も行う。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「結果」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 040「結果」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、結果 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 040「結果」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{041}{実装}
+\SlideImage{41}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 月曜正午に出発
+\begin{itemize}
+\item 最初は市中心部を避ける。
+\item 先に郊外をサービスする。
+\end{itemize}
+\item 月曜夕方に出発
+\begin{itemize}
+\item 先に市中心部をサービスする。
+\item 最初に郊外道路を使う。
+\item 異なる経路になる。
+\end{itemize}
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。
+\item 平均行列、時間帯別行列、連続関数の違いを説明できる。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「実装」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+時間依存旅行時間とは、同じ道路や同じ顧客間でも、出発時刻によって旅行時間が変わることを意味する。通勤時間帯、昼間、夜間、週末で交通量が変わるため、単一の平均旅行時間では現実を十分に表せない場合が多い。\par
+最も単純な情報モデルは、すべての時刻に共通する平均旅行時間行列である。これは扱いやすいが、朝夕の混雑や夜間の自由流交通を無視する。次に、時間帯別旅行時間行列がある。これは、例えば月曜8時台、月曜9時台のように複数の行列を用意する方法である。\par
+さらに詳細には、各道路セグメントや顧客間アークに対して連続的な旅行時間関数を持つこともできる。ただし、細かいモデルほど多くのデータが必要になり、各時間帯・道路ごとの観測数が少なくなると推定が不安定になる。詳細さは常に良いわけではなく、意思決定に役立つ粒度を選ぶ必要がある。\par
+時間依存性は意思決定モデルにも影響する。静的TSPではアークコストは固定なので訪問順だけを考えればよいが、時間依存TSPでは到着時刻、出発時刻、サービス時間、次アークの旅行時間が連鎖する。したがって、ある顧客を挿入するだけで後続すべての到着時刻が変わる。\par
+具体例として、昼に郊外を先に回り、夕方に市中心部を回る計画と、逆の計画では、同じ顧客を訪問していても総旅行時間が大きく異なる。試験答案では、時間依存性が単なるデータの違いではなく、ルーティング決定の構造を変える点まで述べるとよい。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 041「実装」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、実装 を通じて 時間依存旅行時間は情報モデルを精密にするが、意思決定モデルも複雑にする。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 041「実装」を、配送またはTSPの具体例で説明せよ。}\\AからBへ行く時間が朝20分、昼10分、夕方30分なら、同じルートでも出発時刻により総旅行時間が変わる。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{042}{要するに}
+\SlideImage{42}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 問題とデータを真剣に扱うには多くの作業が必要である。
+\item 情報モデル: データ収集、分析、構造化、集約、一般化。
+\item 意思決定モデル: より多くの決定変数、複雑な意思決定モデル、適応した解法。
+\item 得られるアプローチはより詳細なモデリングを行うが、決定論的挙動を仮定している。
+\end{itemize}
+\NoteSection{試験対策ポイント}
+\begin{itemize}
+\item Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。
+\item 情報モデルは現実の圧縮表現、意思決定モデルは行動選択の評価構造である。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{解説}
+このページでは「要するに」を、講義全体の流れの中で位置づける。スライドの箇条書きは短いが、試験ではその背後にある概念、現実例、モデル上の意味を文章で説明できる必要がある。\par
+Real-World は、配送車、顧客、道路、倉庫、ドライバー、注文、交通といった現実そのものである。現実は複雑すぎるため、そのまま数理モデルやアルゴリズムに入れることはできない。そこで、意思決定に必要な要素だけを抽出し、モデルが扱える形に変換する必要がある。\par
+Aggregation は、現実から得られた詳細データを情報モデルの次元に圧縮する操作である。例として、GPS点列を道路セグメントの速度に変換する、住所を顧客ノードに変換する、過去走行ログから顧客間旅行時間行列を作る、注文履歴から需要分布を推定する、といった処理がある。\par
+Information Model は、意思決定に必要な情報の構造化表現である。ここには、顧客集合、デポ、車両集合、旅行時間行列、需要、時間窓、確率分布などが含まれる。重要なのは、情報モデルは現実の全コピーではなく、意思決定に有用な抽象化だという点である。\par
+Decision Model は、その情報モデルを入力として、どの行動を選べるか、何を最適化するか、どの制約を守るかを定義する。TSPなら、顧客を一度ずつ訪問し総旅行時間を最小化する。VRPなら、複数車両、容量制約、時間窓などが加わる。ここでは決定変数、目的関数、制約が中心になる。\par
+Implementation は、モデル上の解を現実の行動に戻す処理である。たとえば x\_\{ij\}=1 というアーク選択を、ドライバーに提示する訪問順、住所、ナビゲーション、積み込み順へ変換する。実装後には実際の遅延や走行時間が観測され、それが再びAggregationを通じてモデル改善に使われる。\par
+\NoteSection{確認問題と解答}
+\begin{enumerate}
+\item \textbf{Slide 042「要するに」の中心概念を、専門用語を使わずに説明せよ。}\\このスライドでは、要するに を通じて Real-World, Aggregation, Information Model, Decision Model, Implementation の向きを正確に説明する。 ことを理解する必要がある。試験答案では、まず概念の定義を一文で書き、次に講義の例へ対応付け、最後に意思決定モデルにどのような影響を与えるかを述べる。単語の列挙だけでは不十分であり、データがどのように情報モデルへ変換され、その情報モデルがどのように決定変数・目的関数・制約へ接続されるかまで説明する。
+\item \textbf{Slide 042「要するに」を、配送またはTSPの具体例で説明せよ。}\\配送現場のGPSと注文データを集約して顧客集合と旅行時間行列を作り、それをTSP/VRPへ入力し、得られた訪問順をドライバー指示へ戻す。 答案では、例を出した後に、それがどのモデル要素に対応するかを明示する。例えば、顧客集合や旅行時間行列は情報モデル、訪問順序や車両割当は意思決定モデル、実際の配送指示は実装である。
+\end{enumerate}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}
+
+\clearpage
+\SlideHeader{Lecture 2: Information and Decision Modeling}{043}{次回予告}
+\SlideImage{43}{../Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf}
+\begin{adjustbox}{max totalsize={\textwidth}{0.675\textheight},center}
+\begin{minipage}{\textwidth}\scriptsize
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{日本語訳}
+\begin{itemize}
+\item 不確実性と、それが情報モデル・意思決定モデルに与える影響。
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\NoteSection{注記}
+{\small このページは表紙・目次・連絡先などの事務情報であるため、解説と確認問題は付けない。}
+\end{minipage}
+\end{minipage}
+\end{adjustbox}

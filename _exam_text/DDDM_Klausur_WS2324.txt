@@ -1,0 +1,360 @@
+--- page 1 ---
+ 
+ 
+Technische Universität Braunschweig, Institut für Wirtschaftsinformatik 
+Lehrstuhl Decision Support 
+ 
+ 
+Klausur 
+Data Driven Decision Making 
+07.03.2024 (Wintersemester 2023/24) 
+ 
+Studiengang 
+❑  Wirtschaftsinformatik (Master) 
+❑  Wirtschaftsingenieurwesen (Master), 
+      Fachrichtung _____________________ 
+❑  Sonstiges:   ________________________ 
+Persönliche Daten 
+Name: 
+________________________ 
+ 
+Vorname: 
+________________________ 
+ 
+Matr.-Nr.: 
+________________________ 
+ 
+Semester: ____ 
+ 
+❑  1. Versuch 
+❑  2. Versuch 
+❑  3. Versuch 
+ 
+ 
+Bearbeitungshinweise 
+• Überprüfen Sie bitte sofort nach Erhalt die Vollständigkeit der Klausur (6 Seiten 
+inkl. Deckblatt). 
+Schreiben Sie bitte auf jedes Blatt Ihre Matrikelnummer! 
+• Zur Lösung – auch für Konzepte – sind nur die vorgesehenen Lösungsfelder und 
+die entsprechenden Rückseiten bzw. gestempelte Leerseiten zu verwenden. 
+• Als Hilfsmittel sind nur dokumentenechte Schreib- und Zeichengeräte zugelas-
+sen. 
+• Antworten ohne ausreichende Begründung oder in unvollständigen Sätzen  
+führen zu Punktabzug. 
+• Die Bearbeitungszeit beträgt 60 Minuten. 
+• Insgesamt sind 60 Punkte erreichbar. 
+ 
+Ergebnis 
+ 
+ 
+Aufgabe 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+10 
+Summe 
+Maximale 
+Punktzahl 
+6 
+5 
+10 
+6 
+7 
+4 
+7 
+7 
+4 
+4 
+60 
+Erreichte 
+Punktzahl 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 2 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 2 – 
+Aufgabe 1 [6 Punkte] 
+ 
+Das aufstrebende Arbeitsgebiet der Business Analytics bedient sich der Methoden 
+aus drei Disziplinen. Nennen Sie die Disziplinen und nennen Sie jeweils die Schnitt-
+mengen, die sich aus der Kombination von jeweils zwei Disziplinen ergeben. Insge-
+samt also drei Disziplinen und drei Schnittmengen sind gefragt.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 2 [5 Punkte] 
+ 
+Zeigen Sie auf, wie das realweltliche Problem (Real-World Problem) und das Ent-
+scheidungsmodell (Decision Model) zur Lösung des realweltlichen Problems in Be-
+ziehung zueinander stehen. Nennen Sie die notwendigen konzeptuellen Bausteine 
+und beschreiben Sie die Datenflüsse, die die Bausteine verbinden. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 3 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 3 – 
+Aufgabe 3 [10 Punkte]  
+ 
+Benennen und beschreiben Sie die Bausteine sowie die Datenflüsse zwischen den 
+Bausteinen (aus Aufgabe 2) am Beispiel der betrieblichen Tourenplanung für eine 
+Flotte von Lieferfahrzeugen.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 4 [6 Punkte] 
+ 
+Es werden Fahrzeiten auf einem Straßensegment beobachtet und der Stunde, in der 
+die Beobachtung gemachte wurde, zugeordnet. Die erwartete Fahrzeit für eine be-
+treffende Stunde wird aus dem Mittel aller in dieser Stunde gemachten Beobachtun-
+gen erhoben. Was versteht man unter der FIFO Bedingung in Bezug auf die mittleren 
+Fahrzeiten bei aufeinanderfolgenden Stunden? Wann wird die FIFO Bedingung ver-
+letzt? Wie kann durch Modifikation von Fahrzeiten die FIFO Bedingung gewährleistet 
+werden?  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 4 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 4 – 
+Aufgabe 5 [7 Punkte] 
+ 
+Wendet man die Cheapest Insertion Heuristik zur Konstruktion von Touren in Tou-
+renproblemen mit tageszeitabhängigen Fahrzeiten an, so kann es zu unbeabsichtigt 
+schlechten Ergebnissen kommen. Warum ist die Idee des Cheapest Insertion nicht 
+direkt auf den Fall der Tourenplanung mit tageszeitabhängigen Fahrzeiten übertrag-
+bar? Begründen Sie dies und erläutern Sie anhand eines Beispiels. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 6 [4 Punkte]: 
+ 
+Beobachtungen von Fahrzeiten auf Straßensegmenten können auch unabhängig von 
+der Tageszeit voneinander abweichen. Diese Abweichungen können in einer Wahr-
+scheinlichkeitsverteilung abgebildet werden. Wie wird dafür vorgegangen? 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 5 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 5 – 
+Aufgabe 7 [7 Punkte] 
+ 
+Unter welchen Bedingungen kann keine Wahrscheinlichkeitsverteilung approximiert 
+werden? Beschreiben Sie zwei Modelle bzw. Möglichkeiten, die einen Ausweg bie-
+ten. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 8 [7 Punkte] 
+ 
+Was sind die Komponenten eines dynamischen Entscheidungsproblems? Aus wel-
+chen Größen bestimmt sich der Problemzustand zum Zeitpunkt t in einer konzeptio-
+nellen Betrachtung? 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 6 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 6 – 
+Aufgabe 9 [4 Punkte]  
+ 
+Benennen Sie die in Aufgabe 8 angesprochenen Komponenten für ein dynamisches 
+Lagerhaltungsproblem (inventory management). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 10 [4 Punkte] 
+ 
+Wie kann bei einem dynamischen stochastischen Lagerhaltungsproblem ohne Prä-
+diktion erzwungen werden, dass es überhaupt zu Bestellvorgängen kommt? In wel-
+che Kategorie von ADP Verfahren würden Sie ihren Lösungsvorschlag einordnen?  
+ 
+ 
+ 
+  
+

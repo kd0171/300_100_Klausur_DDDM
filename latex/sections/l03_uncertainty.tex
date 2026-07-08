@@ -1,0 +1,945 @@
+\section*{Lecture 3: Uncertainty}
+
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 001: Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=1,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 表紙。第3回はUncertaintyを扱う。\par
+
+\noindent\textbf{解説}\; 第2回の時間依存旅行時間に加え、観測値のばらつき・確率分布・シナリオ・ロバスト性を学ぶ。\par
+
+\noindent\textbf{試験ポイント}\; 過去問ではLecture 3は非常に頻出。stochastic/quasi-stochastic, distribution, Hurwicz, regretを重点化する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3, SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 不確実性は情報モデルと決定モデルのどちらに影響するか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 002: Recap \& Today}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=2,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 前回の復習としてBusiness Analytics全体、情報・意思決定モデル、時間依存旅行時間を確認し、今回は不確実性へ進む。\par
+
+\noindent\textbf{解説}\; Lecture 2の時間依存性は「規則的な変化」、Lecture 3は「不確実なばらつき」の扱いへ進む。\par
+
+\noindent\textbf{試験ポイント}\; 時間依存モデルと不確実性モデルを区別する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 4, WS23/24 Aufgabe 4-5, SS25 Exercise 2, WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 時間依存と不確実性は同じか、違うか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 003: Agenda}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=3,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; アジェンダは、不確実性、Uncertaintyのモデリング、不確実性下の意思決定、都市物流のロバストVRPケーススタディ。\par
+
+\noindent\textbf{解説}\; Lecture 3は「不確実性をどう表すか」と「それを使ってどう決めるか」の二段構成。\par
+
+\noindent\textbf{試験ポイント}\; Modeling uncertainty と decision making under uncertainty を区別する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 不確実性のモデリングと不確実性下の意思決定の違いは何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 004: Introduction}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=4,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 不確実性の例として、株式市場、需要、交通などがある。\par
+
+\noindent\textbf{解説}\; 不確実性とは、決定時点では未来の情報が完全には分からないこと。\par
+
+\noindent\textbf{試験ポイント}\; 何が不確実かを、需要、移動時間、サービス時間、リソースなどに分類する。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 2a, WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 同じ配送問題で不確実な要素を3つ挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 005: Uncertainty in Mobility and Logistics}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=5,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; モビリティ・物流では、顧客リクエスト、需要量、サービス時間、可用性、行動、ドライバー、車両、交通、天候など多くの不確実性がある。\par
+
+\noindent\textbf{解説}\; 不確実性は顧客側、リソース側、環境側に分けると答案を書きやすい。\par
+
+\noindent\textbf{試験ポイント}\; カテゴリ別に具体例を挙げる能力が重要。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 2a と強く関連。Same-Day配送の不確実性カテゴリが問われた。\par
+
+\noindent\textbf{確認問題}\; 顧客・リソース・環境の不確実性を各1つ挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 006: Uncertainty in Travel Times}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=6,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 旅行時間の不確実性。天候、事故、道路工事、交通量などが影響し、連続的・予測可能/不可能な変化を含む。\par
+
+\noindent\textbf{解説}\; 旅行時間は時間帯で変わるだけでなく、同じ時間帯でも確率的にばらつく。\par
+
+\noindent\textbf{試験ポイント}\; 時間依存性と確率分布/シナリオの組み合わせとして理解する。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4, SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 旅行時間の不確実性を確率分布で表せる場合と表せない場合の違いは何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 007: Possible Consequences}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=7,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 不確実性の結果として、活動のキャンセル、配送失敗、職場アクセス不能、遅延、追加コストなどが生じる。\par
+
+\noindent\textbf{解説}\; 不確実性は単なるデータ誤差ではなく、制約違反やサービス品質低下につながる。\par
+
+\noindent\textbf{試験ポイント}\; 目的関数だけでなく制約の実行可能性にも影響することを理解する。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 2a/b, WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 不確実性が制約に影響する例を挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 008: Agenda}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=8,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; アジェンダ。次は不確実性のモデリングへ進む。\par
+
+\noindent\textbf{解説}\; ここから deterministic, stochastic, quasi-stochastic の区別を学ぶ。\par
+
+\noindent\textbf{試験ポイント}\; 講義3で最も重要な分類が始まる。\par
+
+\noindent\textbf{過去問関連}\; WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 3つの不確実性モデル分類を予想して書け。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 009: Modeling Uncertainty}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=9,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 不確実性モデルの選択は情報レベルに依存する。Deterministicは全情報が既知。Stochasticは実現値の確率が既知。Quasi-stochasticは確率は不明だが有限シナリオなどで考える。\par
+
+\noindent\textbf{解説}\; Lecture 3の中心分類。データ量・分布の有無・確率の信頼性によりモデルを選ぶ。\par
+
+\noindent\textbf{試験ポイント}\; deterministic/stochastic/quasi-stochasticを定義し、どの状況で使うか説明する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3, SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3 と強く関連。WS24/25 Aufgabe 3で問われた。\par
+
+\noindent\textbf{確認問題}\; stochastic と quasi-stochastic の違いを説明せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 010: Basics}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=10,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 基礎。確率分布は離散または連続。確率変数Xの実現値と確率があり、期待値は \(\mu=E[X]=\sum_i p_i x_i\) で表される。\par
+
+\noindent\textbf{解説}\; 確率的モデリングでは、ばらつきを確率変数として扱い、期待値・分散などで評価する。\par
+
+\noindent\textbf{試験ポイント}\; 期待値、分散、離散/連続分布、実現値、確率を説明できること。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4 と関連。\par
+
+\noindent\textbf{確認問題}\; 期待値 \(E[X]\) は何を意味するか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 011: Determining a Probability Distribution}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=11,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 確率分布の決定。理論分布を仮定しパラメータを設定する方法、または既存データに分布をフィットする方法がある。例は一様分布、正規分布、指数分布。\par
+
+\noindent\textbf{解説}\; 分布選択はデータと現象に依存する。サービス時間や到着間隔では非負・右裾の分布が自然な場合が多い。\par
+
+\noindent\textbf{試験ポイント}\; どの分布が適切か、パラメータをどう決めるかを説明する。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4, SS25 Exercise 4 と関連。\par
+
+\noindent\textbf{確認問題}\; 理論分布を仮定する方法とデータにフィットする方法の違いは何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 012: Theoretical Probability Density Functions}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=12,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 理論的な確率密度関数の例。分布によって形状、裾、対称性、非負制約が異なる。\par
+
+\noindent\textbf{解説}\; PDFの形から、現象に合うかを判断する。サービス時間や旅行時間は非負で右裾を持つことが多い。\par
+
+\noindent\textbf{試験ポイント}\; 分布の形状を解釈できること。\par
+
+\noindent\textbf{過去問関連}\; SS24 Aufgabe 2b と関連。サービス時間分布の典型的性質が問われた。\par
+
+\noindent\textbf{確認問題}\; サービス時間PDFが負の値を持つのは自然か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 013: Example: Urban Travel Time Distribution I}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=13,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 都市旅行時間分布の例。1つの道路区間の旅行時間観測を頻度として可視化している。\par
+
+\noindent\textbf{解説}\; 観測ヒストグラムから分布形を見て、確率モデルを選ぶ。\par
+
+\noindent\textbf{試験ポイント}\; ヒストグラム、頻度、旅行時間のばらつきを読み取る。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4 と関連。\par
+
+\noindent\textbf{確認問題}\; ヒストグラムから何を見て分布候補を判断するか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 014: Fitting using Software}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=14,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 分布フィッティングにはPythonライブラリやEasyFitなどのソフトウェアが使える。\par
+
+\noindent\textbf{解説}\; 確率モデルは手計算だけでなく、データに対して推定・検証する。\par
+
+\noindent\textbf{試験ポイント}\; ツール名より、フィッティングの目的を理解する。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6の観測値から分布を近似する問題に関連。\par
+
+\noindent\textbf{確認問題}\; 分布フィッティングの目的は何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 015: Example: Urban Travel Time Distribution II}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=15,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 都市旅行時間分布の例2。観測頻度と推定密度を比較し、分布がデータに合うかを見る。\par
+
+\noindent\textbf{解説}\; フィットした分布を意思決定モデルで使うには、現実のばらつきを十分表している必要がある。\par
+
+\noindent\textbf{試験ポイント}\; 分布の適合度と過度な単純化の危険を理解する。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4 と関連。\par
+
+\noindent\textbf{確認問題}\; 分布が観測データに合わない場合、意思決定にどんな問題が起こるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 016: Possible Issues with Stochastic Modeling}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=16,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 確率的モデリングの問題点。データが得られない、記録不足、システム変化、道路工事、新しい概念などにより、確率分布を信頼して推定できない場合がある。\par
+
+\noindent\textbf{解説}\; ここでquasi-stochasticへつながる。確率が分からないときは、シナリオや区間、ロバスト基準を使う。\par
+
+\noindent\textbf{試験ポイント}\; なぜ確率分布を常に使えるわけではないかを説明できること。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 7, SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3 と強く関連。\par
+
+\noindent\textbf{確認問題}\; 確率分布を近似できない条件を3つ挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 017: Quasi-stochastic Modeling}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=17,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 準確率的モデリング。複数のシナリオを作り、有限個の可能な実現値としてWhat-If分析を行う。\par
+
+\noindent\textbf{解説}\; 確率が不明でも、最良・最悪・中間などのシナリオで意思決定の頑健性を評価できる。\par
+
+\noindent\textbf{試験ポイント}\; quasi-stochastic = probability unknown but scenarios/intervals known と覚える。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; quasi-stochastic modelingでは確率を使うか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 018: Constructing Scenarios from Data I}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=18,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; データからシナリオを作る例。月曜16-17時のHildesheimer Strasseの旅行時間観測20個を用いる。\par
+
+\noindent\textbf{解説}\; 限られた観測から、可能な旅行時間ケースを構成する。\par
+
+\noindent\textbf{試験ポイント}\; 観測値からシナリオを作る手順を説明する。\par
+
+\noindent\textbf{過去問関連}\; WS24/25 Aufgabe 1, SS23 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 20個の観測から5シナリオを作るならどう選ぶか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 019: Constructing Scenarios from Data II}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=19,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; シナリオ構築方法。シナリオ数を決める、極端シナリオを選ぶ、間のシナリオを選ぶ、分布を利用するなどの方法がある。\par
+
+\noindent\textbf{解説}\; シナリオは代表的な可能世界。多すぎると計算負荷、少なすぎると代表性不足。\par
+
+\noindent\textbf{試験ポイント}\; シナリオ数・極端値・中間値の選び方を説明できること。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3, WS24/25 Aufgabe 1 と関連。\par
+
+\noindent\textbf{確認問題}\; シナリオ数を増やす利点と欠点は何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 020: Determining Intervals from Data}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=20,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; データから区間を決める。上限を90\%分位、下限を10\%分位などにし、悲観的なら悪い方向へシフトする。\par
+
+\noindent\textbf{解説}\; 区間モデルは、確率を明示せずに可能範囲を表す。楽観/悲観の調整でリスク姿勢を入れる。\par
+
+\noindent\textbf{試験ポイント}\; 分位点、上限/下限、悲観/楽観調整を説明する。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS24/25 Aufgabe 1 と関連。\par
+
+\noindent\textbf{確認問題}\; なぜ最小値・最大値ではなく10\%/90\%分位を使うことがあるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 021: Agenda}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=21,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; アジェンダ。不確実性下の意思決定へ進む。ここからprescriptive analyticsの観点になる。\par
+
+\noindent\textbf{解説}\; これまで作った不確実性モデルを、どう意思決定基準に入れるかが問題になる。\par
+
+\noindent\textbf{試験ポイント}\; stochastic decision making と quasi-stochastic decision makingを分ける。\par
+
+\noindent\textbf{過去問関連}\; WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; 不確実性をモデル化した後、意思決定では何を最適化するか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 022: Example Knapsack Problem I}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=22,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; ナップサック問題の例。泥棒が価値と重量を持つ物を選び、容量制約内で価値を最大化する。\par
+
+\noindent\textbf{解説}\; 不確実性下の意思決定基準を説明するための単純例。決定、目的、制約が分かりやすい。\par
+
+\noindent\textbf{試験ポイント}\; 基本的な決定問題として、選択変数・目的・制約を認識する。\par
+
+\noindent\textbf{過去問関連}\; 後のstochastic/quasi-stochastic基準説明の前提。\par
+
+\noindent\textbf{確認問題}\; ナップサック問題の決定変数・目的・制約を答えよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 023: Example Knapsack Problem II}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=23,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 確率的環境では、売却価格や重量などが不確実になりうる。目的関数または制約が不確実性の影響を受ける。\par
+
+\noindent\textbf{解説}\; 不確実性が目的にある場合は価値が変わり、制約にある場合は実行可能性が変わる。\par
+
+\noindent\textbf{試験ポイント}\; objective uncertainty と constraint uncertaintyを区別する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3, SS24 Aufgabe 2a と関連。\par
+
+\noindent\textbf{確認問題}\; 不確実性が目的関数にある例と制約にある例を挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 024: Decision Making under Uncertainty}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=24,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; stochastic decision makingとquasi-stochastic decision makingは異なる。不確実性は目的関数または制約に影響し、実現値は決定後に明らかになる。stochasticでは期待値・偏差が既知、quasi-stochasticでは未知である。\par
+
+\noindent\textbf{解説}\; 決定時点で未来情報は不明なので、直接 \(F(x,\xi)\) を最小化できない。モデルに応じて期待値、分散、最悪ケース、regretなどを使う。\par
+
+\noindent\textbf{試験ポイント}\; 「決定後に実現値が明らかになる」という順序を説明できること。\par
+
+\noindent\textbf{過去問関連}\; WS24/25 Aufgabe 3 と強く関連。\par
+
+\noindent\textbf{確認問題}\; 決定前に未知で決定後に明らかになる情報を何と呼ぶか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 025: Stochastic Decision Making}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=25,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 確率的意思決定。実行可能決定集合 \(\mathcal{X}\)、具体的決定 \(x\)、決定後に分かるランダム情報 \(\xi\)、コスト \(F(x,\xi)\) を考える。直接最適化できないため期待値 \(\mathbb{E}[F(x,\xi)]\) を最小化する。\par
+
+\noindent\textbf{解説}\; 確率分布がある場合、目的関数は期待コストになる。最適値 \(\zeta^*\) と最適決定集合 \(\mathcal{S}^*\) を定義できる。\par
+
+\noindent\textbf{試験ポイント}\; 記号の意味を文章で説明できること。数式暗記だけでは不十分。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4, WS24/25 Aufgabe 3 と関連。\par
+
+\noindent\textbf{確認問題}\; \(x\) と \(\xi\) の違いを説明せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 026: Stochastic Decision Making II}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=26,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; Monte Carlo Sampling。\(n\)個のシナリオ \(\xi_i\) をサンプルし、期待値 \(\mathbb{E}[F(x,\xi)]\) を標本平均 \(\frac{1}{n}\sum_i F(x,\xi_i)\) で近似する。\par
+
+\noindent\textbf{解説}\; 分布が分かる場合、ランダムサンプルで期待コストを近似できる。サンプル数が増えるほど近似は安定するが計算量も増える。\par
+
+\noindent\textbf{試験ポイント}\; サンプリング手順、標本平均、決定問題への利用を説明する。\par
+
+\noindent\textbf{過去問関連}\; SS25 Exercise 4, WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4 と関連。指数分布などから遷移をサンプリングする論点。\par
+
+\noindent\textbf{確認問題}\; Monte Carloで期待値を近似する式と手順を説明せよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 027: Stochastic Decision Making III}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=27,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 期待値・分散原理。決定 \(x\) を期待値と分散を使う選好関数で評価する。分散を重み \(q\) で入れ、\(\mu(x)+q\sigma^2(x)\) のように扱う。\(q=-1\)はリスク志向、0は中立、1はリスク回避。\par
+
+\noindent\textbf{解説}\; 期待値だけではリスクを表せない。分散を入れることで安定性/リスク姿勢を反映する。\par
+
+\noindent\textbf{試験ポイント}\; リスク志向・中立・回避の違いと、分散が意思決定に与える影響を説明する。\par
+
+\noindent\textbf{過去問関連}\; WS24/25 Aufgabe 3 と関連。stochastic手法例として説明できる。\par
+
+\noindent\textbf{確認問題}\; 期待値が同じ2案で分散が違う場合、リスク回避ならどちらを選ぶか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 028: Quasi-stochastic Decision Making I}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=28,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; Hurwicz基準。最悪実現と最良実現を考え、楽観係数 \(\lambda\in[0,1]\) により \((1-\lambda)\cdot worst + \lambda\cdot best\) を評価する。\par
+
+\noindent\textbf{解説}\; quasi-stochasticで確率が不明なときの基準。\(\lambda\) が大きいほど楽観的、小さいほど悲観的。\par
+
+\noindent\textbf{試験ポイント}\; Hurwiczの式、\(\lambda\) の意味、適用条件を説明できること。\par
+
+\noindent\textbf{過去問関連}\; SS25 Exercise 8, WS24/25 Aufgabe 3 と強く関連。SS25 Exercise 8で機能と適用条件が問われた。\par
+
+\noindent\textbf{確認問題}\; \(\lambda=0\) と \(\lambda=1\) はそれぞれ何を意味するか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 029: Quasi-stochastic Decision Making II}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=29,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; Minmax-Regret基準。各シナリオで完全情報があった場合の最良決定と、選んだ決定の差をregretとし、最大regretを小さくする。\par
+
+\noindent\textbf{解説}\; 確率が不明でも「後から見てどれだけ後悔するか」を抑える。ロバストルーティングで重要。\par
+
+\noindent\textbf{試験ポイント}\; regretの定義、best possible decisionとの比較、最大後悔最小化を説明する。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS24/25 Aufgabe 1 と強く関連。SS23 Aufgabe 3, WS24/25 Aufgabe 1で問われた。\par
+
+\noindent\textbf{確認問題}\; regretは何と何の差か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 030: Agenda}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=30,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; ケーススタディへ移る。不確実性下の都市物流ルーティングを扱う。\par
+
+\noindent\textbf{解説}\; ここから区間旅行時間とminmax regretを実際のVRP/TSPに適用する。\par
+
+\noindent\textbf{試験ポイント}\; 理論基準を具体的な配送問題へ接続する。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS24/25 Aufgabe 1 と関連。\par
+
+\noindent\textbf{確認問題}\; なぜ都市物流でロバストルーティングが必要か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 031: Case Study: Robust Vehicle Routing for Urban Logistics}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=31,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 都市物流の課題。高需要・コスト圧力・高い顧客期待、交通混雑、変動する旅行時間があり、旅行時間不確実性をルーティングへ統合する必要がある。\par
+
+\noindent\textbf{解説}\; ケーススタディの動機。都市配送ではサービスレベルと効率の両立が必要。\par
+
+\noindent\textbf{試験ポイント}\; 不確実性が顧客サービスと運用コストへ与える影響を説明する。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, SS24 Aufgabe 2a と関連。\par
+
+\noindent\textbf{確認問題}\; 都市物流で旅行時間不確実性が重要な理由を2つ挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 032: Roles in Urban Logistics}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=32,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 都市物流の役割。Shipping companyは顧客とサービスレベルを持ち、logistic service providerは車両を運用し事前配送計画を立てる。サービスレベルは旅行時間に影響されるため、計画段階で不確実性情報を考慮する必要がある。\par
+
+\noindent\textbf{解説}\; 意思決定主体と目的を分ける。荷主はサービス水準、物流業者は運行計画とコストを重視する。\par
+
+\noindent\textbf{試験ポイント}\; シナリオ型問題で主体、状態、決定、目的を切り分ける練習になる。\par
+
+\noindent\textbf{過去問関連}\; 未知シナリオ型過去問への応用に有用。\par
+
+\noindent\textbf{確認問題}\; Shipping companyとlogistic service providerの関心はどう違うか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 033: Quasi-stochastic}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=33,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 準確率的モデルは区間 \([l,u]\) で旅行時間を表し、小さい観測数でも扱いやすい。一方、確率的モデルは期待値 \(\mu\) と分散 \(\sigma^2\) や分布を用いるが、大量データと分布選択が必要で抽象的になる。都市物流では区間旅行時間が適切とされる。\par
+
+\noindent\textbf{解説}\; Lecture 3の重要比較表。データ要件、解釈性、集約方法、モデル複雑性でstochasticとquasi-stochasticを比較する。\par
+
+\noindent\textbf{試験ポイント}\; どちらが常に優れているのではなく、データ状況と用途で選ぶ。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 3 と強く関連。\par
+
+\noindent\textbf{確認問題}\; データが少ない場合に区間旅行時間が適する理由は何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 034: Generating the information model data}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=34,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 情報モデルデータ生成。Shifted Gamma分布、平均旅行時間、変動係数を使い、500観測をランダムに生成する。\par
+
+\noindent\textbf{解説}\; ケースでは確率分布から観測を作り、そこから区間やシナリオを構成している。\par
+
+\noindent\textbf{試験ポイント}\; 分布パラメータ、変動係数、サンプリングの意味を理解する。\par
+
+\noindent\textbf{過去問関連}\; WS23/24 Aufgabe 6, SS24 Aufgabe 2b, SS25 Exercise 4, SS25 Exercise 4 と関連。\par
+
+\noindent\textbf{確認問題}\; 変動係数が大きいと分布はどう変わるか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 035: Information Model}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=35,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 情報モデルは2つの旅行時間行列からなる。\(U\)は上限でピーク交通の95\%分位、\(L\)は下限でオフピーク交通の5\%分位。常に \(l_{ij}\le u_{ij}\)。\par
+
+\noindent\textbf{解説}\; 区間旅行時間を行列として表すことで、ロバストTSP/VRPの入力になる。\par
+
+\noindent\textbf{試験ポイント}\; 上限/下限行列、分位点、区間制約を説明できること。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS24/25 Aufgabe 1, WS24/25 Aufgabe 1 と関連。\par
+
+\noindent\textbf{確認問題}\; \(L\) と \(U\) はそれぞれ何を表すか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 036: Robust TSP with Minmax Regret-Criterion}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=36,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; Minmax regret基準を用いたロバストTSP。ツアーで使う辺と使わない辺を考え、旅行時間区間のもとで後悔を最小化する。\par
+
+\noindent\textbf{解説}\; ツアーは全シナリオで同じでも、各シナリオでの最適ツアーとの差がregretになる。\par
+
+\noindent\textbf{試験ポイント}\; ロバスト解は平均最短ではなく、悪いシナリオでの後悔を抑える。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS24/25 Aufgabe 1 と強く関連。\par
+
+\noindent\textbf{確認問題}\; ロバストTSPでregretを最小化する目的は何か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 037: What to achieve?}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=37,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 目標は多くの交通速度シナリオで実装可能なルートを見つけること。効率性と punctuality/reliability のトレードオフがある。最良ケースだけは実行可能性を壊し、最悪ケースだけは効率が悪い。regretベースがバランスを取ることを期待する。\par
+
+\noindent\textbf{解説}\; ロバスト性の直感を説明するページ。平均、最良、最悪のいずれかだけでは不十分な理由を理解する。\par
+
+\noindent\textbf{試験ポイント}\; 効率性、信頼性、earliness/lateness、deviationを使って評価する。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS24/25 Aufgabe 1 と関連。\par
+
+\noindent\textbf{確認問題}\; 最良ケースだけで計画すると何が危険か。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 038: Problem Setting}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=38,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 問題設定はTwo-Tier Delivery network。サテライトを中継点とし、デポからサテライトへ車両で配送し、サテライトから最終配送を行う。目的は移動時間とサテライト待ち時間の最小化。\par
+
+\noindent\textbf{解説}\; 複雑な物流ネットワークでも、情報モデルと決定モデルを分けて整理できる。\par
+
+\noindent\textbf{試験ポイント}\; 配送ネットワーク、決定、目的関数、待ち時間を識別する。\par
+
+\noindent\textbf{過去問関連}\; 未知シナリオ型のモデル化問題への練習。\par
+
+\noindent\textbf{確認問題}\; Two-Tier配送でサテライトは何の役割を持つか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 039: Results}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=39,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 結果。minmax regret基準とメタヒューリスティックを用い、AVG, UB, ITTを比較する。評価基準は車両数、総旅行時間、サテライト到着の平均ずれ。\par
+
+\noindent\textbf{解説}\; ロバスト手法を評価するには、平均だけでなく最悪ケースや区間モデルでの実行品質を見る。\par
+
+\noindent\textbf{試験ポイント}\; 結果表は、手法名より評価軸を読み取ることが重要。\par
+
+\noindent\textbf{過去問関連}\; SS23 Aufgabe 3, WS24/25 Aufgabe 1 と関連。\par
+
+\noindent\textbf{確認問題}\; ロバストルートを評価するとき、総旅行時間以外に何を見るべきか。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 040: Summary}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=40,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; まとめ。不確実性は情報モデルと決定モデルの両方で考慮すべきで、意思決定に大きな影響を与える。適切な不確実性モデルが、意思決定関連データを有効に使う条件である。\par
+
+\noindent\textbf{解説}\; Lecture 3の結論。分布があるかないかに応じて、stochastic/quasi-stochastic手法を選ぶ。\par
+
+\noindent\textbf{試験ポイント}\; 試験では、不確実性の種類、モデル選択、意思決定基準、具体例への適用を一体で説明する。\par
+
+\noindent\textbf{過去問関連}\; WS22/23 Aufgabe 5, SS24 Aufgabe 2a, WS24/25 Aufgabe 3, SS23 Aufgabe 3, WS23/24 Aufgabe 7, WS24/25 Aufgabe 1, WS24/25 Aufgabe 3, SS23 Aufgabe 3, WS24/25 Aufgabe 1 と関連。\par
+
+\noindent\textbf{確認問題}\; Lecture 3の最重要論点を3つ挙げよ。\par
+
+\end{multicols}
+\end{minipage}
+% --- slide page ---
+\clearpage
+\thispagestyle{empty}
+\noindent\textbf{Lecture 3 / Slide 041: Further Questions}\hfill {\scriptsize source: 3DM\_03\_Uncertainty\_SS26.pdf}\par
+\vspace{1mm}
+\noindent\makebox[\textwidth][c]{\includegraphics[page=41,width=\textwidth,height=0.455\textheight,keepaspectratio]{../Materials/2026/3DM_03_Uncertainty_SS26.pdf}}
+\vspace{1mm}
+\begin{minipage}[t][0.47\textheight][t]{\textwidth}
+\scriptsize
+\setlength{\parskip}{1.2pt}
+\begin{multicols}{2}
+\noindent\textbf{日本語訳・要約}\; 今後の問い。変化に反応できるか。例として、現在の交通情報に基づいてTSPを再計画する。\par
+
+\noindent\textbf{解説}\; これはLecture 4のdynamismへの橋渡し。不確実性を事前に織り込むだけでなく、新情報に反応する段階へ進む。\par
+
+\noindent\textbf{試験ポイント}\; uncertainty と dynamism の接続を理解する。\par
+
+\noindent\textbf{過去問関連}\; Lecture 4/5の動的意思決定問題と関連。\par
+
+\noindent\textbf{確認問題}\; 事前ロバスト計画と再計画の違いを説明せよ。\par
+
+\end{multicols}
+\end{minipage}

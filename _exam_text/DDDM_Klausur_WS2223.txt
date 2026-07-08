@@ -1,0 +1,421 @@
+--- page 1 ---
+ 
+ 
+Technische Universität Braunschweig, Institut für Wirtschaftsinformatik 
+Lehrstuhl Decision Support 
+ 
+Klausur 
+Data Driven Decision Making 
+09.03.2023 (Wintersemester 2022/23) 
+ 
+ 
+Studiengang 
+❑  Wirtschaftsinformatik (Master) 
+❑  Wirtschaftsingenieurwesen (Master), 
+      Fachrichtung _____________________ 
+❑  Sonstiges:   ________________________ 
+Persönliche Daten 
+Name: 
+________________________ 
+ 
+Vorname: 
+________________________ 
+ 
+Matr.-Nr.: 
+________________________ 
+ 
+Semester: ____ 
+ 
+❑  1. Versuch 
+❑  2. Versuch 
+❑  3. Versuch 
+ 
+ 
+Bearbeitungshinweise 
+• Überprüfen Sie bitte sofort nach Erhalt die Vollständigkeit der Klausur (7 Seiten 
+inkl. Deckblatt). 
+Schreiben Sie bitte auf jedes Blatt Ihre Matrikelnummer! 
+• Zur Lösung – auch für Konzepte – sind nur die vorgesehenen Lösungsfelder und 
+die entsprechenden Rückseiten bzw. gestempelte Leerseiten zu verwenden. 
+• Als Hilfsmittel sind nur dokumentenechte Schreib- und Zeichengeräte zugelas-
+sen. 
+• Antworten ohne ausreichende Begründung oder in unvollständigen Sätzen  
+führen zu Punktabzug. 
+• Die Bearbeitungszeit beträgt 60 Minuten. 
+• Insgesamt sind 60 Punkte erreichbar. 
+ 
+Ergebnis 
+ 
+ 
+ 
+Aufgabe 
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+10 
+11 
+12 
+Summe 
+Maximale 
+Punktzahl 
+7 
+6 
+6 
+8 
+6 
+4 
+5 
+3 
+5 
+3 
+4 
+3 
+60 
+Erreichte 
+Punktzahl 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 2 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 2 – 
+Aufgabe 1: 
+ 
+Die Thematik der Vorlesung wurde anhand des Travelling Salesperson Problems 
+(TSP) illustriert.  
+ 
+a) Skizzieren Sie ein mathematisches Optimierungsmodell an, mit dem die Fra-
+gestellung gelöst werden kann! (5 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) Wie wird die zeitliche Dimension im TSP Model berücksichtigt? (2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 3 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 3 – 
+Aufgabe 2:  
+ 
+Welche drei wissenschaftlichen Disziplinen leisten einen Beitrag zum Bereich Busi-
+ness Analytics? Welche Schnittmengen dieser Disziplinen definieren diesen Beitrag 
+näher? (6 Punkte)  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 3:  
+ 
+Eine Business Analytics Anwendung folgt sukzessiven Prozessschritten.  
+ 
+a) Stellen Sie den prinzipiellen Prozess dar. (4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) Welche Prozessschritte der BA Anwendung werden dabei dem Operations 
+Research zugeordnet?  (2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 4 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 4 – 
+Aufgabe 4: 
+  
+Nennen Sie die Verarbeitungsschritte, um aus historischen Verkehrsbeobachtungen 
+zu mittleren tageszeitabhängigen Reisezeiten zu gelangen, die Verwendung in einem 
+TSP finden können. (8 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 5: 
+ 
+Mittlere Reisezeiten nehmen sichere Information an. In der Praxis sind Reisezeiten 
+nicht sicher prognostizierbar. 
+ 
+a) Welche Formen der Unsicherheit kennen Sie? (2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+b) Wie unterscheiden sich die unter a. genannten Ausprägungen? (2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+c) Was verstehen Sie unter einer robusten Lösung für ein Optimierungsproblem? 
+(2 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 5 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 5 – 
+Aufgabe 6: 
+ 
+Durch welche Größen wird ein dynamischer Entscheidungsprozess beschrieben? (4 
+Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 7: 
+ 
+Wie wird ein dynamischer Entscheidungsprozess in einem Markov Entscheidungs-
+modell formalisiert? (5 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 6 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 6 – 
+Aufgabe 8: 
+ 
+Welche „curses of dimensionality“ kennen Sie für stochastische dynamische Prob-
+lemstellungen? (3 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 9: 
+ 
+Welche Klassen von Politiken gibt es nach Powell (2011)? (5 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 10: 
+ 
+Welche Nachteile bringt die Anwendung eines Post-Decision Roll-out mit sich? (3 
+Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 7 ---
+Klausur Data Driven Decision Making 
+ 
+Matrikel-Nr.: …………….. 
+– 7 – 
+Aufgabe 11: 
+ 
+Welche Umformungsschritte verlangt die Value Function Approximation ausgehend 
+vom Zustandsraum? Beschreiben sie die Schritte kurz. (4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Aufgabe 12: 
+ 
+Antizipative Verfahren für stochastische dynamische Problemstellungen simulieren 
+zukünftige Entwicklungen ausgehend von Nach-Entscheidungszuständen. Erläutern 
+Sie zwei Argumentationshilfen für die Festlegung des Simulationshorizontes. (3 
+Punkte) 
+ 
+

@@ -1,0 +1,401 @@
+--- page 1 ---
+ 
+ 
+Technische Universität Braunschweig, Institut für Wirtschaftsinformatik 
+Lehrstuhl Decision Support, Prof. Dr. Dirk C. Mattfeld 
+ 
+Klausur 
+Data Driven Decision Making 
+27.02.2025 (WS 2024/2025) 
+ 
+Studiengang 
+❑  Wirtschaftsinformatik (Master) 
+❑  Wirtschaftsingenieurwesen (Master),  
+Fachrichtung _____________________ 
+❑  Technologieorientiertes Management (Master)  
+❑  Sonstiges:   ________________________ 
+Persönliche Daten 
+Name: 
+________________________ 
+ 
+Vorname: 
+________________________ 
+ 
+Matr.-Nr.: 
+________________________ 
+ 
+Semester: ____ 
+ 
+❑  1. Versuch 
+❑  2. Versuch 
+❑  3. Versuch 
+ 
+Bearbeitungshinweise 
+• Überprüfen Sie bitte sofort nach Erhalt die Vollständigkeit der Klausur (8 Seiten 
+inkl. Deckblatt). Schreiben Sie bitte auf jedes Blatt Ihre Matrikelnummer! 
+• Zur Lösung – auch für Konzepte – sind nur die vorgesehenen Lösungsfelder und 
+die entsprechenden Rückseiten bzw. gestempelte Leerseiten zu verwenden. 
+• Als Hilfsmittel sind nur Schreib- und Zeichengeräte sowie ein nicht program-
+mierbarer Taschenrechner zugelassen. 
+• Verwenden Sie ein dokumentenechtes Schreibmittel. Mit Bleistift geschriebene 
+Antworten werden nicht gewertet. 
+• Antworten ohne ausreichende Begründung führen zu Punktabzug. 
+• Die Bearbeitungszeit beträgt 60 Minuten. 
+• Insgesamt sind 60 Punkte erreichbar. 
+Ergebnis 
+ 
+Aufgabe 
+1 
+2 
+3 
+4 
+5 
+Summe 
+Punktzahl 
+ 10 
+10  
+12  
+ 6 
+22  
+60 
+Punkte 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 2 ---
+Klausur Data Driven Decision Making  
+ 
+Matrikelnummer: ___________ 
+– 2 – 
+Aufgabe 1 (10 Punkte) 
+ 
+Eine vereinfachte Möglichkeit zur Abbildung von mehrwertigen Fahrzeiten im Verkehr 
+ist die (2-wertige) Berücksichtigung von optimistischen und pessimistischen Fahrzei-
+ten für die betrachteten Straßensegmente.  
+ 
+a) Erläutern Sie die Gründe und die konkrete Einbeziehung dieses vereinfachten 
+Datenmodells in die Tourenplanung. Welche Möglichkeiten gibt es, wenn mehrere 
+Werte berücksichtigt werden sollen? (6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) Gehen Sie dabei insbesondere auch auf den Begriff des Bedauerns (regret) ein. 
+(4 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 3 ---
+Klausur Data Driven Decision Making  
+ 
+Matrikelnummer: ___________ 
+– 3 – 
+Aufgabe 2 (10 Punkte) 
+ 
+Skizzieren Sie die Arbeitsweise der dynamischen Programmierung zur Ableitung ei-
+ner optimalen Strategie für eine stochastische Problemstellung mit diskreten Ent-
+scheidungszeitpunkten. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 4 ---
+Klausur Data Driven Decision Making  
+ 
+Matrikelnummer: ___________ 
+– 4 – 
+Aufgabe 3 (12 Punkte) 
+ 
+Die stochastische Optimierung (stochastic decison making) ermittelt Lösungen, de-
+ren assoziierte Zielfunktionswerte erst ex-post bekannt werden. Durch die Einbezie-
+hung von unterschiedlichen Ausprägungen in die Optimierung wird der Unsicherheit 
+Rechnung getragen. In Abhängigkeit von der Tatsache, dass die verschiedenen Aus-
+prägungen einer Verteilung gehorchen, für die statistische Größen wie Mittelwert und 
+Streuung angegeben werden können, unterscheidet man den stochastischen vom 
+quasi-stochastischen Fall. Geben Sie für beide Fälle jeweils zwei anwendbare Ver-
+fahren an und beschreiben Sie diese mit jeweils einem Satz.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 5 ---
+Klausur Data Driven Decision Making  
+ 
+Matrikelnummer: ___________ 
+– 5 – 
+Aufgabe 4 (6 Punkte) 
+In der Vorlesung wurden die Verfahren des Rollouts sowie der Value Function Appro-
+ximation vorgestellt. Beide basieren auf einer Simulation zukünftiger Perioden.  
+Diskutieren Sie die Länge des Simulationshorizonts. Bringen Sie dazu ein Beispiel, 
+für das der Simulationshorizont bis zum Ende des gesamten Planungshorizontes ge-
+wählt werden soll, sowie ein Beispiel, für das ein nur kurzer Simulations-horizont 
+Sinn ergibt.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 6 ---
+Klausur Data Driven Decision Making  
+ 
+Matrikelnummer: ___________ 
+– 6 – 
+Aufgabe 5 (22 Punkte) 
+ 
+Die Talsperren im Harz werden von der Harz Wasser Werke GmbH betrieben. Das 
+gestaute Wasser wird zur Energieerzeugung sowie zur Versorgung von Haushalten 
+bis weit in die niedersächsische Tiefebene hinein genutzt. Wasser wird gegen ein 
+Entgelt zur Verfügung gestellt, wobei die wesentliche Zielsetzung in der dauerhaften 
+Versorgung der Bevölkerung gesehen wird. Der zu diesem Zweck notwendige Ab-
+fluss aus den Talsperren kann als bekannt, zumindest aber als gut vorhersagbar an-
+genommen werden. Der Füllstand der Talsperren zu sukzessiven Zeitpunkten wird 
+durch den Zufluss aufgrund von Niederschlägen sowie durch die Abflüsse aus den 
+Talsperren determiniert. Bezüglich der Niederschläge ist ein vieljähriges Mittel be-
+kannt, allerdings können die jeweilig beobachteten Niederschläge stark von diesem 
+Mittel abweichen, siehe Abbildung für Niederschläge pro Monat in Niedersachsen 
+von Januar 2024 bis Januar 2025. Über den zur Versorgung der Bevölkerung not-
+wendigen Abfluss kann zusätzlich Wasser aus den Talsperren entnommen werden, 
+dass lediglich zur Energieerzeugung (und nicht zur Versorgung dient). Die erzeugte 
+Energie wird in das Netz eingespeist und entsprechend vergütet. Läuft eine Tal-
+sperre einmal über, so kann dieses überlaufende Wasser (unabhängig von der Über-
+flutungsgefahr) nicht zur Energieerzeugung verwendet werden. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 7 ---
+Klausur Data Driven Decision Making  
+ 
+Matrikelnummer: ___________ 
+– 7 – 
+a) Geben Sie Elemente des generischen Markov Entscheidungsprozesses an.  
+(6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+b) Benennen Sie mit Bezug zu a) mögliche quantitative Größen für die Elemente 
+des Markov Entscheidungsprozesses. (6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+--- page 8 ---
+Klausur Data Driven Decision Making  
+ 
+Matrikelnummer: ___________ 
+– 8 – 
+c) Entwickeln Sie konzeptuell eine Value Function Approximation für die identifi-
+zierte Problemstellung. (6 Punkte) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+d) Beschreiben Sie das Ergebnis der Value Function Approximation. (4 Punkte) 
+ 
+ 
+ 
+ 
+

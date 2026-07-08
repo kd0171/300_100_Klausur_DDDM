@@ -1,0 +1,58 @@
+
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=7mm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\setmainfont{Noto Sans}
+\setsansfont{Noto Sans}
+\setCJKmainfont{Noto Sans CJK JP}
+\definecolor{TUBSred}{HTML}{BE1E3C}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.0pt}
+\setlist[itemize]{leftmargin=1.05em,itemsep=0.8pt,topsep=1.0pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.20em,itemsep=1.2pt,topsep=1.0pt,parsep=0pt}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\titleformat{\section}{\Large\bfseries\color{TUBSred}}{}{0pt}{}
+\newcommand{\SlideHeader}[3]{%
+  \noindent{\large\bfseries #1 / Slide #2: #3}\hfill {\scriptsize review v4}\par
+  \vspace{0.7mm}\hrule\vspace{0.7mm}
+}
+\newcommand{\SlideImage}[2]{%
+  \noindent\makebox[\textwidth][c]{\includegraphics[page=#1,width=0.94\textwidth,height=0.255\textheight,keepaspectratio]{#2}}\par
+  \vspace{0.5mm}
+}
+\newcommand{\NoteSection}[1]{%
+  \vspace{1.0mm}\noindent{\normalsize\bfseries\color{TUBSred}#1}\par\vspace{0.4mm}
+}
+\newcommand{\ExamHeader}[1]{%
+  \noindent{\Large\bfseries\color{TUBSred}過去問演習: #1}\hfill {\scriptsize review v4}\par
+  \vspace{1mm}\hrule\vspace{2mm}
+  {\small このページは、関連概念を説明した後に一度だけ配置する過去問演習ページである。スライドページには同じ過去問を繰り返さない。}\par\vspace{2mm}
+}
+\newcommand{\ExamQuestion}[1]{\vspace{2mm}\noindent{\large\bfseries #1}\par\vspace{0.8mm}}
+\newcommand{\ExamSubsection}[1]{\vspace{1.2mm}\noindent{\normalsize\bfseries\color{TUBSred}#1}\par\vspace{0.6mm}}
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge Data Driven Decision Making\par}
+\vspace{0.5cm}
+{\Large Lecture 1: Overview - 日本語訳・詳細解説・試験対策ノート\par}
+\vspace{1cm}
+\begin{minipage}{0.88\textwidth}
+このPDFは review v4 です。各スライドページは、元スライド、日本語訳、詳細解説、試験対策ポイント、ページ固有の確認問題を1ページに収めています。解説は review v3 より詳細化し、前提知識が少ない読者でも試験答案を作れるように具体例を増やしています。過去問は重複を避け、必要知識を説明した後に独立した演習ページとして配置しています。
+\end{minipage}
+\vfill
+{\large Materials/2026}
+\end{titlepage}
+\tableofcontents
+\clearpage
+\input{sections/3dm_01_overview_ss26_v4.tex}
+\end{document}

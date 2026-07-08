@@ -1,0 +1,56 @@
+
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=7mm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\setmainfont{Noto Sans}
+\setsansfont{Noto Sans}
+\setCJKmainfont{Noto Sans CJK JP}
+\definecolor{TUBSred}{HTML}{BE1E3C}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.8pt}
+\setlength{\columnsep}{5mm}
+\setlist[itemize]{leftmargin=1.25em,itemsep=1.5pt,topsep=2pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.45em,itemsep=2pt,topsep=2pt,parsep=0pt}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\titleformat{\section}{\Large\bfseries\color{TUBSred}}{}{0pt}{}
+\newcommand{\SlideHeader}[3]{%
+  \noindent{\large\bfseries #1 / Slide #2: #3}\hfill {\scriptsize review v2}\par
+  \vspace{1mm}\hrule\vspace{1.5mm}
+}
+\newcommand{\SlideImage}[2]{%
+  \noindent\makebox[\textwidth][c]{\includegraphics[page=#1,width=0.96\textwidth,height=0.36\textheight,keepaspectratio]{#2}}\par
+}
+\newcommand{\NoteSection}[1]{%
+  \vspace{2.2mm}\noindent{\normalsize\bfseries\color{TUBSred}#1}\par\vspace{0.8mm}
+}
+\newcommand{\ExamItem}[3]{%
+  \vspace{1.2mm}\noindent{\scriptsize\bfseries #1}\par
+  \noindent{\scriptsize\bfseries 問題内容:} #2\par
+  \noindent{\scriptsize\bfseries 期待される回答:} #3\par
+}
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge Data Driven Decision Making\par}
+\vspace{0.5cm}
+{\Large Lecture 2: Information and Decision Modeling - 日本語訳・解説・試験対策ノート\par}
+\vspace{1cm}
+\begin{minipage}{0.88\textwidth}
+このPDFは、元スライドを保持しつつ、日本語訳、概念解説、試験対策ポイント、過去問関連、確認問題と解答を構造化したレビュー用ノートです。日本語訳はスライド構造を保ち、解説は初学者が試験答案で使える水準を目標にしています。過去問は出題範囲を限定するものではなく、重要論点を確認するための参考です。
+\end{minipage}
+\vfill
+{\large Materials/2026}\par
+\end{titlepage}
+\tableofcontents
+\clearpage
+\input{sections/l02_information_decision_modeling_structured.tex}
+\end{document}

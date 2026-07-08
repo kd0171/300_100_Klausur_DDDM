@@ -1,0 +1,674 @@
+--- page 1 ---
+Platzhalter für Bild, Bild auf Titelfolie hinter das Logo einsetzen
+Lecture 3 – Uncertainty
+
+--- page 2 ---
+Recap & Today
+•
+Full process of business analytics
+•
+Information and decision model
+•
+Data comes first
+•
+Finding the “right” information model is challenging
+•
+Decision making complexity increases with
+more elaborate information model.
+•
+Uncertainty in the information model
+•
+How can we model uncertainty?
+•
+How can we make decisions under uncertainty?
+•
+Case Study: Delivery routing with uncertain travel times
+http://ardent.mit.edu/real
+_options/Real_opts_pap
+ers/flaw_of_averages.p
+df
+
+--- page 3 ---
+Agenda
+• Uncertainty
+• Modeling Uncertainty
+• Decision Making under Uncertainty
+• Case Study: Robust Vehicle Routing in Urban Logistics
+
+--- page 4 ---
+Introduction
+Examples:
+•
+Stock market
+•
+Demand
+•
+Supply
+•
+Innovation
+•
+Politics
+Differ in
+•
+Frequency
+•
+Range
+•
+Disruptivity
+•
+Predictability
+faz.net
+finanzen.net
+playstation.com
+wired.com
+zeit.de
+
+--- page 5 ---
+Uncertainty in Mobility and Logistics
+•
+Customers: requests, demand volumes, service times, availability, behavior
+•
+Drivers: availability, behavior, range, skills
+•
+Environment: travel times, parking, network availability
+lebensmittelzeitung.de
+Handelsblatt.de
+schindler.com
+www.wnyc.org
+
+--- page 6 ---
+Uncertainty in Travel Times
+•
+Weather
+• Continuous
+• Predictable
+•
+Traffic
+• Systemic / follows observable patterns
+• Spontaneous (accidents, congestion)
+• Partially predictable
+•
+Traffic Management
+• Discrete Events
+• Subjected to framework conditions and previous events
+• Partially predictable
+
+--- page 7 ---
+Possible Consequences
+•
+Complete cancellation of planned activities
+• Transport: Package is not delivered
+• Mobility: Workplace is inaccessible
+•
+Disruption of planned activities
+• Transport: Delayed package delivery
+Complete failure possible if customer is not present anymore
+• Mobility: Workplace is reached with delay
+•
+General undesirable effects (e.g.)
+• Resulting additional costs
+• Decrease of customer satisfaction
+• Successive activities are affected
+Consideration of uncertainty in decision making is crucial
+
+--- page 8 ---
+Agenda
+• Uncertainty
+• Modeling Uncertainty
+• Decision Making under Uncertainty
+• Case Study: Robust Vehicle Routing in Urban Logistics
+
+--- page 9 ---
+Modeling Uncertainty
+Choice of model depends on level of information
+1.
+Deterministic: All information is known
+2.
+Stochastic: Probability of different information realizations is known
+3.
+Quasi-stochastic: Probability of information realization is unknown
+
+--- page 10 ---
+Basics
+• Probability distribution
+• Discrete or continuous
+• Random Variable: 𝑋with realizations 𝑥1,…,𝑖e.g., 𝑥1 = 20 𝑘𝑚/ℎ
+• Probabilities 𝑝1,…,𝑖of the realization of the corresponding 𝑥𝑖
+• Expected value : 𝜇= 𝐸𝑋= σ𝑖𝑝𝑖𝑥𝑖(or an integral)
+• Variance: 𝜎2 = 𝐸(𝑋−𝜇2]
+• Standard deviation: 𝜎=
+𝜎2
+• Coefficient of variation: 𝐶𝑉=
+𝜎
+𝜇
+• Median and quantiles
+Metrics can be incorporated into decision making process
+Sampling: Generation of new observations from distribution
+Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm.
+n=20
+Frequency
+
+--- page 11 ---
+Determining a Probability Distribution
+Simple assumption of a theoretical distribution and its corresponding parameters
+• Uniform distribution
+• Normal distribution
+• Exponential distribution
+Choice and adjustment of a probability distribution to existing data („Fitting“)
+1.
+Choice of appropriate theoretical probability distribution
+2.
+Estimation of corresponding parameters
+3.
+Testing goodness-of-fit
+• Visualization
+• Goodness-of-fit statistics (e.g., Kolmogorov-Smirnov test)
+4.
+Testing the appropriateness of estimated parameters (“bootstrapping”)
+
+--- page 12 ---
+Theoretical Probability Density Functions
+
+--- page 13 ---
+Example: Urban Travel Time Distribution I
+Travel time observations for one street section
+Travel time (in seconds)
+Frequency
+
+--- page 14 ---
+Fitting using Software
+• Supporting: Python + Libraries
+• Automated: EasyFit
+
+--- page 15 ---
+Example: Urban Travel Time Distribution II
+Travel time (in seconds)
+Frequency/ Density
+
+--- page 16 ---
+Possible Issues with Stochastic Modeling
+•
+Unavailability of data (e.g., cannot be observed a priori)
+• Lack of data recording
+• Change of system: Construction of a street
+• New concept (e.g., autonomous cars)
+•
+Limited data available
+• Only few observations are available which leads to coarse estimation of the underlying
+distribution
+•
+Assumption that path travel times are computed by convolution of independent
+distributions generated for street segments. Correlation is neglected.
+•
+Indeed, correlation of neighboring street segments is essential
+
+--- page 17 ---
+Quasi-stochastic Modeling
+•
+Based on scenarios
+• Create 𝑛scenario 𝑠𝑛∈𝑆(all scenarios)
+• Finite amount of possible realizations
+• „What-If“ analysis
+• e.g., traffic congestion: 10 km/h, no traffic congestion 50 km/h
+•
+Based on intervals 𝑙, 𝑢(as range of possible realizations)
+• Smallest possible value 𝑙, highest possible value 𝑢
+• Possible realizations can have arbitrary values within interval limits
+• E.g., 20 km/h for 10,50 km/h
+•
+Both scenarios and intervals can be derived from domain knowledge and / or from data
+Depict an estimation of uncertainty without directly modeling a probability distribution
+
+--- page 18 ---
+Constructing Scenarios from Data I
+Example: Single observations of travel times
+Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm. n=20
+
+--- page 19 ---
+Constructing Scenarios from Data II
+Possible approaches
+• Set number of scenarios to construct (e.g., 5)
+• Choose extreme scenarios (best-/worst-case)
+• Choose in-between scenarios
+•
+Choice based on domain knowledge
+•
+Increasing the number of scenarios lead to more accurate estimations, in general
+Increases complexity of decision making
+Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm. n=20
+
+--- page 20 ---
+Determining Intervals from Data
+Limits
+• Upper: 90% Percentile
+• Lower: 10% Percentile
+Adjustment of limits
+• Pessimistic: Shift towards worst-case
+• Optimistic:   Shift towards best-case
+• Decreasing-/increasing interval span
+90%
+10
+%
+Braunschweig, Section Hildesheimer Straße, Monday 4pm – 5pm. n=20
+
+--- page 21 ---
+Agenda
+• Uncertainty
+• Modeling Uncertainty (Descriptive and Predictive Analytics)
+• Decision Making under Uncertainty (Prescriptive Analytics)
+• Case Study: Robust Vehicle Routing in Urban Logistics
+
+--- page 22 ---
+Example Knapsack Problem I
+Example
+A burglar with a knapsack gets into a house
+and wants to steal objects to sell later on.
+•
+Each object has a value and a weight
+•
+Total weight of a combination of objects
+has to fit the capacity of the knapsack
+•
+Find combination of these objects with
+highest sum of selling prices.
+Deterministic environment
+•
+He knows exact values (𝑣𝑖) and
+weights (𝑤𝑖) of possible objects
+•
+He knows the exact limit of this
+knapsack (𝑊)
+max ෍
+𝑖=1
+𝑛
+𝑣𝑖⋅𝑥𝑖
+s.t.
+෍
+𝑖=1
+𝑛
+𝑤𝑖⋅𝑥𝑖≤𝑊
+𝑥𝑖∈0,1 for 𝑖∈{1, … , 𝑛}
+Icon: https://www.flaticon.com/free-icon/thief_4321310
+
+--- page 23 ---
+Example Knapsack Problem II
+Stochastic environment
+•
+Possible uncertainty in the objective:
+•
+He does not know the exact selling
+prices on the black market.
+•
+Possible uncertainty in the constraints:
+•
+He does not know the exact weights of
+the objects
+•
+He does not know the exact limit of his
+knapsack
+Example
+•
+Random variable in the objective
+•
+max σ𝑖=1
+𝑛
+𝒗𝑖⋅𝑥𝑖
+•
+Random variable on LHS of constraint:
+•
+σ𝑖=1
+𝑛
+𝒘𝑖⋅𝑥𝑖≤𝑊
+•
+Random variable on RHS of constraint:
+•
+σ𝑖=1
+𝑛
+𝑤𝑖⋅𝑥𝑖≤𝑾
+
+--- page 24 ---
+Decision Making under Uncertainty
+•
+Stochastic decision making differs from quasi-stochastic
+decision making
+•
+Uncertainty can affect objective and / or constraints
+•
+Realizations manifest after decisions are made
+•
+Stochastic decision making:
+Expected value and deviation is known
+•
+Quasi-stochastic decision making:
+Expected value and deviation is unknown
+faz.net
+finanzen.ne
+t
+
+--- page 25 ---
+Stochastic Decision Making
+•
+𝒳domain of all feasible decision
+•
+𝑥a specific decision
+•
+𝜉random information (available after decision is made)
+•
+𝐹cost function to be minimized, denoted as 𝐹𝑥, 𝜉
+•
+Optimizing 𝐹𝑥, 𝜉directly is not possible
+minimize expected value 𝔼𝐹(𝑥, 𝜉)
+•
+Optimal value: 𝜁∗= min
+𝑥∈𝒳𝑓𝑥= 𝔼𝐹(𝑥, 𝜉)
+•
+Set of optimal decisions: 𝒮∗= 𝑥∈𝒳: 𝑓𝑥= 𝜁∗
+
+--- page 26 ---
+Stochastic Decision Making II
+Monte Carlo Sampling
+•
+Choose 𝑛scenarios 𝜉𝑖=1
+𝑛
+of 𝜉
+•
+Approximate objective function by
+𝔼𝐹(𝑥, 𝜉)
+≈1
+𝑛෍
+𝑖=1
+𝑛
+𝐹𝑥, 𝜉𝑖
+•
+Solve deterministic right hand side
+•
+Approximate optimal value:
+𝜁𝑛∗= min
+𝑥∈𝒳𝑓𝑛𝑥=
+1
+𝑛σ𝑖=1
+𝑛
+𝐹𝑥, 𝜉𝑖
+Example
+•
+Distributions of selling prices for each
+object is known
+•
+Generate 𝑛scenarios by sampling selling
+prices for each object
+•
+Solve each scenario independently
+•
+Determine approximate optimal value and
+set of approximate optimal decisions from
+the 𝑛solved scenarios
+
+--- page 27 ---
+Stochastic Decision Making III
+Expected Value Variance Principle
+•
+𝑥is evaluated by a preference function
+using expected value and variance
+•
+Incorporating variance for a more precise
+objective function
+•
+Variance is weighted by
+𝑞: 𝜇𝑥+ 𝑞⋅𝜎2 𝑥
+•
+𝑞= −1 high affinity to risk
+•
+𝑞= 0 neutral to risk
+•
+𝑞= 1 risk-averse
+Example
+•
+Burglar knows distributions of selling
+prices for each object
+•
+E.g., through assumption based on
+historical data
+•
+Calculates expected values (and
+variances)
+•
+Chooses combination of objects with best
+total expected selling prices
+
+--- page 28 ---
+Quasi-stochastic Decision Making I
+Hurwicz-Criterion
+•
+Consider worst and best realization
+•
+Weighted sum with optimism-parameter
+λ ∈0,1 :
+1 −𝜆
+⋅"worst case" + 𝜆⋅"best case"
+Example
+•
+Burglar knows (historical) selling prices
+for each objects
+•
+Choose different scenarios
+•
+Calculates weighted mean / sum prices
+for each object
+•
+Chooses combination of objects with best
+total prices as determined
+
+--- page 29 ---
+Quasi-stochastic Decision Making II
+Minmax-Regret-Criterion
+• Comparing a pessimistic decision in a
+certain scenario with best possible
+decision (assuming complete
+information) in the same scenario
+• Regret: Deviation of the worst decision
+from the best possible decision in the
+same scenario
+Example
+•
+Regret of burglar not realizing the best
+case
+•
+Burglar knows (historical) selling prices
+for each objects
+•
+Calculate difference of best and worst
+cases for each combination
+•
+Worst selling price for taken objects
+•
+Best selling price for objects left behind
+•
+Results in taking objects with a stable
+market price and leaving things behind
+that only yield a high price in the
+optimistic case.
+
+--- page 30 ---
+Agenda
+• Uncertainty
+• Modeling Uncertainty (Descriptive and Predictive Analytics)
+• Decision Making under Uncertainty (Prescriptive Analytics)
+• Case Study: Robust Vehicle Routing in Urban Logistics
+30
+
+--- page 31 ---
+Case Study: Robust Vehicle Routing for Urban Logistics
+Challenges of urban logistics
+High demand and cost-pressure
+High Customer Expectation
+Urban Trafficsystems
+Limited infrastructure: Traffic congestion
+Volatile travel times: Uncertainty
+Integration of Informationen on
+Uncertainty of Travel Times
+into Vehicle Routing for Urban Logistics
+Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics.
+Transportation Research Procedia 10, 652 – 661.
+Groß, P.-O., Ehmke, J.F., Mattfeld, D.C., 2020. Interval travel times for robust synchronization in city logistics vehicle routing,
+Transportation Research Part E: Logistics and Transportation Review,
+Volume 143, 2020
+
+--- page 32 ---
+Roles in Urban Logistics
+Shipping Company
+• Online retailer
+• Number of known customers
+• Commission logistic service provider with delivery of goods
+• Demand 𝛼-service level, based on promised delivery dates
+Logistic service provider
+• Parcel Services
+• Operate a fleet of delivery vehicles
+• A-priori / “day-ahead” planning of deliveries
+• Minimize travel time
+𝛼-service level is affected by travel times
+Information w.r.t. uncertainty of travel times must be considered in the planning phase
+
+--- page 33 ---
+Quasi-stochastic
+Intervals of travel times with limits
+[𝑙, 𝑢]
+[Karasan et al. (2001)]
+Small number of observations
+[Groß et al. (2015)]
+Determining interval limits
+Interval arithmetics
+[Alefeld and Mayer (2000)]
+Intuitive / “Simple”
+Modelling uncertain travel times
+Stochastic
+Representation
+Distribution of travel times with
+expected value 𝜇and variance 𝜎2
+[Lecluyse et al. (2009)]
+Data
+requirements
+Large number of observations
+[Ehmke et al. (2016)]
+Modeling
+Type of distribution / parametrization
+[Susilawati et al. (2013)]
+Aggregation
+Convolution
+[Gómez et. al. (2015)]
+Interpretability
+Abstract / “Complex”
+Interval travel times is an appropriate information model for urban logistics
+
+--- page 34 ---
+Generating the information model data
+• Shifted Gamma distribution
+• Parameter
+• Mean Travel Time
+• Coefficient of Variation
+• Sampling Approach
+• Randomly draw 500 observations
+Example of a connection. Parameters:
+Mean travel time = 15.5
+Coefficient of variance = 10% (left) and 30% (right)
+Quelle: Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics. Transportation Research Procedia 10, 652 – 661.
+
+--- page 35 ---
+Information Model
+Two travel time matrices
+• 𝑈: upper limit of interval travel times
+• 95% Quantile (on peak traffic)
+• 𝐿: lower limit of interval travel times
+•
+5% Quantile (off peak traffic)
+𝑈=
+𝑢𝑖𝑗…
+𝐿=
+𝑙𝑖𝑗…
+𝑙𝑖𝑗≤𝑢𝑖𝑗
+Quelle: Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics. Transportation Research Procedia 10, 652 – 661.
+
+--- page 36 ---
+Robust TSP with Minmax Regret-Criterion
+Quelle: Groß, P.-O., Ulmer, M.W., Ehmke, J.F., Mattfeld, D.C., 2015. Exploiting Travel Time Information for Reliable Routing in City Logistics. Transportation Research Procedia 10, 652 – 661.
+Tour edges
+Unused edges
+Legend:
+
+--- page 37 ---
+What to achieve?
+•
+We aim at finding a route that can be implemented for most traffic speed scenarios
+•
+A tradeoff of efficiency in terms of travel time and service reliability in terms of punctuality
+•
+Considering the best possible case is not an option at all. This will violate feasibility
+•
+A mean of best and worst traffic speed per road segment may deteriorate service quality
+•
+Considering worst case traffic speed leads to a poor efficiency, but good service quality
+•
+Hopefully, a regret based approach balances efficiency and reliability
+•
+Evaluation: Sum of earliness and lateness (=deviation) from self-imposed arrival times
+
+--- page 38 ---
+Problem Setting
+•
+“Two-Tier” Delivery network
+•
+Satellites as transfer points
+•
+Delivery from depot to transfer points
+using a fleet of vehicles
+•
+Final delivery originates from
+each transfer point
+•
+Objective: Minimize travel times including
+wait times at transfer points
+
+--- page 39 ---
+Results
+• Method:
+• VRP using minmax regret criterion
+• Metaheuristic
+• Evaluation:
+• AVG (mean), UB (worst-case), ITT (interval)
+•
+Evaluation criteria
+• Vehicles used
+• Total travel time in minutes
+• Mean deviation of arrival
+at satellite (desynchronized)
+
+--- page 40 ---
+Summary
+•
+Uncertainty should be considered in information and decision model
+•
+Uncertainty affects many applications.  Uncertainty may have significant affect on the
+decisions made.
+•
+Modeling uncertainty appropriately is necessary to make sensible use of decision-relevant
+data.
+•
+Decision models must be selected in dependence of application and derived modelling of
+uncertainty.
+
+--- page 41 ---
+Further Questions
+•
+Can we react to changes?
+•
+Example: The TSP is re-planned based
+on current traffic information
+Dynamic decision making
+•
+Can we predict future uncertain
+developments?
+•
+Example: Some regions with risk of traffic
+congestions can be avoided.
+Anticipation
+Stochastic dynamic decision making
+

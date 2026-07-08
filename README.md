@@ -126,3 +126,62 @@ output/main.pdf
 - Lecture 6 は追加アップロードされた `Materials/2026/3DM_06_ADP_SS26.pdf` を正本として追加済みです。
 - Lecture 7 は `Materials/2026/3DM_07_Lookahead-Methods_SS26.pdf` を正本として確認済みです。旧重複ファイルは削除しました。
 - 通常は `--skip-duplicates` を付けたまま実行すると、将来同じPDFを誤って追加した場合も二重出力を避けられます。
+
+## 9. Review run: Lecture 1-3
+
+Lecture 1-3について、レビュー用の日本語訳・解説・試験対策ノートを生成済みです。
+
+生成済みファイル:
+
+```text
+notes/3dm_01_overview_ss26.md
+notes/3dm_02_information_decision_modeling_ss26.md
+notes/3dm_03_uncertainty_ss26.md
+docs/05_l01_l03_exam_focus.md
+latex/main_l01_l03.tex
+latex/sections/l01_overview.tex
+latex/sections/l02_information_decision_modeling.tex
+latex/sections/l03_uncertainty.tex
+output/dddm_l01_l03_jp_exam_notes.pdf
+```
+
+再生成する場合:
+
+```bash
+python scripts/export_slide_images.py --pdf Materials/2026/3DM_01_Overview_SS26.pdf --out-dir assets/slides --dpi 160 --index data/slide_image_index_l01.csv
+python scripts/export_slide_images.py --pdf Materials/2026/3DM_02_Information-and-Decision-Modeling_SS26.pdf --out-dir assets/slides --dpi 160 --index data/slide_image_index_l02.csv
+python scripts/export_slide_images.py --pdf Materials/2026/3DM_03_Uncertainty_SS26.pdf --out-dir assets/slides --dpi 160 --index data/slide_image_index_l03.csv
+
+python scripts/generate_l01_l03_review_notes.py
+python scripts/compile_latex.py --tex latex/main_l01_l03.tex --out-dir output --build-dir build --jobname dddm_l01_l03_jp_exam_notes
+```
+
+Markdownノートでは、スライド画像への相対リンクを保持しています。一方、LaTeX出力ではPDF容量と画質を安定させるため、元PDFの各ページを `\includegraphics[page=...]` で直接参照しています。これはプロジェクト方針と矛盾しません。Markdownは編集・レビュー用、LaTeXは最終PDF化用です。
+
+
+## Lecture 1-3 structured review PDFs
+
+After the first quality review, Lecture 1-3 can be regenerated with a more structured layout and richer exam-oriented content:
+
+```bash
+conda activate exam_26so
+python scripts/generate_l01_l03_structured_notes.py
+```
+
+This creates separate PDFs:
+
+```text
+output/dddm_l01_overview_jp_exam_notes.pdf
+output/dddm_l02_information_decision_modeling_jp_exam_notes.pdf
+output/dddm_l03_uncertainty_jp_exam_notes.pdf
+```
+
+The revised layout uses these sections per slide when relevant:
+
+1. 日本語訳
+2. 解説
+3. 試験対策ポイント
+4. 過去問関連
+5. 確認問題と解答
+
+For cover, agenda, and administrative pages, explanatory/exam sections are intentionally omitted unless they are useful.
