@@ -1,0 +1,13 @@
+# generated files
+build/*
+!build/.gitkeep
+output/*
+!output/.gitkeep
+assets/slides/*
+!assets/slides/.gitkeep
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk

@@ -1,0 +1,53 @@
+term,question,points,topic,what_to_understand,likely_lecture
+WS22/23,Aufgabe 1,7,TSPの数理最適化モデルとTSPにおける時間次元,a prioriな静的最適化と時間依存情報の扱い。目的関数・制約・決定変数を説明できること。,Lecture 2
+WS22/23,Aufgabe 2,6,Business Analyticsを構成する3分野と相互の交差領域,"Operations Research, Statistics, Computer Science/Information Systems等の位置づけと交差領域を言語化すること。",Lecture 2 / Overview
+WS22/23,Aufgabe 3,6,Business Analytics適用プロセスとORに属する工程,現実問題から情報モデル・決定モデル・実装へ進むプロセスを説明できること。,Lecture 2
+WS22/23,Aufgabe 4,8,過去の交通観測から時間帯別平均旅行時間を作る手順,観測データの取得・時間帯への集約・平均化・モデル化・TSPへの利用を説明できること。,Lecture 2
+WS22/23,Aufgabe 5,6,旅行時間の不確実性、確率的/準確率的、ロバスト解,確率分布がある場合とない場合、ロバスト性の意味を区別すること。,Lecture 3
+WS22/23,Aufgabe 6,4,動的意思決定プロセスを記述する量,状態・決定・外生情報・遷移・報酬/費用・時点をセットで説明すること。,Lecture 4 / 5
+WS22/23,Aufgabe 7,5,MDPによる動的意思決定プロセスの形式化,MDPの構成要素を記号で書けること。,Lecture 5
+WS22/23,Aufgabe 8,3,確率的動的問題のcurse of dimensionality,状態空間・決定空間・外生情報/遷移の爆発を説明できること。,Lecture 5
+WS22/23,Aufgabe 9,5,Powellのpolicy classes,"PFA, CFA, VFA, direct lookahead, policy search等の分類を説明すること。",Lecture 7 / 10
+WS22/23,Aufgabe 10,3,Post-Decision Rolloutの欠点,計算負荷・モデル依存・サンプリング誤差などを説明すること。,Lecture 7
+WS22/23,Aufgabe 11,4,VFAの状態空間からの変換ステップ,状態/後決定状態の集約、特徴量化、価値近似への変換を説明すること。,Lecture 8 / 9
+WS22/23,Aufgabe 12,3,シミュレーションホライズン設定の考え方,全計画期間まで見る場合と短期で十分な場合を例で説明すること。,Lecture 7 / 8
+SS23,Aufgabe 1,6,Rollout/VFAのシミュレーションホライズン,未来シミュレーションをどこまで伸ばすべきか、問題依存で論じること。,Lecture 7 / 8
+SS23,Aufgabe 2,5,Powellのpolicy classes,政策クラスを列挙し、rule-basedとoptimization-basedの違いも説明すること。,Lecture 7 / 10
+SS23,Aufgabe 3,6,区間ベース旅行時間とmin-max regret,確率が不明な楽観/悲観旅行時間で最大後悔を最小化するロジックを説明すること。,Lecture 3
+SS23,Aufgabe 4,3,Post-Decision Rolloutの欠点,後決定状態からのシミュレーションの計算・近似上の弱点を説明すること。,Lecture 7
+SS23,Aufgabe 5,8,レストラン配送のCFA/PFA,遅延リスクを費用近似または方策近似で扱い、注文統合の判断を説明すること。,Lecture 11 / Lecture 7
+SS23,Aufgabe 6,32,UNIPERガス貯蔵を確率的動的在庫問題/MDP/VFAとしてモデル化,現実シナリオをMDPの構成要素・定量変数・計画ホライズン・確率/準確率モデル・費用収益・VFAへ展開すること。,Lecture 5 / 8
+WS23/24,Aufgabe 1,6,Business Analyticsの3分野と交差領域,BAの概念図を言語化できること。,Lecture 2
+WS23/24,Aufgabe 2,5,Real-World ProblemとDecision Modelの関係,"Real World, Aggregation, Information Model, Decision Model, Implementation/Disaggregationのデータフローを説明すること。",Lecture 1 / 2
+WS23/24,Aufgabe 3,10,配送車両の業務的ツアープランニングでのBA構成要素,抽象プロセスを具体例に対応付けること。,Lecture 2
+WS23/24,Aufgabe 4,6,時間帯別平均旅行時間におけるFIFO条件,出発が遅い方が早く到着する矛盾、補正方法を説明すること。,Lecture 2
+WS23/24,Aufgabe 5,7,Cheapest Insertionと時間依存旅行時間の問題,局所的な挿入費用が後続時刻に影響し、静的TSPの直感が崩れる理由を例示すること。,Lecture 2
+WS23/24,Aufgabe 6,4,時間帯に依存しない旅行時間ばらつきの確率分布化,観測値から分布を推定し、確率的遷移に使う手順を説明すること。,Lecture 3
+WS23/24,Aufgabe 7,7,確率分布を近似できない条件と代替モデル,データ不足・確率不明時に準確率/ロバスト/区間/シナリオなどで対応すること。,Lecture 3
+WS23/24,Aufgabe 8,7,動的意思決定問題の構成要素と時点tの状態,状態が静的情報・動的情報・履歴/リソースなどから構成されることを説明すること。,Lecture 4 / 5
+WS23/24,Aufgabe 9,4,動的在庫問題の構成要素,在庫水準・注文量・需要・遷移・費用/報酬を対応付けること。,Lecture 5
+WS23/24,Aufgabe 10,4,予測なし動的確率在庫問題で注文を発生させる方法,終端費用/在庫切れペナルティ等のCFA的な調整として説明すること。,Lecture 7 / 8
+SS24,Aufgabe 1a,8,"Information Model, Decision Model, Aggregation, Disaggregationの機能",各ブロックの役割を定義し、データがどの向きに流れるかを説明すること。,Lecture 1 / 2
+SS24,Aufgabe 1b,4,旅行時間の情報モデルの例と詳細モデルを常に選ばない理由,平均値モデル、時間帯別モデル、分布/区間モデルなどと複雑性とのトレードオフを説明すること。,Lecture 2 / 3
+SS24,Aufgabe 2a,3,Same-Day配送の不確実性カテゴリ,需要・リソース・環境の不確実性を具体例で挙げること。,Lecture 3 / 11
+SS24,Aufgabe 2b,3,サービス時間分布の典型的性質,非負・右裾・分散/期待値など、サービス時間PDFの直感を説明すること。,Lecture 3
+SS24,Aufgabe 3a,6,MDPグラフで最適政策とGreedy政策を比較,期待報酬を計算し、短期最適と長期最適の違いを判断すること。,Lecture 5
+SS24,Aufgabe 3b,4,Post-Decision Stateを特徴量に集約したVFAの意思決定,近似価値を含めた期待総報酬で決定を選ぶこと。,Lecture 8 / 9
+SS24,Aufgabe 3c,4,Bellman方程式と計算不能になる部分,max/期待値/遷移列挙が状態・遷移増大で爆発することを示すこと。,Lecture 5
+SS24,Aufgabe 4,8,Multiple Scenario ApproachとConsensus Function,複数シナリオの独立解から一致度を測り、現在決定を抽出する考え方を説明すること。,Lecture 7
+SS24,Aufgabe 5,20,一週間のパッケージ配送をMDP/VFA/PFAとしてモデル化,決定時点、状態、決定、費用、後決定状態、外生情報、遷移、目的関数を具体化すること。,Lecture 5 / 8
+WS24/25,Aufgabe 1,10,2値の楽観/悲観旅行時間、複数値、regret,区間・複数シナリオ・後悔最小化をツアープランニングに適用すること。,Lecture 3
+WS24/25,Aufgabe 2,10,離散時点の確率的問題に対する動的計画法,後ろ向き再帰、Bellman方程式、価値関数、最適戦略を説明すること。,Lecture 5
+WS24/25,Aufgabe 3,12,stochasticとquasi-stochasticの違いと各手法,分布がある場合/ない場合の適用手法を2つずつ説明すること。,Lecture 3 / 7
+WS24/25,Aufgabe 4,6,Rollout/VFAのシミュレーションホライズン,SS23 Q1と同じ論点。ホライズン設定を例とともに説明すること。,Lecture 7 / 8
+WS24/25,Aufgabe 5,22,HarzダムをMDP/VFAとしてモデル化,貯水量・降水・放流・エネルギー発電・供給義務をMDP/VFAへ落とすこと。,Lecture 5 / 8
+SS25,Exercise 1,2,a priori optimizationの動的意思決定に対する利点,静的最適化の単純性・計算容易性などを説明すること。,Lecture 4
+SS25,Exercise 2,6,FIFO条件,WS23/24 Q4と同じ論点。旅行時間モデルの整合性を説明すること。,Lecture 2
+SS25,Exercise 3,4,予測なし動的在庫問題で注文を発生させる方法,WS23/24 Q10と同じ論点。CFA/ペナルティで行動を誘導すること。,Lecture 7 / 8
+SS25,Exercise 4,4,指数分布から確率的遷移をサンプリングする手順,分布・パラメータ・乱数サンプル・外生情報の生成を説明すること。,Lecture 3 / 7
+SS25,Exercise 5,4,feature selectionとdimensionality reductionの違い,特徴量を選ぶのか、新しい低次元表現に変換するのかを例で区別すること。,Lecture 9
+SS25,Exercise 6,8,動的在庫問題の外生プロセス・決定プロセス・状態空間・報酬,MDPを抽象要素で表すこと。,Lecture 5
+SS25,Exercise 7,6,MDPの構成要素,状態、決定、外生情報、遷移、報酬、目的関数などを列挙すること。,Lecture 5
+SS25,Exercise 8,4,Hurwicz基準の機能と適用条件,楽観係数で最良/最悪ケースを重み付けする準確率的判断基準を説明すること。,Lecture 3
+SS25,Exercise 9,10,5つのADP method classesと各欠点,各クラスの機能だけでなく、欠点を1つずつ説明すること。,Lecture 7 / 10
+SS25,Exercise 10,12,ADP手法の2つ組み合わせを3例提案,組み合わせの狙い、補完関係、期待利点を説明すること。,Lecture 10

@@ -1,0 +1,12 @@
+name: exam_26so
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - pymupdf>=1.24.0
+      - Pillow>=10.0.0
+      - PyYAML>=6.0.0
+      - rich>=13.0.0

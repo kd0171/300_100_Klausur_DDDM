@@ -1,0 +1,42 @@
+% DDDM Exam Learning System - LaTeX template
+% Compile with: python scripts/compile_latex.py --tex latex/main.tex --out-dir output --build-dir build
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[margin=10mm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\setmainfont{DejaVu Serif}
+\setCJKmainfont{Noto Sans CJK JP}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\setlist[itemize]{leftmargin=*, nosep}
+\pagestyle{empty}
+
+\newcommand{\notePage}[3]{%
+  \clearpage
+  \begin{minipage}[t][0.43\textheight][t]{\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{#2}
+  \end{minipage}
+  \vspace{2mm}
+  \hrule
+  \vspace{2mm}
+  {\large\bfseries #1}\par
+  \vspace{1mm}
+  \begin{minipage}[t][0.51\textheight][t]{\textwidth}
+    #3
+  \end{minipage}
+}
+
+\begin{document}
+
+\input{sections/sample_overview}
+
+\end{document}
