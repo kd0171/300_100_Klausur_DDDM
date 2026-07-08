@@ -1,7 +1,7 @@
 # generated files
 build/*
 !build/.gitkeep
-output/*
+output/
 !output/.gitkeep
 assets/slides/*
 !assets/slides/.gitkeep
